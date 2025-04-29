@@ -1,0 +1,1 @@
+neeed to navigate to rate table when clicking on the rate coloumn from location table (add main route for that )
