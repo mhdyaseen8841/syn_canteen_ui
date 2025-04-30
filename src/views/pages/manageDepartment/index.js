@@ -3,7 +3,7 @@ import { Stack } from '@mui/material';
 import Content from './content';
 import Tools from './tools';
 import AddForm from './AddForm';
-import { getMenu } from '../../../utils/Service';
+import { getDepartment } from '../../../utils/Service';
 
 
 
@@ -13,7 +13,7 @@ export default function Index() {
 
   const getData = async () => {
     try {
-      const res = await getMenu();
+      const res = await getDepartment();
       setData(res);
     } catch (err) {
       console.log(err);
@@ -21,16 +21,15 @@ export default function Index() {
   };
 
   useEffect(() => {
-    console.log("heeeeeeeeeeeeeeeey")
     getData();
   }, []);
 
-  let addLocation = async (location) => {
+  let addData = async (location) => {
     return true
   }
   return (
     <Stack direction={'column'} gap={2}>
-      <AddForm open={formOpen} addLocation={addLocation} getLocation={getData} onClose={() => setFormOpen(false)} />
+      <AddForm open={formOpen} addData={addData} getData={getData} onClose={() => setFormOpen(false)} />
       <Tools buttonClick={() => setFormOpen(true)} />
       <Content data={data} updateData={getData} />
     </Stack>

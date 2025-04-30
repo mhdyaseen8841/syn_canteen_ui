@@ -9,7 +9,7 @@ import AuthWrapper1 from '../AuthWrapper1';
 import AuthCardWrapper from '../AuthCardWrapper';
 import AuthLogin from '../auth-forms/AuthLogin';
 import Logo from 'ui-component/Logo';
-import { adminLogin } from '../../../../utils/Service'
+import { login } from '../../../../utils/Service'
 
 
 // assets
@@ -60,7 +60,7 @@ const Login = () => {
                     </Grid>
                   </Grid>
                   <Grid item xs={12}>
-                    <AuthLogin adminLogin={adminLogin} />
+                    <AuthLogin adminLogin={login} />
                   </Grid>
                   <Grid item xs={12}>
                     <Divider />

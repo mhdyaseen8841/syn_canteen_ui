@@ -5,57 +5,78 @@ import { TextField, Box, Grid, Select, MenuItem, FormControl, InputLabel } from 
 import { useState } from 'react';
 import { toast } from 'react-toastify';
 import AddForm from './AddForm';
-import { formatTime } from 'utils/formatTime';
 
-const tableHeader = ['Menu Code', 'Menu Name', 'Start Time', 'End Time', 'Active'];
+const tableHeader = [
+  'Employee Code',
+  'Employee Name',
+  'Employee Type',
+  'Company',
+  'Department',
+  'Premium Enabled',
+  'Active'
+];
 
 export default function Content({ data, deleteAd, updateData }) {
   const [formOpen, setFormOpen] = useState(false);
   const [selectedData, setselectedData] = useState();
-  const [searchType, setSearchType] = useState('');
+  const [searchEmployee, setSearchEmployee] = useState('');
   const [filterStatus, setFilterStatus] = useState('');
 
   const status = ['1', '0'];
 
   const filteredData = data.filter((item) => {
-    // Filter by menu name
-    const menuNameMatch = searchType.trim() === '' || item.menu_name.toLowerCase().includes(searchType.toLowerCase());
+    // Filter by employee name or code
+    const searchMatch = searchEmployee.trim() === '' || 
+      item.employee_name.toLowerCase().includes(searchEmployee.toLowerCase()) ||
+      item.employee_code.toLowerCase().includes(searchEmployee.toLowerCase());
 
     // Filter by active status
     const statusMatch = filterStatus === '' || item.Active.toString() === filterStatus;
 
-    // Return true if both conditions match
-    return menuNameMatch && statusMatch;
+    return searchMatch && statusMatch;
   });
 
-  const tableData = tableHeaderReplace(filteredData, ['menu_code', 'menu_name', 'start_time', 'end_time', 'Active'], tableHeader).map(
-    (item) => ({
-      ...item,
-      'Start Time': formatTime(item['Start Time']),
-      'End Time': formatTime(item['End Time']),
-      Active: item['Active'] === 1 ? 'Yes' : 'No'
-    })
-  );
+  const tableData = tableHeaderReplace(
+    filteredData, 
+    [
+      'employee_code',
+      'employee_name',
+      'employee_type',
+      'company_id',
+      'department_id',
+      'premium_enabled',
+      'Active'
+    ], 
+    tableHeader
+  ).map((item) => ({
+    ...item,
+    'Premium Enabled': item['Premium Enabled'] === 1 ? 'Yes' : 'No',
+    'Active': item['Active'] === 1 ? 'Yes' : 'No'
+  }));
 
   const actionHandle = (e) => {
     console.log(e);
     if (e.action === 'delete') {
       setselectedData(e.data);
-      deleteAd(e.data._id)
+      deleteAd(e.data.employee_id)
         .then(() => {
           updateData();
+          toast.success('Employee deleted successfully');
         })
         .catch((error) => {
           console.error(error);
-          toast.error(error.response.data.message);
+          toast.error(error.response?.data?.message || 'Error deleting employee');
         });
     } else if (e.action === 'edit') {
-      // Prepare the data for editing
       const editData = {
-        menu_id: e.data.menu_id,
-        start_time: e.data['Start Time'],
-        end_time: e.data['End Time'],
-        active: e.data['Active'] === 'Yes' ? 1 : 0
+        employee_id: e.data.employee_id,
+        employee_code: e.data['Employee Code'],
+        employee_name: e.data['Employee Name'],
+        employee_type: e.data['Employee Type'],
+        company_id: e.data.company_id,
+        department_id: e.data.department_id,
+        premium_enabled: e.data['Premium Enabled'] === 'Yes' ? 1 : 0,
+        Active: e.data['Active'] === 'Yes' ? 1 : 0
       };
       setselectedData(editData);
       setFormOpen(true);
@@ -68,18 +89,22 @@ export default function Content({ data, deleteAd, updateData }) {
         <Grid container spacing={2}>
           <Grid item xs={12} md={6}>
             <TextField
-              label="Search by Menu Name"
+              label="Search by Employee Name/Code"
               variant="outlined"
               size="small"
               fullWidth
-              value={searchType}
-              onChange={(e) => setSearchType(e.target.value)}
+              value={searchEmployee}
+              onChange={(e) => setSearchEmployee(e.target.value)}
             />
           </Grid>
           <Grid item xs={12} md={6}>
             <FormControl fullWidth size="small">
               <InputLabel>Active</InputLabel>
-              <Select value={filterStatus} label="Active" onChange={(e) => setFilterStatus(e.target.value)}>
+              <Select 
+                value={filterStatus} 
+                label="Active" 
+                onChange={(e) => setFilterStatus(e.target.value)}
+              >
                 <MenuItem value="">All</MenuItem>
                 {status.map((type) => (
                   <MenuItem key={type} value={type}>
@@ -93,15 +118,15 @@ export default function Content({ data, deleteAd, updateData }) {
       </Box>
 
       <AddForm
-  open={formOpen}
-  onClose={() => {
-    setFormOpen(false);
-    setselectedData(null); // Reset selected data when closing
-    updateData(); // Refresh data after edit
-  }}
-  data={selectedData}
-  isEdit={Boolean(selectedData)} // Set isEdit based on whether we have selected data
-/>
+        open={formOpen}
+        onClose={() => {
+          setFormOpen(false);
+          setselectedData(null);
+          updateData();
+        }}
+        data={selectedData}
+        isEdit={Boolean(selectedData)}
+      />
       <StyledTable
         data={tableData}
         header={tableHeader}

@@ -1,12 +1,23 @@
 // assets
-import {IconToolsKitchen2,IconUsers,IconReportAnalytics,IconUserCircle } from '@tabler/icons';
+import {
+  IconToolsKitchen2,
+  IconUsers,
+  IconReportAnalytics,
+  IconUserPlus,    // Changed from IconUserCircle
+  IconBuildingSkyscraper,
+  IconBuildingCommunity,
+  IconUserCircle
+} from '@tabler/icons';
 
 // constant
 const icons = {
   IconToolsKitchen2,
   IconUsers,
   IconReportAnalytics,
-  IconUserCircle
+  IconUserCircle,
+  IconBuildingSkyscraper,  
+  IconBuildingCommunity,
+  IconUserPlus  
 };
 
 
@@ -39,11 +50,32 @@ export default function Pages (){
         icon: icons.IconReportAnalytics,
       },
       {
+        id: 'manageEmployees',
+        title: 'Manage Employees',
+        type: 'item',
+        url: '/employees',
+        icon: icons.IconUserPlus,
+      },
+      {
         id: 'manageContractor',
         title: 'Manage Contractor',
         type: 'item',
         url: '/contractor',
         icon: icons.IconUserCircle,
+      },
+      {
+        id: 'manageCompany',
+        title: 'Manage Company',
+        type: 'item',
+        url: '/company',
+        icon: icons.IconBuildingSkyscraper,
+      },
+      {
+        id: 'manageDepartment',
+        title: 'Manage Department',
+        type: 'item',
+        url: '/department',
+        icon: icons.IconBuildingCommunity,
       },
        {
         id: 'manageUsers',

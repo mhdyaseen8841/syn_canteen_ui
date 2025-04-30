@@ -1,19 +1,24 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import { Stack } from '@mui/material';
 import Content from './content';
 import Tools from './tools';
 import AddForm from './AddForm';
-import { getMenu } from '../../../utils/Service';
-
+import { getEmployee } from '../../../utils/Service';
+import { toast } from 'react-toastify';
 
 
 export default function Index() {
+  const { companyId } = useParams();
+  const navigate = useNavigate();
+
+
   const [formOpen, setFormOpen] = useState(false);
   const [data, setData] = useState([]);
 
   const getData = async () => {
     try {
-      const res = await getMenu();
+      const res = await getEmployee();
       setData(res);
     } catch (err) {
       console.log(err);
@@ -21,9 +26,16 @@ export default function Index() {
   };
 
   useEffect(() => {
-    console.log("heeeeeeeeeeeeeeeey")
+    console.log("dfdsfdsafsadfdsf")
+    if (companyId) {
     getData();
+  }else {
+      console.log("company id not found")
+      toast.error("company id not found")
+      navigate('/company')
+    }
   }, []);
+
 
   let addLocation = async (location) => {
     return true

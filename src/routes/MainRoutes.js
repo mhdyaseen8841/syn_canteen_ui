@@ -7,11 +7,12 @@ import Loadable from 'ui-component/Loadable';
 
 // dashboard routing
 const DashboardDefault = Loadable(lazy(() => import('views/dashboard/Default')));
-// const ManageCompany = Loadable(lazy(() => import('views/pages/manageCompany')));
-// const ManageDrivers = Loadable(lazy(() => import('views/pages/manageDrivers')));
 const Menu = Loadable(lazy(() => import('views/pages/manageMenu')));
 const Transaction = Loadable(lazy(() => import('views/pages/manageTransaction')));
+const Company = Loadable(lazy(() => import('views/pages/manageCompany')));
 const Contractor = Loadable(lazy(() => import('views/pages/manageContractor')));
+const Department = Loadable(lazy(() => import('views/pages/manageDepartment')));
+const Employees = Loadable(lazy(() => import('views/pages/manageEmployee')));
 // const ManageUsers = Loadable(lazy(() => import('views/pages/manageUsers')));
 // ==============================|| MAIN ROUTING ||============================== //
 
@@ -42,16 +43,25 @@ const MainRoutes = {
       path: 'transaction',
       element: <Transaction />
     },
+    {
+      path: 'employees/:companyId',
+      element: <Employees />
+     },
    {
     path: 'contractor',
     element: <Contractor />
    },
+   {
+    path: 'company',
+    element: <Company />
+   },
+   {
+    path: 'department',
+    element: <Department />
+   },
+   
    
     
-    // {
-    //   path: 'manageCompany',
-    //   element: <ManageCompany />
-    // },
     // {
     //   path: 'manageDrivers',
     //   element: <ManageDrivers />

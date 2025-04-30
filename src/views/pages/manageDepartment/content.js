@@ -5,31 +5,23 @@ import { TextField, Box, Grid } from '@mui/material';
 import { useState } from 'react';
 import { toast } from 'react-toastify';
 import AddForm from './AddForm';
-import { useNavigate } from 'react-router-dom';
 
-const tableHeader = ['Company Id', 'Company Name'];
+const tableHeader = ['Department Id', 'Department Name'];
 
 export default function Content({ data, deleteAd, updateData }) {
   const [formOpen, setFormOpen] = useState(false);
   const [selectedData, setselectedData] = useState();
-  const [searchCompany, setSearchCompany] = useState('');
-
-  const navigate = useNavigate();
-
-  const handleRowClick = (companyId) => {
-    navigate(`/employees/${companyId}`);
-  };
-
+  const [searchDepartment, setSearchDepartment] = useState('');
 
   const filteredData = data.filter((item) => {
-    // Filter by company name
-    return searchCompany.trim() === '' || 
-           item.company_name.toLowerCase().includes(searchCompany.toLowerCase());
+    // Filter by department name
+    return searchDepartment.trim() === '' || 
+           item.department_name.toLowerCase().includes(searchDepartment.toLowerCase());
   });
 
   const tableData = tableHeaderReplace(
     filteredData, 
-    ['company_id', 'company_name'], 
+    ['department_id', 'department_name'], 
     tableHeader
   );
 
@@ -47,8 +39,8 @@ export default function Content({ data, deleteAd, updateData }) {
         });
     } else if (e.action === 'edit') {
       const editData = {
-        company_id: e.data.company_id,
-        company_name: e.data.company_name
+        department_id: e.data.department_id,
+        department_name: e.data.department_name
       };
       setselectedData(editData);
       setFormOpen(true);
@@ -61,12 +53,12 @@ export default function Content({ data, deleteAd, updateData }) {
         <Grid container spacing={2}>
           <Grid item xs={12}>
             <TextField
-              label="Search by Company Name"
+              label="Search by Department Name"
               variant="outlined"
               size="small"
               fullWidth
-              value={searchCompany}
-              onChange={(e) => setSearchCompany(e.target.value)}
+              value={searchDepartment}
+              onChange={(e) => setSearchDepartment(e.target.value)}
             />
           </Grid>
         </Grid>
@@ -87,7 +79,6 @@ export default function Content({ data, deleteAd, updateData }) {
         header={tableHeader}
         isShowSerialNo={false}
         isShowAction={false}
-        onClickAction={(id) => handleRowClick(id)}
         actions={['edit', 'delete']}
         onActionChange={actionHandle}
       />
