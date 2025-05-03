@@ -8,8 +8,8 @@ export default function Tools({buttonClick}) {
         <MainCard>
             
             <Stack direction={'row'} sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
-                <Typography variant='h3' color={'secondary.main'}>Manage Menus</Typography>
-                <Button variant='contained' startIcon={<Add />} sx={{ backgroundColor: 'secondary.main' }} onClick={buttonClick}>Add Menus</Button>
+                <Typography variant='h3' color={'secondary.main'}>Manage Menu</Typography>
+                {/* <Button variant='contained' startIcon={<Add />} sx={{ backgroundColor: 'secondary.main' }} onClick={buttonClick}>Add Menus</Button> */}
             </Stack>
         </MainCard>
     )

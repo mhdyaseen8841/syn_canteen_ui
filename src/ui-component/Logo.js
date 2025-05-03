@@ -1,7 +1,7 @@
 // material-ui
 // import { useTheme } from '@mui/material/styles';
 // import logo from 'assets/images/container-width.svg';
-import logo1 from 'assets/images/gemini22.png';
+import logo1 from 'assets/images/syn.jpg';
 /**
  * if you want to use image instead of <svg> uncomment following.
  *
@@ -22,7 +22,7 @@ const Logo = () => {
      * <img src={logo} alt="Berry" width="100" />
      *
      */
-    <img src={logo1} alt="Berry" width="100"/>
+    <img src={logo1} alt="Synthite" width="120"/>
     
   );
 };

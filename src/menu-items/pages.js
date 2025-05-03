@@ -6,7 +6,8 @@ import {
   IconUserPlus,    // Changed from IconUserCircle
   IconBuildingSkyscraper,
   IconBuildingCommunity,
-  IconUserCircle
+  IconUserCircle,
+  IconReportMoney 
 } from '@tabler/icons';
 
 // constant
@@ -17,7 +18,8 @@ const icons = {
   IconUserCircle,
   IconBuildingSkyscraper,  
   IconBuildingCommunity,
-  IconUserPlus  
+  IconUserPlus  ,
+  IconReportMoney 
 };
 
 
@@ -36,18 +38,25 @@ export default function Pages (){
      
 
       {
-        id: 'menu',
-        title: 'Menu',
-        type: 'item',
-        url: '/menu',
-        icon: icons.IconToolsKitchen2,
-      },
-      {
         id: 'transaction',
         title: 'Transactions',
         type: 'item',
         url: '/transaction',
         icon: icons.IconReportAnalytics,
+      },
+      {
+        id: 'expenses',
+        title: 'Expenses',
+        type: 'item',
+        url: '/expenses',
+        icon: icons.IconReportMoney ,
+      },
+      {
+        id: 'menu',
+        title: 'Menu',
+        type: 'item',
+        url: '/menu',
+        icon: icons.IconToolsKitchen2,
       },
       {
         id: 'manageEmployees',
@@ -56,13 +65,13 @@ export default function Pages (){
         url: '/employees',
         icon: icons.IconUserPlus,
       },
-      {
-        id: 'manageContractor',
-        title: 'Manage Contractor',
-        type: 'item',
-        url: '/contractor',
-        icon: icons.IconUserCircle,
-      },
+      // {
+      //   id: 'manageContractor',
+      //   title: 'Manage Contractor',
+      //   type: 'item',
+      //   url: '/contractor',
+      //   icon: icons.IconUserCircle,
+      // },
       {
         id: 'manageCompany',
         title: 'Manage Company',
@@ -77,13 +86,13 @@ export default function Pages (){
         url: '/department',
         icon: icons.IconBuildingCommunity,
       },
-       {
-        id: 'manageUsers',
-        title: 'Manage Users',
-        type: 'item',
-        url: '/manageUsers',
-        icon: icons.IconUsers,
-      },
+      //  {
+      //   id: 'manageUsers',
+      //   title: 'Manage Users',
+      //   type: 'item',
+      //   url: '/manageUsers',
+      //   icon: icons.IconUsers,
+      // },
       
       //  //admin routes
       //  {

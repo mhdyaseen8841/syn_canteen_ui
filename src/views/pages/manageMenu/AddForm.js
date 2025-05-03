@@ -57,57 +57,52 @@ export default function AddForm({ getData, addData, open, onClose, isEdit = fals
             <form onSubmit={handleSubmit(onSubmit)}>
                 <Container>
                     <Stack direction={'column'} sx={{ p: 2 }} spacing={2}>
-                        <Typography variant='h5'>Start Time</Typography>
-                        <Controller
-                            name="start_time"
-                            control={control}
-                            rules={{ required: "Start Time is required" }}
-                            render={({ field }) => (
-                                <FormControl fullWidth error={Boolean(errors.start_time)}>
-                                    <Select
-                                        {...field}
-                                        value={field.value || ''}
-                                        displayEmpty
-                                    >
-                                        <MenuItem value="" disabled>Select Time</MenuItem>
-                                        {generateTimeOptions().map((time) => (
-                                            <MenuItem key={time} value={time}>
-                                                {time}
-                                            </MenuItem>
-                                        ))}
-                                    </Select>
-                                    {errors.start_time && (
-                                        <FormHelperText>{errors.start_time.message}</FormHelperText>
-                                    )}
-                                </FormControl>
-                            )}
-                        />
+                    <Typography variant='h5'>Start Time</Typography>
+<Controller
+    name="start_time"
+    control={control}
+    rules={{ required: "Start Time is required" }}
+    render={({ field }) => (
+        <TextField
+            {...field}
+            type="time"
+            label="Start Time"
+            fullWidth
+            error={Boolean(errors.start_time)}
+            helperText={errors.start_time?.message}
+            InputLabelProps={{
+                shrink: true,
+            }}
+            inputProps={{
+                step: 1800, // 30-minute steps
+            }}
+        />
+    )}
+/>
 
-                        <Typography variant='h5'>End Time</Typography>
-                        <Controller
-                            name="end_time"
-                            control={control}
-                            rules={{ required: "End Time is required" }}
-                            render={({ field }) => (
-                                <FormControl fullWidth error={Boolean(errors.end_time)}>
-                                    <Select
-                                        {...field}
-                                        value={field.value || ''}
-                                        displayEmpty
-                                    >
-                                        <MenuItem value="" disabled>Select Time</MenuItem>
-                                        {generateTimeOptions().map((time) => (
-                                            <MenuItem key={time} value={time}>
-                                                {time}
-                                            </MenuItem>
-                                        ))}
-                                    </Select>
-                                    {errors.end_time && (
-                                        <FormHelperText>{errors.end_time.message}</FormHelperText>
-                                    )}
-                                </FormControl>
-                            )}
-                        />
+<Typography variant='h5'>End Time</Typography>
+<Controller
+    name="end_time"
+    control={control}
+    rules={{ required: "End Time is required" }}
+    render={({ field }) => (
+        <TextField
+            {...field}
+            type="time"
+            label="End Time"
+            fullWidth
+            error={Boolean(errors.end_time)}
+            helperText={errors.end_time?.message}
+            InputLabelProps={{
+                shrink: true,
+            }}
+            inputProps={{
+                step: 1800, // 30-minute steps
+            }}
+        />
+    )}
+/>
+
 
                         <FormControlLabel
                             control={

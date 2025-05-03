@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Stack, FormControl, InputLabel, Select, MenuItem, Box } from '@mui/material';
+import { Stack, FormControl, InputLabel, Select, MenuItem, Box, Typography } from '@mui/material';
 import Content from './content';
 import Tools from './tools';
 import AddForm from './AddForm';
@@ -53,6 +53,9 @@ export default function Index() {
 
   return (
     <Stack direction={'column'} gap={2}>
+        <Typography variant="h3" color={'secondary.main'}>
+                Select Company 
+              </Typography>
       <Box sx={{ mb: 2 }}>
         <Stack direction={{ xs: 'column', md: 'row' }} spacing={2}>
           <FormControl fullWidth>
@@ -80,9 +83,6 @@ export default function Index() {
               label="Employee Type"
               onChange={(e) => setSelectedType(e.target.value)}
             >
-              <MenuItem value="">
-                <em>All Types</em>
-              </MenuItem>
               {employeeTypes.map((type) => (
                 <MenuItem key={type} value={type}>
                   {type.charAt(0).toUpperCase() + type.slice(1)}
@@ -101,7 +101,7 @@ export default function Index() {
         selectedCompany={selectedCompany}
         type={selectedType}
       />
-      <Tools buttonClick={() => {
+      <Tools selectedCompany buttonClick={() => {
         if (!selectedCompany) {
           toast.error("Please select a company first");
           return;

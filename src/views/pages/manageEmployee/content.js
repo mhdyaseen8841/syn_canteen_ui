@@ -133,14 +133,16 @@ export default function Content({ data, deleteAd, updateData,selectedCompany,typ
 
     )
 }
-      <StyledTable
-        data={tableData}
-        header={tableHeader}
-        isShowSerialNo={true}
-        isShowAction={true}
-        actions={['edit', 'delete']}
-        onActionChange={actionHandle}
-      />
+<StyledTable
+  data={tableData}
+  header={tableHeader}
+  isShowSerialNo={true}
+  isShowAction={true}
+  actions={['edit', 'delete']}
+  onActionChange={actionHandle}
+  rowsPerPage={5} // Optional
+/>
+
     </>
   );
 }
