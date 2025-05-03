@@ -51,6 +51,21 @@ export default function Pages (){
         url: '/expenses',
         icon: icons.IconReportMoney ,
       },
+      
+      {
+        id: 'companyReports',
+        title: 'Company Reports',
+        type: 'item',
+        url: '/companyReports',
+        icon: icons.IconReportAnalytics,
+      },
+      {
+        id: 'employeeReports',
+        title: 'Employee Reports',
+        type: 'item',
+        url: '/employeeReports',
+        icon: icons.IconReportAnalytics,
+      },
       {
         id: 'menu',
         title: 'Menu',
@@ -65,13 +80,6 @@ export default function Pages (){
         url: '/employees',
         icon: icons.IconUserPlus,
       },
-      // {
-      //   id: 'manageContractor',
-      //   title: 'Manage Contractor',
-      //   type: 'item',
-      //   url: '/contractor',
-      //   icon: icons.IconUserCircle,
-      // },
       {
         id: 'manageCompany',
         title: 'Manage Company',

@@ -8,13 +8,14 @@ import Loadable from 'ui-component/Loadable';
 // dashboard routing
 const DashboardDefault = Loadable(lazy(() => import('views/dashboard/Default')));
 const Menu = Loadable(lazy(() => import('views/pages/manageMenu')));
-// const Transaction = Loadable(lazy(() => import('views/pages/manageTransaction')));
 const Company = Loadable(lazy(() => import('views/pages/manageCompany')));
 const Contractor = Loadable(lazy(() => import('views/pages/manageContractor')));
 const Department = Loadable(lazy(() => import('views/pages/manageDepartment')));
 const Employees = Loadable(lazy(() => import('views/pages/manageEmployee')));
 const Transaction = Loadable(lazy(() => import('views/pages/transactions')));
 const ManageExpenses = Loadable(lazy(() => import('views/pages/manageExpense')));
+const CompanyReport = Loadable(lazy(() => import('views/pages/companyReports')));
+const EmployeeReport = Loadable(lazy(() => import('views/pages/employeeReports')));
 // const ManageUsers = Loadable(lazy(() => import('views/pages/manageUsers')));
 // ==============================|| MAIN ROUTING ||============================== //
 
@@ -64,6 +65,14 @@ const MainRoutes = {
    {
     path: 'department',
     element: <Department />
+   },
+   {
+    path: 'companyReports',
+    element: <CompanyReport />
+   },
+   {
+    path: 'employeeReports',
+    element: <EmployeeReport />
    },
    
     
