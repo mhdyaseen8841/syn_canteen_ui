@@ -91,8 +91,8 @@ export async function addDepartment(data) {
 }
 
 // Employee Operations
-export async function getEmployee(companyId) {
-  const response = await apiInstance.get(`employee?company_id=${companyId}`);
+export async function getEmployee(companyId,employeeType) {
+  const response = await apiInstance.get(`employee?company_id=${companyId}&employee_type=${employeeType}`);
   return response.data;
 }
 

@@ -9,7 +9,7 @@ import { formatTime } from 'utils/formatTime';
 
 const tableHeader = ['Menu Code', 'Menu Name', 'Start Time', 'End Time', 'Active'];
 
-export default function Content({ data, deleteAd, updateData }) {
+export default function Content({ data, editData, updateData }) {
   const [formOpen, setFormOpen] = useState(false);
   const [selectedData, setselectedData] = useState();
   const [searchType, setSearchType] = useState('');
@@ -57,6 +57,13 @@ export default function Content({ data, deleteAd, updateData }) {
         end_time: e.data['End Time'],
         active: e.data['Active'] === 'Yes' ? 1 : 0
       };
+      editData(editData).then(() => {
+        updateData();
+      })
+      .catch((error) => {
+        console.error(error);
+        toast.error(error.response.data.message);
+      });
       setselectedData(editData);
       setFormOpen(true);
     }

@@ -1,112 +1,185 @@
-import { Button, Container, MenuItem, Select, Stack, TextField, Typography, FormControl, FormHelperText, FormControlLabel, Switch } from '@mui/material'
-import React from 'react'
+import { Button, Container, MenuItem, Select, Stack, TextField, Typography, FormControl, FormHelperText, FormControlLabel, Switch, Autocomplete } from '@mui/material'
+import { set } from 'lodash';
+import React, { useEffect, useState } from 'react'
 import { useForm, Controller } from "react-hook-form";
 import { toast } from 'react-toastify';
 import StyledDialog from 'ui-component/StyledDialog';
+import { getCompany, getDepartment } from 'utils/Service';
 
-export default function AddForm({ getData, addData, open, onClose, isEdit = false, data = {} }) {
-    const [active, setActive] = React.useState(data?.active === 1);
+export default function AddForm({selectedCompany, getData, addData, open, onClose, isEdit = false, data = {},type }) {
+    const [active, setActive] = useState(data?.active === 1);
+    const [premiumEnabled, setPremiumEnabled] = useState(data?.premium_enabled === 1);
+    const [departments, setDepartments] = useState([]);
+    const [selectedDepartment, setSelectedDepartment] = useState(null);
 
     const {
         control,
+        setValue,
         handleSubmit,
         formState: { errors },
     } = useForm({
         defaultValues: {
-            menu_id: data?.menu_id || '',
-            start_time: data?.start_time || '',
-            end_time: data?.end_time || '',
-            active: data?.active || 1
+            employee_code: data?.employee_code || '',
+            employee_name: data?.employee_name || '',
+            department_id: data?.department_id || '',
+            premium_enabled: data?.premium_enabled || 0,
+            active: data?.Active || data?.active || 1
         }
     });
 
-    const onSubmit = (formData) => {
-        const submitData = {
-            menu_id: isEdit ? data.menu_id : undefined, // Only include menu_id for edit
-            start_time: formData.start_time,
-            end_time: formData.end_time,
-            active: active ? 1 : 0
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const deptRes = await getDepartment();
+                setDepartments(deptRes);
+                
+                debugger;
+                // If we have department_id in edit data, find and set the department
+                if (isEdit && data?.department_id) {
+                    const dept = deptRes.find(d => d.department_id === data.department_id);
+                    if (dept) {
+                        setSelectedDepartment(dept);
+                        setValue('department_id', dept.department_id);
+                    }
+                }
+            } catch (error) {
+                console.error('Error fetching departments:', error);
+                toast.error('Error loading departments');
+            }
         };
+        fetchData();
+    }, [isEdit]);
+
+    const onSubmit = (formData) => {
+        debugger;
+        if(selectedCompany === '' || selectedCompany === undefined) {   
+            toast.error("Please select a company first")
+            return;
+        }
+        if(type === '' || type === undefined) {
+            toast.error("Please select a employee type first")
+            return;
+        }
+        const submitData = {
+            employee_code: formData.employee_code,
+            employee_name: formData.employee_name,
+            employee_type:  type,
+            company_id: selectedCompany,
+            department_id: formData.department_id,
+            premium_enabled: premiumEnabled ? 1 : 0,
+            active: active ? 1 : 0,
+            user: 'admin_user' // You might want to get this from context/props
+        };
+        if(isEdit) {
+            submitData.employee_id = data.employee_id; 
+        }
 
         addData(submitData)
             .then((response) => {
-                toast.success(isEdit ? "Menu Updated Successfully" : "Menu Added Successfully");
+                console.log(response)
+                toast.success(isEdit ? "Employee Updated Successfully" : "Employee Added Successfully");
                 getData();
                 onClose();
             })
             .catch((error) => {
                 console.error(error);
-                toast.error(error.response?.data?.message || "Error saving menu");
+                toast.error(error.response?.data?.message || "Error saving employee");
             });
-    }
-
-    const generateTimeOptions = () => {
-        const times = [];
-        for (let hours = 0; hours < 24; hours++) {
-            for (let minutes = 0; minutes < 60; minutes += 30) {
-                const hour = hours.toString().padStart(2, '0');
-                const minute = minutes.toString().padStart(2, '0');
-                times.push(`${hour}:${minute}:00`);
-            }
-        }
-        return times;
     };
 
     return (
-        <StyledDialog open={open} fullWidth onClose={onClose} title={`${isEdit ? "Edit" : "Add"} Menu`}>
+        <StyledDialog open={open} fullWidth onClose={onClose} title={`${isEdit ? "Edit" : "Add"} Employee`}>
             <form onSubmit={handleSubmit(onSubmit)}>
                 <Container>
                     <Stack direction={'column'} sx={{ p: 2 }} spacing={2}>
-                        <Typography variant='h5'>Start Time</Typography>
                         <Controller
-                            name="start_time"
+                            name="employee_code"
                             control={control}
-                            rules={{ required: "Start Time is required" }}
+                            rules={{ required: "Employee Code is required" }}
                             render={({ field }) => (
-                                <FormControl fullWidth error={Boolean(errors.start_time)}>
-                                    <Select
-                                        {...field}
-                                        value={field.value || ''}
-                                        displayEmpty
-                                    >
-                                        <MenuItem value="" disabled>Select Time</MenuItem>
-                                        {generateTimeOptions().map((time) => (
-                                            <MenuItem key={time} value={time}>
-                                                {time}
-                                            </MenuItem>
-                                        ))}
-                                    </Select>
-                                    {errors.start_time && (
-                                        <FormHelperText>{errors.start_time.message}</FormHelperText>
-                                    )}
-                                </FormControl>
+                                <TextField
+                                    {...field}
+                                    label="Employee Code"
+                                    error={Boolean(errors.employee_code)}
+                                    helperText={errors.employee_code?.message}
+                                    fullWidth
+                                />
                             )}
                         />
 
-                        <Typography variant='h5'>End Time</Typography>
                         <Controller
-                            name="end_time"
+                            name="employee_name"
                             control={control}
-                            rules={{ required: "End Time is required" }}
+                            rules={{ required: "Employee Name is required" }}
                             render={({ field }) => (
-                                <FormControl fullWidth error={Boolean(errors.end_time)}>
-                                    <Select
-                                        {...field}
-                                        value={field.value || ''}
-                                        displayEmpty
-                                    >
-                                        <MenuItem value="" disabled>Select Time</MenuItem>
-                                        {generateTimeOptions().map((time) => (
-                                            <MenuItem key={time} value={time}>
-                                                {time}
-                                            </MenuItem>
-                                        ))}
-                                    </Select>
-                                    {errors.end_time && (
-                                        <FormHelperText>{errors.end_time.message}</FormHelperText>
-                                    )}
-                                </FormControl>
+                                <TextField
+                                    {...field}
+                                    label="Employee Name"
+                                    error={Boolean(errors.employee_name)}
+                                    helperText={errors.employee_name?.message}
+                                    fullWidth
+                                />
                             )}
+                        />
+
+                        {/* <Controller
+                            name="company_id"
+                            control={control}
+                            rules={{ required: "Company is required" }}
+                            render={({ field }) => (
+                                <Autocomplete
+                                    options={companies}
+                                    getOptionLabel={(option) => option.company_name}
+                                    value={companies.find(x => x.company_id === field.value) || null}
+                                    onChange={(_, newValue) => field.onChange(newValue?.company_id)}
+                                    renderInput={(params) => (
+                                        <TextField
+                                            {...params}
+                                            label="Company"
+                                            error={Boolean(errors.company_id)}
+                                            helperText={errors.company_id?.message}
+                                        />
+                                    )}
+                                />
+                            )}
+                        /> */}
+
+<Controller
+            name="department_id"
+            control={control}
+            rules={{ required: "Department is required" }}
+            render={({ field }) => (
+                <Autocomplete
+                    options={departments}
+                    getOptionLabel={(option) => option.department_name || ''}
+                    value={departments.find(d => d.department_id === field.value) || null}
+                    onChange={(_, newValue) => {
+                        field.onChange(newValue?.department_id);
+                        setSelectedDepartment(newValue);
+                    }}
+                    isOptionEqualToValue={(option, value) => 
+                        option.department_id === value.department_id
+                    }
+                    renderInput={(params) => (
+                        <TextField
+                            {...params}
+                            label="Department"
+                            error={Boolean(errors.department_id)}
+                            helperText={errors.department_id?.message}
+                        />
+                    )}
+                />
+            )}
+        />
+
+                        <FormControlLabel
+                            control={
+                                <Switch 
+                                    checked={premiumEnabled}
+                                    onChange={(e) => setPremiumEnabled(e.target.checked)}
+                                />
+                            }
+                            label="Premium Enabled"
                         />
 
                         <FormControlLabel
@@ -130,5 +203,5 @@ export default function AddForm({ getData, addData, open, onClose, isEdit = fals
                 </Container>
             </form>
         </StyledDialog>
-    )
+    );
 }

@@ -3,7 +3,7 @@ import { Stack } from '@mui/material';
 import Content from './content';
 import Tools from './tools';
 import AddForm from './AddForm';
-import { getMenu } from '../../../utils/Service';
+import { getMenu,editMenu } from '../../../utils/Service';
 
 
 
@@ -32,7 +32,7 @@ export default function Index() {
     <Stack direction={'column'} gap={2}>
       <AddForm open={formOpen} addLocation={addLocation} getLocation={getData} onClose={() => setFormOpen(false)} />
       <Tools buttonClick={() => setFormOpen(true)} />
-      <Content data={data} updateData={getData} />
+      <Content editData={editMenu} data={data} updateData={getData} />
     </Stack>
   );
 }

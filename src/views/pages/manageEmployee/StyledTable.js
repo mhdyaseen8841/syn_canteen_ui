@@ -1,6 +1,6 @@
 import React from 'react';
 import MainCard from 'ui-component/cards/MainCard';
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
+import { Chip, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import TableActionButton from 'ui-component/TableActionButton';
 
 export default function StyledTable({
@@ -56,6 +56,24 @@ if(onClickAction){
                         </TableCell>
                       );
                     }
+                    else if (head.toUpperCase().replace(/\s+/g, '_') === 'PREMIUM_ENABLED') {
+                      const isPremium = dt[`${head}`] == 'Yes';
+                    
+                      return (
+                        <TableCell key={i}>
+                          <Chip 
+                            label={isPremium ? 'Yes' : 'No'}
+                            size="small"
+                            variant="filled"
+                            sx={{
+                              color: '#fff',
+                              backgroundColor: isPremium ? 'success.main' : '#424242', // darker grey
+                            }}
+                          />
+                        </TableCell>
+                      );
+                    }
+                    
                     else if (head.toUpperCase() === 'STATUS' ) {
                      
                       return (

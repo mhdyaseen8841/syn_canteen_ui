@@ -5,7 +5,7 @@ import { TextField, Box, Grid } from '@mui/material';
 import { useState } from 'react';
 import { toast } from 'react-toastify';
 import AddForm from './AddForm';
-import { useNavigate } from 'react-router-dom';
+// import { useNavigate } from 'react-router-dom';
 
 const tableHeader = ['Company Id', 'Company Name'];
 
@@ -14,10 +14,10 @@ export default function Content({ data, deleteAd, updateData }) {
   const [selectedData, setselectedData] = useState();
   const [searchCompany, setSearchCompany] = useState('');
 
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
   const handleRowClick = (companyId) => {
-    navigate(`/employees/${companyId}`);
+    // navigate(`/employees/${companyId}`);
   };
 
 

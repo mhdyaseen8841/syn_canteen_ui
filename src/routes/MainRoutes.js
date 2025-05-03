@@ -44,7 +44,7 @@ const MainRoutes = {
       element: <Transaction />
     },
     {
-      path: 'employees/:companyId',
+      path: 'employees',
       element: <Employees />
      },
    {

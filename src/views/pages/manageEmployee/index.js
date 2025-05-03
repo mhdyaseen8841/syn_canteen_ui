@@ -1,50 +1,119 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
-import { Stack } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
+import { Stack, FormControl, InputLabel, Select, MenuItem, Box } from '@mui/material';
 import Content from './content';
 import Tools from './tools';
 import AddForm from './AddForm';
-import { getEmployee } from '../../../utils/Service';
+import { getEmployee, getCompany, addEmployee, editEmployee } from '../../../utils/Service';
 import { toast } from 'react-toastify';
-
-
 export default function Index() {
-  const { companyId } = useParams();
-  const navigate = useNavigate();
-
-
   const [formOpen, setFormOpen] = useState(false);
   const [data, setData] = useState([]);
+  const [companies, setCompanies] = useState([]);
+  const [selectedCompany, setSelectedCompany] = useState('');
+  const [selectedType, setSelectedType] = useState('employee'); 
 
+
+  const employeeTypes = ['employee', 'contractor', 'guest'];
+
+  // Fetch companies
+  const getCompanies = async () => {
+    try {
+      const response = await getCompany();
+      setCompanies(response);
+    } catch (err) {
+      console.error(err);
+      toast.error("Error fetching companies");
+    }
+  };
+
+  // Fetch employees
   const getData = async () => {
     try {
-      const res = await getEmployee();
+      if (!selectedCompany) {
+        setData([]);
+        return;
+      }
+      const res = await getEmployee(selectedCompany,selectedType);
+    
       setData(res);
     } catch (err) {
-      console.log(err);
+      console.error(err);
+      toast.error("Error fetching employees");
     }
   };
 
   useEffect(() => {
-    console.log("dfdsfdsafsadfdsf")
-    if (companyId) {
-    getData();
-  }else {
-      console.log("company id not found")
-      toast.error("company id not found")
-      navigate('/company')
-    }
+    getCompanies();
   }, []);
 
+  useEffect(() => {
+    getData();
+  }, [selectedCompany, selectedType]);
 
-  let addLocation = async (location) => {
-    return true
-  }
   return (
     <Stack direction={'column'} gap={2}>
-      <AddForm open={formOpen} addLocation={addLocation} getLocation={getData} onClose={() => setFormOpen(false)} />
-      <Tools buttonClick={() => setFormOpen(true)} />
-      <Content data={data} updateData={getData} />
+      <Box sx={{ mb: 2 }}>
+        <Stack direction={{ xs: 'column', md: 'row' }} spacing={2}>
+          <FormControl fullWidth>
+            <InputLabel>Select Company</InputLabel>
+            <Select
+              value={selectedCompany}
+              label="Select Company"
+              onChange={(e) => setSelectedCompany(e.target.value)}
+            >
+              <MenuItem value="">
+                <em>Select a company</em>
+              </MenuItem>
+              {companies.map((company) => (
+                <MenuItem key={company.company_id} value={company.company_id}>
+                  {company.company_name}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+
+          <FormControl fullWidth>
+            <InputLabel>Employee Type</InputLabel>
+            <Select
+              value={selectedType}
+              label="Employee Type"
+              onChange={(e) => setSelectedType(e.target.value)}
+            >
+              <MenuItem value="">
+                <em>All Types</em>
+              </MenuItem>
+              {employeeTypes.map((type) => (
+                <MenuItem key={type} value={type}>
+                  {type.charAt(0).toUpperCase() + type.slice(1)}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </Stack>
+      </Box>
+
+      <AddForm 
+        open={formOpen}
+        onClose={() => setFormOpen(false)}
+        getData={getData}
+        addData={addEmployee}
+        selectedCompany={selectedCompany}
+        type={selectedType}
+      />
+      <Tools buttonClick={() => {
+        if (!selectedCompany) {
+          toast.error("Please select a company first");
+          return;
+        }
+        setFormOpen(true);
+      }} type={selectedType} />
+      <Content 
+        selectedCompany={selectedCompany}
+        data={data}
+        updateData={getData}
+        type={selectedType}
+      />
     </Stack>
   );
 }

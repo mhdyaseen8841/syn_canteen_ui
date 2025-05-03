@@ -3,8 +3,10 @@ import StyledTable from './StyledTable';
 import { tableHeaderReplace } from 'utils/tableHeaderReplace';
 import { TextField, Box, Grid, Select, MenuItem, FormControl, InputLabel } from '@mui/material';
 import { useState } from 'react';
+import { Chip } from '@mui/material';
 import { toast } from 'react-toastify';
 import AddForm from './AddForm';
+import { editEmployee } from 'utils/Service';
 
 const tableHeader = [
   'Employee Code',
@@ -16,7 +18,7 @@ const tableHeader = [
   'Active'
 ];
 
-export default function Content({ data, deleteAd, updateData }) {
+export default function Content({ data, deleteAd, updateData,selectedCompany,type }) {
   const [formOpen, setFormOpen] = useState(false);
   const [selectedData, setselectedData] = useState();
   const [searchEmployee, setSearchEmployee] = useState('');
@@ -43,7 +45,7 @@ export default function Content({ data, deleteAd, updateData }) {
       'employee_name',
       'employee_type',
       'company_id',
-      'department_id',
+      'department_name',
       'premium_enabled',
       'Active'
     ], 
@@ -51,6 +53,7 @@ export default function Content({ data, deleteAd, updateData }) {
   ).map((item) => ({
     ...item,
     'Premium Enabled': item['Premium Enabled'] === 1 ? 'Yes' : 'No',
+    'Employee Type': type,
     'Active': item['Active'] === 1 ? 'Yes' : 'No'
   }));
 
@@ -58,25 +61,16 @@ export default function Content({ data, deleteAd, updateData }) {
     console.log(e);
     if (e.action === 'delete') {
       setselectedData(e.data);
-      deleteAd(e.data.employee_id)
-        .then(() => {
-          updateData();
-          toast.success('Employee deleted successfully');
-        })
-        .catch((error) => {
-          console.error(error);
-          toast.error(error.response?.data?.message || 'Error deleting employee');
-        });
+     
     } else if (e.action === 'edit') {
       const editData = {
         employee_id: e.data.employee_id,
         employee_code: e.data['Employee Code'],
         employee_name: e.data['Employee Name'],
-        employee_type: e.data['Employee Type'],
         company_id: e.data.company_id,
         department_id: e.data.department_id,
         premium_enabled: e.data['Premium Enabled'] === 'Yes' ? 1 : 0,
-        Active: e.data['Active'] === 'Yes' ? 1 : 0
+        active: e.data['Active'] === 'Yes' ? 1 : 0
       };
       setselectedData(editData);
       setFormOpen(true);
@@ -117,6 +111,11 @@ export default function Content({ data, deleteAd, updateData }) {
         </Grid>
       </Box>
 
+{
+  formOpen && (
+
+
+
       <AddForm
         open={formOpen}
         onClose={() => {
@@ -124,9 +123,16 @@ export default function Content({ data, deleteAd, updateData }) {
           setselectedData(null);
           updateData();
         }}
+       addData={editEmployee}
+       getData={updateData}
         data={selectedData}
+        selectedCompany={selectedCompany}
         isEdit={Boolean(selectedData)}
+        type={type}
       />
+
+    )
+}
       <StyledTable
         data={tableData}
         header={tableHeader}
