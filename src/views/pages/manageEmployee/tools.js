@@ -5,9 +5,11 @@ import MainCard from 'ui-component/cards/MainCard';
 
 export default function Tools({ buttonClick, type, selectedCompany }) {
   const hasDisabled = () => {
+    console.log("heey")
     if (selectedCompany == '' || selectedCompany == undefined || selectedCompany == null) {
       return true;
-    } else false;
+    } else 
+    return false;
   };
   return (
     <MainCard>
@@ -16,7 +18,7 @@ export default function Tools({ buttonClick, type, selectedCompany }) {
           Manage {type ? type : 'Employees / Contractor / Guest'}
         </Typography>
         <Button
-          disabled={hasDisabled}
+          disabled={hasDisabled()}
           variant="contained"
           startIcon={<Add />}
           sx={{ backgroundColor: 'secondary.main' }}

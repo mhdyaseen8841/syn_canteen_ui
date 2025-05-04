@@ -110,3 +110,18 @@ export async function editEmployee(data) {
   const response = await apiInstance.put('employee', data);
   return response.data;
 }
+
+export async function addFixedTransaction(data) {
+  const response = await apiInstance.post('fixed-transaction', data);
+  return response.data;
+}
+
+export async function addContractorTransaction(data) {
+  const response = await apiInstance.post('contractor-transaction', data);
+  return response.data;
+}
+
+export async function addGuestTransaction(data) {
+  const response = await apiInstance.post('guest-transaction', data);
+  return response.data;
+}

@@ -101,7 +101,7 @@ export default function Index() {
         selectedCompany={selectedCompany}
         type={selectedType}
       />
-      <Tools selectedCompany buttonClick={() => {
+      <Tools selectedCompany={selectedCompany} buttonClick={() => {
         if (!selectedCompany) {
           toast.error("Please select a company first");
           return;

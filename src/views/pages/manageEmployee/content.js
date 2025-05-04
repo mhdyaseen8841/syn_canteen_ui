@@ -140,7 +140,7 @@ export default function Content({ data, deleteAd, updateData,selectedCompany,typ
   isShowAction={true}
   actions={['edit', 'delete']}
   onActionChange={actionHandle}
-  rowsPerPage={5} // Optional
+  rowsPerPage={20} // Optional
 />
 
     </>
