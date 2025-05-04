@@ -9,7 +9,7 @@ import Loadable from 'ui-component/Loadable';
 const DashboardDefault = Loadable(lazy(() => import('views/dashboard/Default')));
 const Menu = Loadable(lazy(() => import('views/pages/manageMenu')));
 const Company = Loadable(lazy(() => import('views/pages/manageCompany')));
-const Contractor = Loadable(lazy(() => import('views/pages/manageContractor')));
+// const Contractor = Loadable(lazy(() => import('views/pages/manageContractor')));
 const Department = Loadable(lazy(() => import('views/pages/manageDepartment')));
 const Employees = Loadable(lazy(() => import('views/pages/manageEmployee')));
 const Transaction = Loadable(lazy(() => import('views/pages/transactions')));
@@ -54,10 +54,10 @@ const MainRoutes = {
       path: 'employees',
       element: <Employees />
      },
-   {
-    path: 'contractor',
-    element: <Contractor />
-   },
+  //  {
+  //   path: 'contractor',
+  //   element: <Contractor />
+  //  },
    {
     path: 'company',
     element: <Company />

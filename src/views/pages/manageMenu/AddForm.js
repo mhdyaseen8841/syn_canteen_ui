@@ -23,6 +23,11 @@ export default function AddForm({ getData, addData, open, onClose, isEdit = fals
     });
 
     const onSubmit = (formData) => {
+        if (formData.start_time === '' || formData.end_time === '') {
+            toast.error("Start Time and End Time are required")
+            return;
+        }
+
         const submitData = {
             menu_id: isEdit ? data.menu_id : undefined, // Only include menu_id for edit
             start_time: formData.start_time,
