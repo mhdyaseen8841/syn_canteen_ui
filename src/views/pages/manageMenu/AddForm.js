@@ -1,8 +1,9 @@
 import { Button, Container, MenuItem, Select, Stack, TextField, Typography, FormControl, FormHelperText, FormControlLabel, Switch } from '@mui/material'
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useForm, Controller } from "react-hook-form";
 import { toast } from 'react-toastify';
 import StyledDialog from 'ui-component/StyledDialog';
+import { convertTo24Hour } from 'utils/convertTo24Hour';
 
 export default function AddForm({ getData, addData, open, onClose, isEdit = false, data = {} }) {
     const [active, setActive] = React.useState(data?.active === 1);
@@ -10,6 +11,7 @@ export default function AddForm({ getData, addData, open, onClose, isEdit = fals
     const {
         control,
         handleSubmit,
+        reset,
         formState: { errors },
     } = useForm({
         defaultValues: {
@@ -40,18 +42,20 @@ export default function AddForm({ getData, addData, open, onClose, isEdit = fals
             });
     }
 
-    const generateTimeOptions = () => {
-        const times = [];
-        for (let hours = 0; hours < 24; hours++) {
-            for (let minutes = 0; minutes < 60; minutes += 30) {
-                const hour = hours.toString().padStart(2, '0');
-                const minute = minutes.toString().padStart(2, '0');
-                times.push(`${hour}:${minute}:00`);
-            }
-        }
-        return times;
-    };
 
+    useEffect(() => {
+console.log("trugger")
+        if(isEdit) {
+            console.log(data)
+            reset({
+                start_time: convertTo24Hour(data?.start_time || '00:00'),
+            end_time: convertTo24Hour(data?.end_time || '00:00'),
+                active: data?.active || 1
+            });
+            setActive(data?.active === 1);
+        }
+
+    },[isEdit])
     return (
         <StyledDialog open={open} fullWidth onClose={onClose} title={`${isEdit ? "Edit" : "Add"} Menu`}>
             <form onSubmit={handleSubmit(onSubmit)}>

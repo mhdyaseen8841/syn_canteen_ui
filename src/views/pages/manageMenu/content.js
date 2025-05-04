@@ -6,10 +6,11 @@ import { useState } from 'react';
 import { toast } from 'react-toastify';
 import AddForm from './AddForm';
 import { formatTime } from 'utils/formatTime';
+import { editMenu } from 'utils/Service';
 
 const tableHeader = ['Menu Code', 'Menu Name', 'Start Time', 'End Time', 'Active'];
 
-export default function Content({ data, editData, updateData }) {
+export default function Content({ data, updateData }) {
   const [formOpen, setFormOpen] = useState(false);
   const [selectedData, setselectedData] = useState();
   const [searchType, setSearchType] = useState('');
@@ -57,13 +58,6 @@ export default function Content({ data, editData, updateData }) {
         end_time: e.data['End Time'],
         active: e.data['Active'] === 'Yes' ? 1 : 0
       };
-      editData(editData).then(() => {
-        updateData();
-      })
-      .catch((error) => {
-        console.error(error);
-        toast.error(error.response.data.message);
-      });
       setselectedData(editData);
       setFormOpen(true);
     }
@@ -101,6 +95,8 @@ export default function Content({ data, editData, updateData }) {
 
       <AddForm
   open={formOpen}
+  addData={editMenu}
+  getData={updateData}
   onClose={() => {
     setFormOpen(false);
     setselectedData(null); // Reset selected data when closing

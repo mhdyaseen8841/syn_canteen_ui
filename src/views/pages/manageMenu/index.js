@@ -25,12 +25,12 @@ export default function Index() {
     getData();
   }, []);
 
-  let addLocation = async (location) => {
+  let addMenu = async (location) => {
     return true
   }
   return (
     <Stack direction={'column'} gap={2}>
-      <AddForm open={formOpen} addLocation={addLocation} getLocation={getData} onClose={() => setFormOpen(false)} />
+      <AddForm open={formOpen} addData={addMenu} getData={getData} onClose={() => setFormOpen(false)} />
       <Tools buttonClick={() => setFormOpen(true)} />
       <Content editData={editMenu} data={data} updateData={getData} />
     </Stack>
