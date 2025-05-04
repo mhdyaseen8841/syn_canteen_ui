@@ -33,7 +33,6 @@ export default function AddForm({selectedCompany, getData, addData, open, onClos
                 const deptRes = await getDepartment();
                 setDepartments(deptRes);
                 
-                debugger;
                 // If we have department_id in edit data, find and set the department
                 if (isEdit && data?.department_id) {
                     const dept = deptRes.find(d => d.department_id === data.department_id);
@@ -51,7 +50,7 @@ export default function AddForm({selectedCompany, getData, addData, open, onClos
     }, [isEdit]);
 
     const onSubmit = (formData) => {
-        debugger;
+       
         if(selectedCompany === '' || selectedCompany === undefined) {   
             toast.error("Please select a company first")
             return;

@@ -3,22 +3,37 @@ import React from 'react'
 import { useForm, Controller } from "react-hook-form";
 import { toast } from 'react-toastify';
 import StyledDialog from 'ui-component/StyledDialog';
+import { useEffect } from 'react';
 
-export default function AddForm({ getData, addData, open, onClose, isEdit = false, data = {} }) {
+export default function AddForm({ getData, addData, open, onClose, isEdit = false, data = {}, isExist }) {
     const {
         control,
         handleSubmit,
+        reset,
         formState: { errors },
     } = useForm({
         defaultValues: {
-            department_name: data?.department_name || '',
+            department_name: '',
         }
     });
 
     const onSubmit = (formData) => {
+       
+        if(isExist(formData.department_name)) {
+                toast.error("Department already exists")
+                return;
+        }
         const submitData = {
             department_name: formData.department_name,
         };
+        if(isEdit){
+            if(data?.department_id === undefined || data?.department_id === '') {
+                toast.error("Please select a department first")
+                return;
+            }
+
+            submitData.department_id = data?.department_id;
+        }
 
         addData(submitData)
             .then((response) => {
@@ -32,6 +47,15 @@ export default function AddForm({ getData, addData, open, onClose, isEdit = fals
             });
     }
 
+    useEffect(() => {
+        if (open) {
+            console.log("dddddddddddd")
+            reset({
+                department_name: data?.department_name || '',
+            });
+        }
+    }, [open]);
+
     return (
         <StyledDialog open={open} fullWidth onClose={onClose} title={`${isEdit ? "Edit" : "Add"} Department`}>
             <form onSubmit={handleSubmit(onSubmit)}>
@@ -44,8 +68,8 @@ export default function AddForm({ getData, addData, open, onClose, isEdit = fals
                             rules={{ 
                                 required: "Department Name is required",
                                 minLength: {
-                                    value: 3,
-                                    message: "Department name must be at least 3 characters"
+                                    value: 1,
+                                    message: "Department name must be at least 1 characters"
                                 }
                             }}
                             render={({ field }) => (

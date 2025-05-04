@@ -3,7 +3,7 @@ import { Stack } from '@mui/material';
 import Content from './content';
 import Tools from './tools';
 import AddForm from './AddForm';
-import { getCompany } from '../../../utils/Service';
+import { getCompany,addCompany } from '../../../utils/Service';
 
 
 
@@ -25,12 +25,10 @@ export default function Index() {
     getData();
   }, []);
 
-  let addData = async (location) => {
-    return true
-  }
+ 
   return (
     <Stack direction={'column'} gap={2}>
-      <AddForm open={formOpen} addData={addData} getData={getData} onClose={() => setFormOpen(false)} />
+      <AddForm open={formOpen} addData={addCompany} getData={getData} onClose={() => setFormOpen(false)} />
       <Tools buttonClick={() => setFormOpen(true)} />
       <Content data={data} updateData={getData} />
     </Stack>

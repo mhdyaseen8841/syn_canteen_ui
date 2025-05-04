@@ -81,19 +81,20 @@ export default function Pages (){
         icon: icons.IconUserPlus,
       },
       {
-        id: 'manageCompany',
-        title: 'Manage Company',
-        type: 'item',
-        url: '/company',
-        icon: icons.IconBuildingSkyscraper,
-      },
-      {
         id: 'manageDepartment',
         title: 'Manage Department',
         type: 'item',
         url: '/department',
         icon: icons.IconBuildingCommunity,
       },
+      {
+        id: 'manageCompany',
+        title: 'Manage Company',
+        type: 'item',
+        url: '/company',
+        icon: icons.IconBuildingSkyscraper,
+      },
+     
       //  {
       //   id: 'manageUsers',
       //   title: 'Manage Users',

@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react'
 import { useForm, Controller } from "react-hook-form";
 import { toast } from 'react-toastify';
 import StyledDialog from 'ui-component/StyledDialog';
-import { getCompany, getDepartment } from 'utils/Service';
+import {  getDepartment } from 'utils/Service';
 
 export default function AddForm({selectedCompany, getData, addData, open, onClose, isEdit = false, data = {},type }) {
     const [active, setActive] = useState(data?.active === 1);
@@ -33,7 +33,7 @@ export default function AddForm({selectedCompany, getData, addData, open, onClos
                 const deptRes = await getDepartment();
                 setDepartments(deptRes);
                 
-                debugger;
+          
                 // If we have department_id in edit data, find and set the department
                 if (isEdit && data?.department_id) {
                     const dept = deptRes.find(d => d.department_id === data.department_id);
@@ -51,7 +51,7 @@ export default function AddForm({selectedCompany, getData, addData, open, onClos
     }, [isEdit]);
 
     const onSubmit = (formData) => {
-        debugger;
+ 
         if(selectedCompany === '' || selectedCompany === undefined) {   
             toast.error("Please select a company first")
             return;

@@ -5,10 +5,11 @@ import { TextField, Box, Grid } from '@mui/material';
 import { useState } from 'react';
 import { toast } from 'react-toastify';
 import AddForm from './AddForm';
+import { editDepartment } from 'utils/Service';
 
 const tableHeader = ['Department Id', 'Department Name'];
 
-export default function Content({ data, deleteAd, updateData }) {
+export default function Content({ data, deleteAd, updateData,isExist }) {
   const [formOpen, setFormOpen] = useState(false);
   const [selectedData, setselectedData] = useState();
   const [searchDepartment, setSearchDepartment] = useState('');
@@ -39,8 +40,8 @@ export default function Content({ data, deleteAd, updateData }) {
         });
     } else if (e.action === 'edit') {
       const editData = {
-        department_id: e.data.department_id,
-        department_name: e.data.department_name
+        department_id: e.data['Department Id'],
+        department_name: e.data['Department Name']
       };
       setselectedData(editData);
       setFormOpen(true);
@@ -72,14 +73,17 @@ export default function Content({ data, deleteAd, updateData }) {
           updateData();
         }}
         data={selectedData}
+        addData={editDepartment}
         isEdit={Boolean(selectedData)}
+        getData={updateData} 
+        isExist={isExist}
       />
       <StyledTable
         data={tableData}
         header={tableHeader}
         isShowSerialNo={false}
-        isShowAction={false}
-        actions={['edit', 'delete']}
+        isShowAction={true}
+        actions={['edit']}
         onActionChange={actionHandle}
       />
     </>

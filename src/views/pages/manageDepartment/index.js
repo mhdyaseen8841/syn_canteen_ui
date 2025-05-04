@@ -3,7 +3,7 @@ import { Stack } from '@mui/material';
 import Content from './content';
 import Tools from './tools';
 import AddForm from './AddForm';
-import { getDepartment } from '../../../utils/Service';
+import { getDepartment,addDepartment } from '../../../utils/Service';
 
 
 
@@ -20,18 +20,20 @@ export default function Index() {
     }
   };
 
+  const isExist = (name) => {
+    const nameToCheck = name.trim().toLowerCase();
+    return data.some(dep => dep.department_name?.trim().toLowerCase() === nameToCheck);
+  };
+
   useEffect(() => {
     getData();
   }, []);
 
-  let addData = async (location) => {
-    return true
-  }
   return (
     <Stack direction={'column'} gap={2}>
-      <AddForm open={formOpen} addData={addData} getData={getData} onClose={() => setFormOpen(false)} />
-      <Tools buttonClick={() => setFormOpen(true)} />
-      <Content data={data} updateData={getData} />
+      <AddForm open={formOpen} addData={addDepartment} getData={getData} onClose={() => setFormOpen(false)} isExist={isExist}/>
+      <Tools  buttonClick={() => setFormOpen(true)} />
+      <Content data={data} updateData={getData} isExist={isExist}/>
     </Stack>
   );
 }

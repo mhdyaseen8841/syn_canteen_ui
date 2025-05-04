@@ -90,6 +90,11 @@ export async function addDepartment(data) {
   return response.data;
 }
 
+export async function editDepartment(data) {
+  const response = await apiInstance.put('department', data);
+  return response.data;
+}
+
 // Employee Operations
 export async function getEmployee(companyId,employeeType) {
   const response = await apiInstance.get(`employee?company_id=${companyId}&employee_type=${employeeType}`);
