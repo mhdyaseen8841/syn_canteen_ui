@@ -3,7 +3,7 @@ import { Box, FormControl, InputLabel, MenuItem, Select, Stack, Typography } fro
 import Content from './content';
 import Tools from './tools';
 import AddForm from './AddForm';
-import { getExpense,getCanteenCalender, getMenu,addExpense } from '../../../utils/Service';
+import { getExpense,getCanteenCalender, getMenu,addExpense,editExpense  } from '../../../utils/Service';
 import { toast } from 'react-toastify';
 
 
@@ -15,7 +15,7 @@ export default function Index() {
   const [menu, setMenu] = useState([]);
   const [selectedMenu, setSelectedMenu] = useState('');
   const getData = async (calender = selectedCalender,menu = selectedMenu) => {
-    consle.log(selectedCalender)
+    console.log(selectedCalender)
     console.log(selectedMenu)
     try {
       const res = await getExpense(calender,menu);
@@ -111,9 +111,9 @@ export default function Index() {
               </Stack>
             </Box>
 
-      <AddForm open={formOpen} addData={addExpense} getData={getData} onClose={() => setFormOpen(false)} />
-      <Tools buttonClick={() => setFormOpen(true)} />
-      <Content data={data} updateData={getData} />
+      <AddForm open={formOpen} addData={addExpense} getData={getData} onClose={() => setFormOpen(false)} selectedCalender={selectedCalender} />
+      <Tools buttonClick={() => setFormOpen(true)} selectedCalender={selectedCalender} />
+      <Content data={data} updateData={getData} selectedCalender={selectedCalender} editExpense={editExpense} menus={menu}/>
     </Stack>
   );
 }

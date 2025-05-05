@@ -13,7 +13,7 @@ import {
   import StyledDialog from 'ui-component/StyledDialog';
   import { getMenu, getCanteenCalender } from 'utils/Service';
   
-  export default function AddForm({ getData, addData, open, onClose, isEdit = false, data = {} }) {
+  export default function AddForm({ getData, addData, open, onClose, isEdit = false, data = {},selectedCalender }) {
     const {
       control,
       handleSubmit,
@@ -38,7 +38,50 @@ import {
       getCanteenCalender().then(setCalendars).catch(err => toast.error("Error loading calendar dates"));
     }, []);
   
+    function parseDDMMYYYY(dateStr) {
+      const [day, month, year] = dateStr.split("-");
+      return `${year}-${month}-${day}`; // Convert to YYYY-MM-DD
+    }
+    
+
+    useEffect(() => {
+      if (isEdit) {
+        console.log(data)
+        console.log(isEdit)
+        setValue("menu_id", data.menu_id);
+        setValue("canteen_calendar_id", data.canteen_calendar_id);
+       setValue(
+  "expense_date",
+  data.expense_date ? parseDDMMYYYY(data.expense_date) : ''
+);
+        
+        setValue("expense_amount", data.expense_amount);
+        setValue("remarks", data.remarks);
+      } else {
+        setValue("menu_id", null);
+        setValue("canteen_calendar_id", null);
+        setValue("expense_date", '');
+        setValue("expense_amount", '');
+        setValue("remarks", '');
+      }
+    }, [open]);
+
+
     const onSubmit = (formData) => {
+      console.log(formData);
+      if(isEdit) {
+        formData.expense_id = data.expense_id;
+
+        addData(formData).then((response) => {
+          toast.success("Expense Updated Successfully");
+          getData();
+          onClose();
+        }).catch((error) => {
+          console.error(error);
+          toast.error(error.response?.data?.message || "Error updating expense");
+        }
+        );
+      } else {
       addData(formData)
         .then((response) => {
           toast.success("Expense Added Successfully");
@@ -49,6 +92,7 @@ import {
           console.error(error);
           toast.error(error.response?.data?.message || "Error adding expense");
         });
+      }
     };
   
     return (
@@ -58,62 +102,73 @@ import {
             <Stack direction={'column'} sx={{ p: 2 }} spacing={2}>
               {/* Menu */}
               <Controller
-                name="menu_id"
-                control={control}
-                rules={{ required: "Menu is required" }}
-                render={({ field }) => (
-                  <Autocomplete
-                    options={menus}
-                    getOptionLabel={(option) => option.menu_name || ''}
-                    onChange={(_, value) => field.onChange(value?.menu_id || null)}
-                    renderInput={(params) => (
-                      <TextField
-                        {...params}
-                        label="Select Menu"
-                        error={Boolean(errors.menu_id)}
-                        helperText={errors.menu_id?.message}
-                      />
-                    )}
-                  />
-                )}
-              />
+  name="menu_id"
+  control={control}
+  rules={{ required: "Menu is required" }}
+  render={({ field }) => {
+    const selectedMenu = menus.find((menu) => menu.menu_id === field.value) || null;
+
+    return (
+      <Autocomplete
+        options={menus}
+        getOptionLabel={(option) => option.menu_name || ''}
+        value={selectedMenu}
+        onChange={(_, value) => field.onChange(value?.menu_id || null)}
+        renderInput={(params) => (
+          <TextField
+            {...params}
+            label="Select Menu"
+            error={Boolean(errors.menu_id)}
+            helperText={errors.menu_id?.message}
+          />
+        )}
+      />
+    );
+  }}
+/>
+
   
               {/* Calendar Date */}
               <Controller
   name="canteen_calendar_id"
   control={control}
   rules={{ required: "Calendar date is required" }}
-  render={({ field }) => (
-    <Autocomplete
-      options={calendars}
-      getOptionLabel={(option) => option.month_year || ''}
-      onChange={(_, value) => {
-        field.onChange(value?.canteen_calendar_id || null);
+  render={({ field }) => {
+    const selectedCalendar = calendars.find(
+      (cal) => cal.canteen_calendar_id === selectedCalender
+    ) || null;
 
-        // Reset expense date on calendar change
-        setValue("expense_date", "");
-
-        // Set new date limits
-        if (value?.from_date && value?.to_date) {
+    useEffect(() => {
+      if (selectedCalendar) {
+        field.onChange(selectedCalendar.canteen_calendar_id);
+        if (selectedCalendar.from_date && selectedCalendar.to_date) {
           setDateLimits({
-            min: value.from_date.split('T')[0],
-            max: value.to_date.split('T')[0],
+            min: selectedCalendar.from_date.split('T')[0],
+            max: selectedCalendar.to_date.split('T')[0],
           });
-        } else {
-          setDateLimits({ min: '', max: '' });
         }
-      }}
-      renderInput={(params) => (
-        <TextField
-          {...params}
-          label="Select Calendar Date"
-          error={Boolean(errors.canteen_calendar_id)}
-          helperText={errors.canteen_calendar_id?.message}
-        />
-      )}
-    />
-  )}
+      }
+    }, [selectedCalender, calendars]);
+
+    return (
+      <Autocomplete
+        options={selectedCalendar ? [selectedCalendar] : []}
+        getOptionLabel={(option) => option.month_year || ''}
+        value={selectedCalendar}
+        disabled
+        renderInput={(params) => (
+          <TextField
+            {...params}
+            label="Calendar Date"
+            error={Boolean(errors.canteen_calendar_id)}
+            helperText={errors.canteen_calendar_id?.message}
+          />
+        )}
+      />
+    );
+  }}
 />
+
 
 
               {/* Expense Date */}

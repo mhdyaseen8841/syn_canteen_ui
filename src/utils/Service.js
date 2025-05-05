@@ -131,6 +131,12 @@ export async function addExpense(data) {
   return response.data;
 }
 
+export async function editExpense(data) {
+  const response = await apiInstance.put('expense', data);
+  return response.data;
+}
+
+
 export async function getExpense(canteen_calendar_id, menu_id = null) {
   const response = await apiInstance.get('expense?canteen_calendar_id=' + canteen_calendar_id + '&menu_id=' + menu_id);
   return response.data;

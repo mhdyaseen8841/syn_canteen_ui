@@ -7,13 +7,13 @@ import { toast } from 'react-toastify';
 import AddForm from './AddForm';
 import { formatDate } from 'utils/formatDate';
 
-const tableHeader = ['Menu Id', 'Expense Date', 'Amount',  'Settled', 'Active', 'Remarks'];
+const tableHeader = ['Menu Id', 'Menu Name', 'Expense Date', 'Amount',  'Settled', 'Active', 'Remarks'];
 
-export default function Content({ data, deleteAd, updateData }) {
+export default function Content({ data, deleteAd, updateData,selectedCalender,editExpense,menus }) {
   const [formOpen, setFormOpen] = useState(false);
   const [selectedData, setselectedData] = useState();
   const [searchName, setSearchName] = useState('');
-
+ 
 
 
   const filteredData = data.filter((item) => {
@@ -25,16 +25,21 @@ export default function Content({ data, deleteAd, updateData }) {
 
 
   
-   const tableData = tableHeaderReplace(
-      filteredData, 
-      ['menu_id', 'expense_date', 'expense_amount', 'is_settled', 'active', 'remarks'],
-      tableHeader
-    ).map((item) => ({
+  const tableData = tableHeaderReplace(
+    filteredData,
+    ['menu_id', 'menu_name', 'expense_date', 'expense_amount', 'is_settled', 'active', 'remarks'],
+    tableHeader
+  ).map((item) => {
+    // Find the corresponding menu name using the menu_id from the menus prop
+    const menu = menus.find((menu) => menu.menu_id === item['Menu Id']);
+    return {
       ...item,
+       'Menu Name': menu ? menu.menu_name : item['Menu Id'], // Use menu_name if found
       'Settled': item['Settled'] === 1 ? 'Yes' : 'No',
       'Active': item['Active'] === 1 ? 'Yes' : 'No',
       'Expense Date': formatDate(item['Expense Date']),
-    }));
+    };
+  });
   const actionHandle = (e) => {
     console.log(e);
     if (e.action == 'delete') {
@@ -55,7 +60,8 @@ export default function Content({ data, deleteAd, updateData }) {
         expense_amount: e.data['Amount'],
         is_settled: e.data['Settled'] === 'Yes' ? 1 : 0,
         active: e.data['Active'] === 'Yes' ? 1 : 0,
-        remarks: e.data['Remarks']
+        remarks: e.data['Remarks'],
+        expense_id: e.data.expense_id,
       };
       setselectedData(editData);
       setFormOpen(true);
@@ -86,6 +92,9 @@ export default function Content({ data, deleteAd, updateData }) {
         }}
         data={selectedData}
         isEdit={true}
+        selectedCalender={selectedCalender}
+        getData={updateData}
+        addData={editExpense}
       />
       <StyledTable
         data={tableData}
