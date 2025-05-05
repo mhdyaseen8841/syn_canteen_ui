@@ -1,6 +1,6 @@
 import React from 'react';
 import MainCard from 'ui-component/cards/MainCard';
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
+import { Chip, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import TableActionButton from 'ui-component/TableActionButton';
 
 export default function StyledTable({
@@ -41,6 +41,8 @@ if(onClickAction){
                 <TableRow onClick={()=>handleClick(dt._id)} key={ind}>
                   {isShowSerialNo && <TableCell>{ind + 1}</TableCell>}
                   {header.map((head, i) => {
+                            const fieldKey = head.replace(/\s+/g, '_');
+                            const value = dt[head];
                     if (head.toUpperCase() === 'IMAGE') {
                       return (
                         <TableCell key={i}>
@@ -56,6 +58,24 @@ if(onClickAction){
                         </TableCell>
                       );
                     }
+                    else if (fieldKey === 'Settled') {
+                      
+                                        const settled = value === 'Yes' || value === 1 || value === true;
+                                        return (
+                                          <TableCell key={i}>
+                                            <Chip
+                                              label={settled ? 'Yes' : 'No'}
+                                              size="small"
+                                              variant="filled"
+                                              sx={{
+                                                color: '#fff',
+                                                backgroundColor: settled ? 'success.main' : 'error.main',
+                                              }}
+                                            />
+                                          </TableCell>
+                                        );
+                                      } 
+
                     else if (head.toUpperCase() === 'STATUS' ) {
                      
                       return (

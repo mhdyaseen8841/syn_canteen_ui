@@ -5,8 +5,9 @@ import { TextField, Box, Grid, Select, MenuItem, FormControl, InputLabel } from 
 import { useState } from 'react';
 import { toast } from 'react-toastify';
 import AddForm from './AddForm';
+import { formatDate } from 'utils/formatDate';
 
-const tableHeader = ['Date', 'Menu Type', 'Amount', 'Remarks'];
+const tableHeader = ['Menu Id', 'Expense Date', 'Amount',  'Settled', 'Active', 'Remarks'];
 
 export default function Content({ data, deleteAd, updateData }) {
   const [formOpen, setFormOpen] = useState(false);
@@ -16,38 +17,55 @@ export default function Content({ data, deleteAd, updateData }) {
 
 
   const filteredData = data.filter((item) => {
-    const nameMatch = item.name.toLowerCase().includes(searchName.toLowerCase());
-    return nameMatch;
+    // const nameMatch = item.name.toLowerCase().includes(searchName.toLowerCase());
+    // return nameMatch;
+    return item;
   });
 
 
 
-  const tableData = tableHeaderReplace(
-    filteredData,
-    ['name', 'contact', 'address', 'details'],
-  tableHeader
-  );
-
+  
+   const tableData = tableHeaderReplace(
+      filteredData, 
+      ['menu_id', 'expense_date', 'expense_amount', 'is_settled', 'active', 'remarks'],
+      tableHeader
+    ).map((item) => ({
+      ...item,
+      'Settled': item['Settled'] === 1 ? 'Yes' : 'No',
+      'Active': item['Active'] === 1 ? 'Yes' : 'No',
+      'Expense Date': formatDate(item['Expense Date']),
+    }));
   const actionHandle = (e) => {
     console.log(e);
     if (e.action == 'delete') {
       console.log(e.data._id);
       setselectedData(e.data);
       deleteAd(e.data._id)
-        .then(() => {})
+        .then(() => {
+          updateData();
+        })
         .catch((error) => {
           console.error(error);
           toast.error(error.response.data.message);
         });
-    } else {
-      setselectedData();
+    } else if (e.action == 'edit') {
+      const editData = {
+        menu_id: e.data['Menu Id'],
+        expense_date: e.data['Expense Date'],
+        expense_amount: e.data['Amount'],
+        is_settled: e.data['Settled'] === 'Yes' ? 1 : 0,
+        active: e.data['Active'] === 'Yes' ? 1 : 0,
+        remarks: e.data['Remarks']
+      };
+      setselectedData(editData);
+      setFormOpen(true);
     }
-    updateData();
+   
   };
 
   return (
     <>
-     <Box sx={{ mb: 2 }}>
+     {/* <Box sx={{ mb: 2 }}>
         <Grid container spacing={2}>
           <Grid item xs={12}>
             <TextField
@@ -60,7 +78,7 @@ export default function Content({ data, deleteAd, updateData }) {
             />
           </Grid>
         </Grid>
-      </Box>
+      </Box> */}
       <AddForm
         open={formOpen}
         onClose={() => {
@@ -74,7 +92,7 @@ export default function Content({ data, deleteAd, updateData }) {
         header={tableHeader}
         isShowSerialNo={true}
         isShowAction={true}
-        actions={['delete']}
+        actions={['edit','delete']}
         onActionChange={actionHandle}
       />
     </>

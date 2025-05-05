@@ -125,3 +125,18 @@ export async function addGuestTransaction(data) {
   const response = await apiInstance.post('guest-transaction', data);
   return response.data;
 }
+
+export async function addExpense(data) {
+  const response = await apiInstance.post('expense', data);
+  return response.data;
+}
+
+export async function getExpense(canteen_calendar_id, menu_id = null) {
+  const response = await apiInstance.get('expense?canteen_calendar_id=' + canteen_calendar_id + '&menu_id=' + menu_id);
+  return response.data;
+}
+
+export async function getCanteenCalender(is_settled=0 ) {
+  const response = await apiInstance.get(`canteen-calender?is_settled=${is_settled}`);
+  return response.data;
+}
