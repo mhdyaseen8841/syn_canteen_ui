@@ -1,4 +1,4 @@
-import dashboard from './dashboard';
+// import dashboard from './dashboard';
 import pages from './pages';
 // import utilities from './utilities';
 // import other from './other';
@@ -9,7 +9,9 @@ import pages from './pages';
 export default function menuItems(){
 
   return  {
-    items: [dashboard, pages()]
+    // items: [dashboard, pages()]
+        items: [ pages()]
+
   };
   
 }

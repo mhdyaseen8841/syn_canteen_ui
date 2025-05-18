@@ -13,6 +13,7 @@ const Company = Loadable(lazy(() => import('views/pages/manageCompany')));
 const Department = Loadable(lazy(() => import('views/pages/manageDepartment')));
 const Employees = Loadable(lazy(() => import('views/pages/manageEmployee')));
 const Transaction = Loadable(lazy(() => import('views/pages/transactions')));
+const ManageTransactions = Loadable(lazy(()=>import('views/pages/manageTransaction')))
 const ManageExpenses = Loadable(lazy(() => import('views/pages/manageExpense')));
 const CompanyReport = Loadable(lazy(() => import('views/pages/companyReports')));
 const EmployeeReport = Loadable(lazy(() => import('views/pages/employeeReports')));
@@ -27,14 +28,13 @@ const MainRoutes = {
   children: [
     {
       path: '',
-      element: <Navigate to="dashboard" />
+      element: <Navigate to="transaction" />
     },
       {
       path: 'dashboard',
       element: <DashboardDefault />
     },
-    //transporter routes
-    
+
 
 
   
@@ -45,6 +45,10 @@ const MainRoutes = {
     {
       path: 'transaction',
       element: <Transaction />
+    },
+    {
+      path: 'manage-transactions',
+      element: <ManageTransactions />
     },
     {
       path: 'expenses',
