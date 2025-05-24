@@ -1,0 +1,23 @@
+/* Hide print-only content on screen */
+.print-only {
+  display: none;
+}
+
+/* Show only .print-only during printing */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+
+  .print-only, .print-only * {
+    visibility: visible;
+    display: block !important;
+  }
+
+  .print-only {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+  }
+}

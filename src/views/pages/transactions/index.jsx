@@ -26,7 +26,8 @@ import {
   addContractorTransaction,
   addGuestTransaction
 } from '../../../utils/Service';
-
+import CouponPrintComponent from './CouponPrint';
+import "./index.css";
 const COMPANIES = [
   { id: 1, label: 'Tech Solutions Inc.' },
   { id: 2, label: 'Global Finance Ltd.' },
@@ -72,6 +73,37 @@ const GUESTS = {
   ]
 };
 
+
+import {
+  Printer,
+  Text,
+  Line,
+  Row,
+  render
+} from 'react-thermal-printer';
+
+const MyReceipt = () => {
+  const printerData = render(
+    <Printer>
+      <Text align="center" bold={true}>My Company</Text>
+      <Line />
+      <Row left="Item" right="$10.00" />
+      <Row left="Total" right="$10.00" />
+    </Printer>
+  );
+
+  const handlePrint = async () => {
+    await fetch('http://192.168.1.20:3001/print', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ data: printerData })
+    });
+  };
+
+  return <button onClick={handlePrint}>Print</button>;
+};
+
+
 export default function Index() {
   const [openDialog, setOpenDialog] = useState(null);
   const [fixedData, setFixedData] = useState({
@@ -103,6 +135,10 @@ export default function Index() {
   const [companySearch, setCompanySearch] = useState('');
   const [contractorSearch, setContractorSearch] = useState('');
   const [guestSearch, setGuestSearch] = useState('');
+
+  const [printData, setPrintData] = useState(null);
+const [shouldPrint, setShouldPrint] = useState(false);
+
 
   const filteredCompanies = COMPANIES.filter((company) => company.label.toLowerCase().includes(companySearch.toLowerCase()));
 
@@ -189,6 +225,14 @@ export default function Index() {
     addFixedTransaction({ menu_id: menuItem.menu_id, no_of_entries: coupons })
       .then((res) => {
         console.log(res);
+        setPrintData({
+      type: 'Fixed',
+      menu_name: menuItem.menu_name,
+      no_of_entries: coupons,
+      transaction_id: res.transaction_id,
+      date: new Date().toLocaleDateString()
+    });
+    setShouldPrint(true); // Trigger print
       })
       .catch((err) => {
         console.error(err);
@@ -272,6 +316,15 @@ export default function Index() {
       date: new Date().toISOString().split('T')[0]
     });
   };
+
+//   useEffect(() => {
+//   if (shouldPrint && printData) {
+//     setTimeout(() => {
+//       window.print();
+//       setShouldPrint(false);
+//     }, 500); // Short delay to render content
+//   }
+// }, [shouldPrint, printData]);
 
   // Fixed Dialog
   const renderFixedDialog = () => (
@@ -652,6 +705,12 @@ export default function Index() {
         </Grid>
       </Grid>
 
+  {/* {printData && (
+  <div style={{ display: 'block' }}>
+    <CouponPrintComponent data={printData}  menuId={printData.menu_name} transactionId={printData.transaction_id} />
+  </div>
+)} */}
+{/* <MyReceipt/> */}
       {renderFixedDialog()}
       {renderContractorDialog()}
       {renderGuestDialog()}

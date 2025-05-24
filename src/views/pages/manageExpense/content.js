@@ -41,18 +41,29 @@ export default function Content({ data, deleteAd, updateData,selectedCalender,ed
     };
   });
   const actionHandle = (e) => {
-    console.log(e);
     if (e.action == 'delete') {
-      console.log(e.data._id);
-      setselectedData(e.data);
-      deleteAd(e.data._id)
+      const deleteData = {
+      menu_id: e.data['Menu Id'],
+        expense_date: e.data['Expense Date'],
+        expense_amount: e.data['Amount'],
+        is_settled: e.data['Settled'] === 'Yes' ? 1 : 0,
+        active: 0,
+        remarks: e.data['Remarks'],
+        expense_id: e.data.expense_id,
+        canteen_calendar_id: selectedCalender,
+      };
+
+      editExpense(deleteData)
         .then(() => {
-          updateData();
+          toast.success('Expense deleted successfully');
+          updateData()
         })
-        .catch((error) => {
-          console.error(error);
-          toast.error(error.response.data.message);
+        .catch((err) => {
+          console.error(err);
+          toast.error('Error deleting expense');
         });
+
+
     } else if (e.action == 'edit') {
       const editData = {
         menu_id: e.data['Menu Id'],

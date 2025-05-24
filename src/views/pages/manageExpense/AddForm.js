@@ -159,7 +159,7 @@ import {
         renderInput={(params) => (
           <TextField
             {...params}
-            label="Calendar Date"
+            label="Month & Year"
             error={Boolean(errors.canteen_calendar_id)}
             helperText={errors.canteen_calendar_id?.message}
           />
