@@ -16,7 +16,7 @@ const apiInstance = axios.create({
 
 apiInstance.interceptors.request.use(
   async (config) => {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('accessToken');
 
     if (token) {
       config.headers['Authorization'] = 'Bearer ' + token;
@@ -40,8 +40,8 @@ apiInstance.interceptors.response.use(
       console.log('Unauthorized, logging out...');
 
       localStorage.clear();
-      //  Navigate('/login')
-      // window.location.href = '/login'; // redirect to login page
+       Navigate('/login')
+       window.location.href = '/login'; // redirect to login page
     }
 
     // Return any other error responses
@@ -108,6 +108,33 @@ export async function addEmployee(data) {
 
 export async function editEmployee(data) {
   const response = await apiInstance.put('employee', data);
+  return response.data;
+}
+
+export async function searchEmployee(data) {
+  const response = await apiInstance.post(`/employee/search`,data);
+  return response.data;
+}
+
+//transaction routes
+
+export async function getCurrentTransaction(data) {
+  const response = await apiInstance.post('/get-current-transaction',data);
+  return response.data;
+}
+
+export async function getTransaction(data) {
+  const response = await apiInstance.get('transaction',data);
+  return response.data;
+}
+
+export async function addEmployeeTransaction(data) {
+  const response = await apiInstance.post('employee-transaction', data);
+  return response.data;
+}
+
+export async function deleteEmployeeTransaction(data) {
+  const response = await apiInstance.post('delete-employee-transaction', data);
   return response.data;
 }
 

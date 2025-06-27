@@ -67,8 +67,7 @@ export default function AddForm({selectedCompany, getData, addData, open, onClos
             company_id: selectedCompany,
             department_id: formData.department_id,
             premium_enabled: premiumEnabled ? 1 : 0,
-            active: active ? 1 : 0,
-            user: 'admin_user' // You might want to get this from context/props
+            active: active ? 1 : 0
         };
         if(isEdit) {
             submitData.employee_id = data.employee_id; 
@@ -88,7 +87,7 @@ export default function AddForm({selectedCompany, getData, addData, open, onClos
     };
 
     return (
-        <StyledDialog open={open} fullWidth onClose={onClose} title={`${isEdit ? "Edit" : "Add"} Employee`}>
+        <StyledDialog open={open} fullWidth onClose={onClose} title={`${isEdit ? "Edit" : "Add"} ${type ? type : 'Employee'}`}>
             <form onSubmit={handleSubmit(onSubmit)}>
                 <Container>
                     <Stack direction={'column'} sx={{ p: 2 }} spacing={2}>

@@ -68,7 +68,6 @@ export default function AddForm({selectedCompany, getData, addData, open, onClos
             department_id: formData.department_id,
             premium_enabled: premiumEnabled ? 1 : 0,
             active: active ? 1 : 0,
-            user: 'admin_user' // You might want to get this from context/props
         };
         if(isEdit) {
             submitData.employee_id = data.employee_id; 

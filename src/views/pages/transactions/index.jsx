@@ -26,7 +26,7 @@ import {
   addContractorTransaction,
   addGuestTransaction
 } from '../../../utils/Service';
-import CouponPrintComponent from './CouponPrint';
+// import CouponPrintComponent from './CouponPrint';
 import "./index.css";
 const COMPANIES = [
   { id: 1, label: 'Tech Solutions Inc.' },

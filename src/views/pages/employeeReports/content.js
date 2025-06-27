@@ -137,8 +137,8 @@ export default function Content({ data, deleteAd, updateData,selectedCompany,typ
   data={tableData}
   header={tableHeader}
   isShowSerialNo={true}
-  isShowAction={true}
-  actions={['edit', 'delete']}
+  isShowAction={false}
+  actions={['edit']}
   onActionChange={actionHandle}
   rowsPerPage={5} // Optional
 />

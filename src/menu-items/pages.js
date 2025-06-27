@@ -8,7 +8,8 @@ import {
   IconBuildingCommunity,
   IconUserCircle,
   IconReportMoney,
-  IconReceipt2
+  IconReceipt2,
+  IconAdjustments
 } from '@tabler/icons';
 
 // constant
@@ -21,7 +22,8 @@ const icons = {
   IconBuildingCommunity,
   IconUserPlus,
   IconReportMoney,
-  IconReceipt2 
+  IconReceipt2,
+  IconAdjustments
 };
 
 // ==============================|| EXTRA PAGES MENU ITEMS ||============================== //
@@ -34,7 +36,7 @@ export default function Pages() {
     children: [
       {
         id: 'transaction',
-        title: 'Transactions',
+        title: 'Fixed/Guest/Contractor',
         type: 'item',
         url: '/transaction',
         icon: icons.IconReportAnalytics
@@ -48,53 +50,71 @@ export default function Pages() {
       },
 
       {
-        id: 'companyReports',
-        title: 'Company Reports',
-        type: 'item',
-        url: '/companyReports',
-        icon: icons.IconReportAnalytics
-      },
-      {
-        id: 'employeeReports',
-        title: 'Employee Reports',
-        type: 'item',
-        url: '/employeeReports',
-        icon: icons.IconReportAnalytics
-      },
-      {
         id: 'manageTransactions',
-        title: 'Manage Transactions',
+        title: 'Manage Current Transactions',
         type: 'item',
         url: '/manage-transactions',
-        icon: icons.IconReceipt2 
-      },
-          {
-        id: 'menu',
-        title: 'Manage Menu',
-        type: 'item',
-        url: '/menu',
-        icon: icons.IconToolsKitchen2
+        icon: icons.IconReceipt2
       },
       {
-        id: 'manageEmployees',
-        title: 'Manage Employees',
-        type: 'item',
-        url: '/employees',
-        icon: icons.IconUserPlus
-      },
-      {
-        id: 'manageDepartment',
-        title: 'Manage Department',
-        type: 'item',
-        url: '/department',
-        icon: icons.IconBuildingCommunity
-      },
-      {
-        id: 'manageCompany',
+        id: 'manageOrganization',
         title: 'Manage Company',
-        type: 'item',
-        url: '/company',
-        icon: icons.IconBuildingSkyscraper
+        type: 'collapse',
+        icon: icons.IconAdjustments,
+        children: [
+          {
+            id: 'menu',
+            title: 'Manage Menu',
+            type: 'item',
+            url: '/menu',
+            icon: icons.IconToolsKitchen2
+          },
+
+          {
+            id: 'manageEmployees',
+            title: 'Manage Employees',
+            type: 'item',
+            url: '/employees',
+            icon: icons.IconUserPlus
+          },
+          {
+            id: 'manageDepartment',
+            title: 'Manage Departments',
+            type: 'item',
+            url: '/department',
+            icon: icons.IconBuildingCommunity
+          },
+          {
+            id: 'manageCompany',
+            title: 'View Companies',
+            type: 'item',
+            url: '/company',
+            icon: icons.IconBuildingSkyscraper
+          }
+        ]
+      },
+
+      {
+        id: 'reports',
+        title: 'Reports',
+        type: 'collapse',
+        icon: icons.IconReportAnalytics,
+        children: [
+          {
+            id: 'companyReports',
+            title: 'Company Reports',
+            type: 'item',
+            url: '/companyReports',
+            icon: icons.IconReportAnalytics
+          },
+          {
+            id: 'employeeReports',
+            title: 'Employee Reports',
+            type: 'item',
+            url: '/employeeReports',
+            icon: icons.IconReportAnalytics
+          }
+        ]
       }
     ]
   };

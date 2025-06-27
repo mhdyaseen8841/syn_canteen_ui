@@ -45,6 +45,7 @@ const ProfileSection = () => {
    * anchorRef is used on different componets and specifying one type leads to other components throwing an error
    * */
   const anchorRef = useRef(null);
+  
   const handleLogout = async () => {
     console.log('Logout');
     localStorage.clear();
@@ -68,7 +69,7 @@ const ProfileSection = () => {
     let user = JSON.parse(localStorage.getItem("user"));
     let role = localStorage.getItem("role");
     if(user){
-      setAdmin(user.name)
+      setAdmin(user.display_name || 'User')
     }
     if(role){
       setRole(role)

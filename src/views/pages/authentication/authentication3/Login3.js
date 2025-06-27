@@ -21,13 +21,10 @@ const Login = () => {
   const matchDownSM = useMediaQuery(theme.breakpoints.down('md'));
   const navigate = useNavigate();
   useEffect(() => {
-    let user = JSON.parse(localStorage.getItem("user"));
-    const role = localStorage.getItem('role');
-    console.log(user)
-    if (user) {
-      if(role){
-      navigate("/dashboard")
-      }
+    let accessToken = JSON.parse(localStorage.getItem("accessToken"));
+    console.log(accessToken)
+    if (accessToken) {
+      navigate("/")
     }
 
   }, [])

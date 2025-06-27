@@ -48,7 +48,7 @@ if(onClickAction){
                         </TableCell>
                       );
                     } 
-                    else if (dt.status != 'isHighRangeArea' && head.toUpperCase() === 'ISHIGHRANGEAREA') {
+                    else if (dt.status != 'is_settled' && head.toUpperCase() === 'IS_SETTLED') {
                       return (
                         <TableCell key={i}>
                     {dt[`${head}`]?'Yes':'No'}

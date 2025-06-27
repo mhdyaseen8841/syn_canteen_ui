@@ -1,5 +1,7 @@
 import { useDispatch, useSelector } from 'react-redux';
-import { Outlet,useNavigate } from 'react-router-dom';
+import { Outlet, useNavigate,
+  // useNavigate 
+} from 'react-router-dom';
 import { useEffect, useState } from 'react';
 // material-ui
 import { styled, useTheme } from '@mui/material/styles';
@@ -68,10 +70,10 @@ const MainLayout = () => {
 
   useEffect(() => {
 setNavItem(navigation())
-    let user = JSON.parse(localStorage.getItem("user"));
+     let accessToken = localStorage.getItem("accessToken"); 
   
-    if(!user){
-      // navigate("/login")
+    if(!accessToken){
+      navigate("/login")
     }
   }, [])
   

@@ -24,7 +24,7 @@ export default function Tools({ buttonClick, type, selectedCompany }) {
           sx={{ backgroundColor: 'secondary.main' }}
           onClick={buttonClick}
         >
-          Add Employees
+          Add {type ? type : 'Employees'}
         </Button>
       </Stack>
     </MainCard>

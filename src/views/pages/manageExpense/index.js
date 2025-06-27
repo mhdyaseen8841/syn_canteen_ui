@@ -68,7 +68,7 @@ export default function Index() {
 
   return (
     <Stack direction={'column'} gap={2}>
-
+   <Tools buttonClick={() => setFormOpen(true)} selectedCalender={selectedCalender} />
 
        <Typography variant="h3" color={'secondary.main'}>
                       Select Filters
@@ -112,7 +112,7 @@ export default function Index() {
             </Box>
 
       <AddForm open={formOpen} addData={addExpense} getData={getData} onClose={() => setFormOpen(false)} selectedCalender={selectedCalender} />
-      <Tools buttonClick={() => setFormOpen(true)} selectedCalender={selectedCalender} />
+   
       <Content data={data} updateData={getData} selectedCalender={selectedCalender} editExpense={editExpense} menus={menu}/>
     </Stack>
   );

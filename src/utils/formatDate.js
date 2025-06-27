@@ -8,3 +8,13 @@ export const formatDate = (isoDateString) => {
 
   return `${day}-${month}-${year}`;
 };
+
+export const deformatDate = (formattedDate) => {
+  if (!formattedDate) return '';
+
+  const [day, month, year] = formattedDate.split('-');
+  if (!day || !month || !year) return '';
+
+  const isoString = `${year}-${month}-${day}`;
+  return isoString;
+};
