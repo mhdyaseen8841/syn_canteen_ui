@@ -3,13 +3,14 @@ import {
   IconToolsKitchen2,
   IconUsers,
   IconReportAnalytics,
-  IconUserPlus, // Changed from IconUserCircle
+  IconUserPlus, 
   IconBuildingSkyscraper,
   IconBuildingCommunity,
   IconUserCircle,
   IconReportMoney,
   IconReceipt2,
-  IconAdjustments
+  IconAdjustments,
+  IconHeartHandshake  
 } from '@tabler/icons';
 
 // constant
@@ -23,7 +24,8 @@ const icons = {
   IconUserPlus,
   IconReportMoney,
   IconReceipt2,
-  IconAdjustments
+  IconAdjustments,
+  IconHeartHandshake  
 };
 
 // ==============================|| EXTRA PAGES MENU ITEMS ||============================== //
@@ -48,13 +50,20 @@ export default function Pages() {
         url: '/expenses',
         icon: icons.IconReportMoney
       },
+      {
+        id: 'settlement',
+        title: 'Settlement',
+        type: 'item',
+        url: '/manage-settlement',
+        icon: icons.IconHeartHandshake 
+      },
 
       {
         id: 'manageTransactions',
         title: 'Manage Current Transactions',
         type: 'item',
         url: '/manage-transactions',
-        icon: icons.IconReceipt2
+        icon: icons.IconReceipt2 
       },
       {
         id: 'manageOrganization',

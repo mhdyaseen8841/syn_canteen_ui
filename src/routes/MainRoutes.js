@@ -14,6 +14,7 @@ const Department = Loadable(lazy(() => import('views/pages/manageDepartment')));
 const Employees = Loadable(lazy(() => import('views/pages/manageEmployee')));
 const Transaction = Loadable(lazy(() => import('views/pages/transactions')));
 const ManageTransactions = Loadable(lazy(()=>import('views/pages/manageTransaction')))
+const ManageSettlement = Loadable(lazy(()=>import('views/pages/manageSettlement')))
 const ManageExpenses = Loadable(lazy(() => import('views/pages/manageExpense')));
 const CompanyReport = Loadable(lazy(() => import('views/pages/companyReports')));
 const EmployeeReport = Loadable(lazy(() => import('views/pages/employeeReports')));
@@ -49,6 +50,10 @@ const MainRoutes = {
     {
       path: 'manage-transactions',
       element: <ManageTransactions />
+    },
+    {
+      path: 'manage-settlement',
+      element: <ManageSettlement />
     },
     {
       path: 'expenses',

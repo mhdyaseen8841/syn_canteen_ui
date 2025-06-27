@@ -173,3 +173,14 @@ export async function getCanteenCalender(is_settled=0 ) {
   const response = await apiInstance.get(`canteen-calender?is_settled=${is_settled}`);
   return response.data;
 }
+
+export async function doSettlement(data) {
+  // data should be: { menu_id, canteen_calendar_id, amount }
+  const response = await apiInstance.post('do-settlement', data);
+  return response.data;
+}
+
+export async function getSettlementRates(canteenCalenderId) {
+  const response = await apiInstance.get(`settlement-rates?canteenCalenderId=${canteenCalenderId}`);
+  return response.data;
+}
