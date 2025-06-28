@@ -3,7 +3,8 @@ import axios from 'axios';
 
 // const baseURL = `http://${window.location.hostname}:3005/`;
 
-const baseURL = `http://localhost:4001/`;
+const baseURL = process.env.REACT_APP_BASE_URL || 'http://localhost:4001/';
+
 
 
 
@@ -182,5 +183,15 @@ export async function doSettlement(data) {
 
 export async function getSettlementRates(canteenCalenderId) {
   const response = await apiInstance.get(`settlement-rates?canteenCalenderId=${canteenCalenderId}`);
+  return response.data;
+}
+
+export async function getCanteenEmployeeReport(data) {
+  const response = await apiInstance.post('get-canteen-employee-report', data);
+  return response.data;
+}
+
+export async function getCanteenReport(data) {
+  const response = await apiInstance.post('get-canteen-report', data);
   return response.data;
 }

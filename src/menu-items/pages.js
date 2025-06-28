@@ -3,14 +3,14 @@ import {
   IconToolsKitchen2,
   IconUsers,
   IconReportAnalytics,
-  IconUserPlus, 
+  IconUserPlus,
   IconBuildingSkyscraper,
   IconBuildingCommunity,
   IconUserCircle,
   IconReportMoney,
   IconReceipt2,
   IconAdjustments,
-  IconHeartHandshake  
+  IconHeartHandshake
 } from '@tabler/icons';
 
 // constant
@@ -25,9 +25,15 @@ const icons = {
   IconReportMoney,
   IconReceipt2,
   IconAdjustments,
-  IconHeartHandshake  
+  IconHeartHandshake
 };
 
+export const Roles = {
+  ADMIN: 'admin',
+  FRONTOFFICE: 'front_office',
+  MANAGER: 'manager',
+  EMPLOYEE: 'employee'
+};
 // ==============================|| EXTRA PAGES MENU ITEMS ||============================== //
 
 export default function Pages() {
@@ -37,8 +43,6 @@ export default function Pages() {
     return null;
   }
 
-
-
   // Menu items with role-based visibility
   const allPages = [
     {
@@ -47,7 +51,7 @@ export default function Pages() {
       type: 'item',
       url: '/transaction',
       icon: icons.IconReportAnalytics,
-      visibleTo: ['admin', 'contractor', 'manager', 'employee']
+      visibleTo: [Roles.ADMIN, Roles.FRONTOFFICE, Roles.MANAGER, Roles.EMPLOYEE]
     },
     {
       id: 'expenses',
@@ -55,15 +59,15 @@ export default function Pages() {
       type: 'item',
       url: '/expenses',
       icon: icons.IconReportMoney,
-      visibleTo: ['admin', 'contractor', 'manager', 'employee']
+      visibleTo: [Roles.ADMIN, Roles.FRONTOFFICE, Roles.MANAGER, Roles.EMPLOYEE]
     },
     {
       id: 'settlement',
       title: 'Settlement',
       type: 'item',
       url: '/manage-settlement',
-      icon: icons.IconHeartHandshake , // or any icon you prefer
-      visibleTo: ['admin', 'contractor', 'manager', 'employee']
+      icon: icons.IconHeartHandshake, // or any icon you prefer
+      visibleTo: [Roles.ADMIN, Roles.FRONTOFFICE, Roles.MANAGER, Roles.EMPLOYEE]
     },
     {
       id: 'manageTransactions',
@@ -71,13 +75,13 @@ export default function Pages() {
       type: 'item',
       url: '/manage-transactions',
       icon: icons.IconReceipt2,
-      visibleTo: ['admin', 'contractor', 'manager', 'employee']
-    },
+      visibleTo: [Roles.ADMIN, Roles.FRONTOFFICE, Roles.MANAGER, Roles.EMPLOYEE]
+    }
     // ...add more items as needed, with their own visibleTo arrays
   ];
 
   // Filter pages based on current role
-  const filteredPages = allPages.filter(page => page.visibleTo.includes(role));
+  const filteredPages = allPages.filter((page) => page.visibleTo.includes(role));
 
   // Add collapses and reports as needed, with their own visibility logic
   const pages = {
@@ -98,7 +102,7 @@ export default function Pages() {
             type: 'item',
             url: '/menu',
             icon: icons.IconToolsKitchen2,
-            visibleTo: ['admin', 'contractor', 'manager', 'employee']
+            visibleTo: [Roles.ADMIN, Roles.FRONTOFFICE, Roles.MANAGER, Roles.EMPLOYEE]
           },
           {
             id: 'manageEmployees',
@@ -106,7 +110,7 @@ export default function Pages() {
             type: 'item',
             url: '/employees',
             icon: icons.IconUserPlus,
-            visibleTo: ['admin', 'contractor', 'manager', 'employee']
+            visibleTo: [Roles.ADMIN, Roles.FRONTOFFICE, Roles.MANAGER, Roles.EMPLOYEE]
           },
           {
             id: 'manageDepartment',
@@ -114,7 +118,7 @@ export default function Pages() {
             type: 'item',
             url: '/department',
             icon: icons.IconBuildingCommunity,
-            visibleTo: ['admin', 'contractor', 'manager', 'employee']
+            visibleTo: [Roles.ADMIN, Roles.FRONTOFFICE, Roles.MANAGER, Roles.EMPLOYEE]
           },
           {
             id: 'manageCompany',
@@ -122,9 +126,9 @@ export default function Pages() {
             type: 'item',
             url: '/company',
             icon: icons.IconBuildingSkyscraper,
-            visibleTo: ['admin', 'contractor', 'manager', 'employee']
+            visibleTo: [Roles.ADMIN, Roles.FRONTOFFICE, Roles.MANAGER, Roles.EMPLOYEE]
           }
-        ].filter(item => item.visibleTo.includes(role))
+        ].filter((item) => item.visibleTo.includes(role))
       },
       {
         id: 'reports',
@@ -138,7 +142,7 @@ export default function Pages() {
             type: 'item',
             url: '/companyReports',
             icon: icons.IconReportAnalytics,
-            visibleTo: ['admin', 'contractor', 'manager', 'employee']
+            visibleTo: [Roles.ADMIN, Roles.FRONTOFFICE, Roles.MANAGER, Roles.EMPLOYEE]
           },
           {
             id: 'employeeReports',
@@ -146,9 +150,9 @@ export default function Pages() {
             type: 'item',
             url: '/employeeReports',
             icon: icons.IconReportAnalytics,
-            visibleTo: ['admin', 'contractor', 'manager', 'employee']
+            visibleTo: [Roles.ADMIN, Roles.FRONTOFFICE, Roles.MANAGER, Roles.EMPLOYEE]
           }
-        ].filter(item => item.visibleTo.includes(role))
+        ].filter((item) => item.visibleTo.includes(role))
       }
     ]
   };

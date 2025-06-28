@@ -1,10 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Stack, FormControl, InputLabel, Select, MenuItem, Box, Typography } from '@mui/material';
+import { MenuItem, Box, Typography } from '@mui/material';
 import Content from './content';
 import Tools from './tools';
-import AddForm from './AddForm';
-import { getEmployee, getCompany, addEmployee, editEmployee } from '../../../utils/Service';
+import { getEmployee, getCompany, addEmployee } from '../../../utils/Service';
 import { toast } from 'react-toastify';
 export default function Index() {
   const [formOpen, setFormOpen] = useState(false);

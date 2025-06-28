@@ -3,9 +3,6 @@ import StyledTable from './StyledTable';
 import { tableHeaderReplace } from 'utils/tableHeaderReplace';
 import { TextField, Box, Grid, Select, MenuItem, FormControl, InputLabel } from '@mui/material';
 import { useState } from 'react';
-import { Chip } from '@mui/material';
-import { toast } from 'react-toastify';
-import AddForm from './AddForm';
 import { editEmployee } from 'utils/Service';
 
 const tableHeader = [

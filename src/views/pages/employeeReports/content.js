@@ -1,148 +1,161 @@
 import React from 'react';
 import StyledTable from './StyledTable';
 import { tableHeaderReplace } from 'utils/tableHeaderReplace';
-import { TextField, Box, Grid, Select, MenuItem, FormControl, InputLabel } from '@mui/material';
 import { useState } from 'react';
-import { Chip } from '@mui/material';
 import { toast } from 'react-toastify';
 import AddForm from './AddForm';
-import { editEmployee } from 'utils/Service';
+import { deformatDate, formatDate } from 'utils/formatDate';
+import DeleteConfirmationDialog from 'ui-component/DeleteConfirmationDialog';
 
-const tableHeader = [
-  'Employee Code',
-  'Employee Name',
-  'Employee Type',
-  'Company',
-  'Department',
-  'Premium Enabled',
-  'Active'
-];
+const tableHeader = ['Menu Id', 'Menu Name', 'Expense Date', 'Amount', 'Remarks'];
 
-export default function Content({ data, deleteAd, updateData,selectedCompany,type }) {
+export default function Content({ data, updateData,selectedCalender,editExpense,menus }) {
   const [formOpen, setFormOpen] = useState(false);
   const [selectedData, setselectedData] = useState();
-  const [searchEmployee, setSearchEmployee] = useState('');
-  const [filterStatus, setFilterStatus] = useState('');
+  // const [searchName, setSearchName] = useState('');
+   const [confirmOpen, setConfirmOpen] = useState(false);
+  const [pendingDelete, setPendingDelete] = useState(null);
 
-  const status = ['1', '0'];
+
 
   const filteredData = data.filter((item) => {
-    // Filter by employee name or code
-    const searchMatch = searchEmployee.trim() === '' || 
-      item.employee_name.toLowerCase().includes(searchEmployee.toLowerCase()) ||
-      item.employee_code.toLowerCase().includes(searchEmployee.toLowerCase());
-
-    // Filter by active status
-    const statusMatch = filterStatus === '' || item.Active.toString() === filterStatus;
-
-    return searchMatch && statusMatch;
+    // const nameMatch = item.name.toLowerCase().includes(searchName.toLowerCase());
+    // return nameMatch;
+    return item;
   });
 
-  const tableData = tableHeaderReplace(
-    filteredData, 
-    [
-      'employee_code',
-      'employee_name',
-      'employee_type',
-      'company_id',
-      'department_name',
-      'premium_enabled',
-      'Active'
-    ], 
-    tableHeader
-  ).map((item) => ({
-    ...item,
-    'Premium Enabled': item['Premium Enabled'] === 1 ? 'Yes' : 'No',
-    'Employee Type': type,
-    'Active': item['Active'] === 1 ? 'Yes' : 'No'
-  }));
 
+
+  
+  const tableData = tableHeaderReplace(
+    filteredData,
+    ['menu_id', 'menu_name', 'expense_date', 'expense_amount', 'remarks'],
+    tableHeader
+  ).map((item) => {
+    // Find the corresponding menu name using the menu_id from the menus prop
+    const menu = menus.find((menu) => menu.menu_id === item['Menu Id']);
+    return {
+      ...item,
+       'Menu Name': menu ? menu.menu_name : item['Menu Id'], // Use menu_name if found
+      'Settled': item['Settled'] === 1 ? 'Yes' : 'No',
+      'Active': item['Active'] === 1 ? 'Yes' : 'No',
+      'Expense Date': formatDate(item['Expense Date']),
+    };
+  });
   const actionHandle = (e) => {
-    console.log(e);
-    if (e.action === 'delete') {
-      setselectedData(e.data);
-     
-    } else if (e.action === 'edit') {
+    if (e.action == 'delete') {
+      setPendingDelete(e);
+      setConfirmOpen(true);
+      // const deleteData = {
+      // menu_id: e.data['Menu Id'],
+      //   expense_date: e.data['Expense Date'],
+      //   expense_amount: e.data['Amount'],
+      //   is_settled: e.data['Settled'] === 'Yes' ? 1 : 0,
+      //   active: 0,
+      //   remarks: e.data['Remarks'],
+      //   expense_id: e.data.expense_id,
+      //   canteen_calendar_id: selectedCalender,
+      // };
+
+      // editExpense(deleteData)
+      //   .then(() => {
+      //     toast.success('Expense deleted successfully');
+      //     updateData()
+      //   })
+      //   .catch((err) => {
+      //     console.error(err);
+      //     toast.error('Error deleting expense');
+      //   });
+
+
+    } else if (e.action == 'edit') {
       const editData = {
-        employee_id: e.data.employee_id,
-        employee_code: e.data['Employee Code'],
-        employee_name: e.data['Employee Name'],
-        company_id: e.data.company_id,
-        department_id: e.data.department_id,
-        premium_enabled: e.data['Premium Enabled'] === 'Yes' ? 1 : 0,
-        active: e.data['Active'] === 'Yes' ? 1 : 0
+        menu_id: e.data['Menu Id'],
+        expense_date: e.data['Expense Date'],
+        expense_amount: e.data['Amount'],
+        is_settled: e.data['Settled'] === 'Yes' ? 1 : 0,
+        active: e.data['Active'] === 'Yes' ? 1 : 0,
+        remarks: e.data['Remarks'],
+        expense_id: e.data.expense_id,
       };
       setselectedData(editData);
       setFormOpen(true);
     }
+   
+  };
+
+
+   const handleDeleteConfirm = () => {
+    if (!pendingDelete) return;
+    const e = pendingDelete;
+    const deleteData = {
+      menu_id: e.data['Menu Id'],
+      expense_date: deformatDate(e.data['Expense Date']),
+      expense_amount: e.data['Amount'],
+      is_settled: e.data['Settled'] === 'Yes' ? 1 : 0,
+      active: 0,
+      remarks: e.data['Remarks'],
+      expense_id: e.data.expense_id,
+      canteen_calendar_id: selectedCalender,
+    };
+
+    editExpense(deleteData)
+      .then(() => {
+        toast.success('Expense deleted successfully');
+        updateData();
+      })
+      .catch((err) => {
+        console.error(err);
+        toast.error('Error deleting expense');
+      })
+      .finally(() => {
+        setConfirmOpen(false);
+        setPendingDelete(null);
+      });
   };
 
   return (
     <>
-      <Box sx={{ mb: 2 }}>
+     {/* <Box sx={{ mb: 2 }}>
         <Grid container spacing={2}>
-          <Grid item xs={12} md={6}>
+          <Grid item xs={12}>
             <TextField
-              label="Search by Employee Name/Code"
+              label="Search by Name"
               variant="outlined"
               size="small"
               fullWidth
-              value={searchEmployee}
-              onChange={(e) => setSearchEmployee(e.target.value)}
+              value={searchName}
+              onChange={(e) => setSearchName(e.target.value)}
             />
           </Grid>
-          <Grid item xs={12} md={6}>
-            <FormControl fullWidth size="small">
-              <InputLabel>Active</InputLabel>
-              <Select 
-                value={filterStatus} 
-                label="Active" 
-                onChange={(e) => setFilterStatus(e.target.value)}
-              >
-                <MenuItem value="">All</MenuItem>
-                {status.map((type) => (
-                  <MenuItem key={type} value={type}>
-                    {type === '1' ? 'Active' : 'Inactive'}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          </Grid>
         </Grid>
-      </Box>
-
-{
-  formOpen && (
-
-
-
+      </Box> */}
+       <DeleteConfirmationDialog
+        open={confirmOpen}
+        title="Delete Expense"
+        content="Are you sure you want to delete this expense?"
+        onClose={() => setConfirmOpen(false)}
+        onConfirm={handleDeleteConfirm}
+      />
       <AddForm
         open={formOpen}
         onClose={() => {
           setFormOpen(false);
-          setselectedData(null);
-          updateData();
         }}
-       addData={editEmployee}
-       getData={updateData}
         data={selectedData}
-        selectedCompany={selectedCompany}
-        isEdit={Boolean(selectedData)}
-        type={type}
+        isEdit={true}
+        selectedCalender={selectedCalender}
+        getData={updateData}
+        addData={editExpense}
       />
-
-    )
-}
-<StyledTable
-  data={tableData}
-  header={tableHeader}
-  isShowSerialNo={true}
-  isShowAction={false}
-  actions={['edit']}
-  onActionChange={actionHandle}
-  rowsPerPage={5} // Optional
-/>
-
+      <StyledTable
+        data={tableData}
+        header={tableHeader}
+        isShowSerialNo={true}
+        isShowAction={true}
+        actions={['edit','delete']}
+        onActionChange={actionHandle}
+      />
     </>
   );
 }

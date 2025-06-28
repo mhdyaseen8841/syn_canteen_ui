@@ -1,206 +1,237 @@
-import { Button, Container, MenuItem, Select, Stack, TextField, Typography, FormControl, FormHelperText, FormControlLabel, Switch, Autocomplete } from '@mui/material'
-import { set } from 'lodash';
-import React, { useEffect, useState } from 'react'
-import { useForm, Controller } from "react-hook-form";
+import { Button, Container, Stack, TextField, Autocomplete } from '@mui/material';
+import React, { useEffect, useState } from 'react';
+import { useForm, Controller } from 'react-hook-form';
 import { toast } from 'react-toastify';
 import StyledDialog from 'ui-component/StyledDialog';
-import { getCompany, getDepartment } from 'utils/Service';
+import { getMenu, getCanteenCalender } from 'utils/Service';
 
-export default function AddForm({selectedCompany, getData, addData, open, onClose, isEdit = false, data = {},type }) {
-    const [active, setActive] = useState(data?.active === 1);
-    const [premiumEnabled, setPremiumEnabled] = useState(data?.premium_enabled === 1);
-    const [departments, setDepartments] = useState([]);
-    const [selectedDepartment, setSelectedDepartment] = useState(null);
-
-    const {
-        control,
-        setValue,
-        handleSubmit,
-        formState: { errors },
-    } = useForm({
-        defaultValues: {
-            employee_code: data?.employee_code || '',
-            employee_name: data?.employee_name || '',
-            department_id: data?.department_id || '',
-            premium_enabled: data?.premium_enabled || 0,
-            active: data?.Active || data?.active || 1
+export default function AddForm({ getData, addData, open, onClose, isEdit = false, data = {}, selectedCalender }) {
+  const {
+    control,
+    handleSubmit,
+    setValue,
+    formState: { errors }
+  } = useForm({
+    defaultValues: isEdit
+      ? data
+      : {
+          menu_id: null,
+          canteen_calendar_id: null,
+          expense_date: '',
+          expense_amount: '',
+          remarks: ''
         }
-    });
+  });
 
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const deptRes = await getDepartment();
-                setDepartments(deptRes);
-                
-            
-                // If we have department_id in edit data, find and set the department
-                if (isEdit && data?.department_id) {
-                    const dept = deptRes.find(d => d.department_id === data.department_id);
-                    if (dept) {
-                        setSelectedDepartment(dept);
-                        setValue('department_id', dept.department_id);
-                    }
-                }
-            } catch (error) {
-                console.error('Error fetching departments:', error);
-                toast.error('Error loading departments');
-            }
-        };
-        fetchData();
-    }, [isEdit]);
+  const [menus, setMenus] = useState([]);
+  const [calendars, setCalendars] = useState([]);
+  const [dateLimits, setDateLimits] = useState({ min: '', max: '' });
 
-    const onSubmit = (formData) => {
-      
-        if(selectedCompany === '' || selectedCompany === undefined) {   
-            toast.error("Please select a company first")
-            return;
-        }
-        if(type === '' || type === undefined) {
-            toast.error("Please select a employee type first")
-            return;
-        }
-        const submitData = {
-            employee_code: formData.employee_code,
-            employee_name: formData.employee_name,
-            employee_type:  type,
-            company_id: selectedCompany,
-            department_id: formData.department_id,
-            premium_enabled: premiumEnabled ? 1 : 0,
-            active: active ? 1 : 0,
-        };
-        if(isEdit) {
-            submitData.employee_id = data.employee_id; 
-        }
+  useEffect(() => {
+    getMenu()
+      .then(setMenus)
+      .catch((err) => {
+        console.log(err);
+        toast.error('Error loading menus');
+      });
+    getCanteenCalender()
+      .then(setCalendars)
+      .catch((err) => {
+        console.log(err);
+        toast.error('Error loading calendar dates');
+      });
+  }, []);
 
-        addData(submitData)
-            .then((response) => {
-                console.log(response)
-                toast.success(isEdit ? "Employee Updated Successfully" : "Employee Added Successfully");
-                getData();
-                onClose();
-            })
-            .catch((error) => {
-                console.error(error);
-                toast.error(error.response?.data?.message || "Error saving employee");
-            });
-    };
+  function parseDDMMYYYY(dateStr) {
+    const [day, month, year] = dateStr.split('-');
+    return `${year}-${month}-${day}`; // Convert to YYYY-MM-DD
+  }
 
-    return (
-        <StyledDialog open={open} fullWidth onClose={onClose} title={`${isEdit ? "Edit" : "Add"} Employee`}>
-            <form onSubmit={handleSubmit(onSubmit)}>
-                <Container>
-                    <Stack direction={'column'} sx={{ p: 2 }} spacing={2}>
-                        <Controller
-                            name="employee_code"
-                            control={control}
-                            rules={{ required: "Employee Code is required" }}
-                            render={({ field }) => (
-                                <TextField
-                                    {...field}
-                                    label="Employee Code"
-                                    error={Boolean(errors.employee_code)}
-                                    helperText={errors.employee_code?.message}
-                                    fullWidth
-                                />
-                            )}
-                        />
+  useEffect(() => {
+    if (isEdit) {
+      console.log(data);
+      console.log(isEdit);
+      setValue('menu_id', data.menu_id);
+      setValue('canteen_calendar_id', data.canteen_calendar_id);
+      setValue('expense_date', data.expense_date ? parseDDMMYYYY(data.expense_date) : '');
 
-                        <Controller
-                            name="employee_name"
-                            control={control}
-                            rules={{ required: "Employee Name is required" }}
-                            render={({ field }) => (
-                                <TextField
-                                    {...field}
-                                    label="Employee Name"
-                                    error={Boolean(errors.employee_name)}
-                                    helperText={errors.employee_name?.message}
-                                    fullWidth
-                                />
-                            )}
-                        />
+      setValue('expense_amount', data.expense_amount);
+      setValue('remarks', data.remarks);
+    } else {
+      setValue('menu_id', null);
+      setValue('canteen_calendar_id', null);
+      setValue('expense_date', '');
+      setValue('expense_amount', '');
+      setValue('remarks', '');
+    }
+  }, [open]);
 
-                        {/* <Controller
-                            name="company_id"
-                            control={control}
-                            rules={{ required: "Company is required" }}
-                            render={({ field }) => (
-                                <Autocomplete
-                                    options={companies}
-                                    getOptionLabel={(option) => option.company_name}
-                                    value={companies.find(x => x.company_id === field.value) || null}
-                                    onChange={(_, newValue) => field.onChange(newValue?.company_id)}
-                                    renderInput={(params) => (
-                                        <TextField
-                                            {...params}
-                                            label="Company"
-                                            error={Boolean(errors.company_id)}
-                                            helperText={errors.company_id?.message}
-                                        />
-                                    )}
-                                />
-                            )}
-                        /> */}
+  const onSubmit = (formData) => {
+    console.log(formData);
+    if (isEdit) {
+      formData.expense_id = data.expense_id;
+      formData.active = 1;
+      addData(formData)
+        .then(() => {
+          toast.success('Expense Updated Successfully');
+          getData();
+          onClose();
+        })
+        .catch((error) => {
+          console.error(error);
+          toast.error(error.response?.data?.message || 'Error updating expense');
+        });
+    } else {
+      addData(formData)
+        .then(() => {
+          toast.success('Expense Added Successfully');
+          getData();
+          onClose();
+        })
+        .catch((error) => {
+          console.error(error);
+          toast.error(error.response?.data?.message || 'Error adding expense');
+        });
+    }
+  };
 
-<Controller
-            name="department_id"
-            control={control}
-            rules={{ required: "Department is required" }}
-            render={({ field }) => (
-                <Autocomplete
-                    options={departments}
-                    getOptionLabel={(option) => option.department_name || ''}
-                    value={departments.find(d => d.department_id === field.value) || null}
-                    onChange={(_, newValue) => {
-                        field.onChange(newValue?.department_id);
-                        setSelectedDepartment(newValue);
-                    }}
-                    isOptionEqualToValue={(option, value) => 
-                        option.department_id === value.department_id
-                    }
+  return (
+    <StyledDialog open={open} fullWidth onClose={onClose} title={`${isEdit ? 'Edit' : 'Add'} Expense`}>
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <Container>
+          <Stack direction={'column'} sx={{ p: 2 }} spacing={2}>
+            {/* Menu */}
+            <Controller
+              name="menu_id"
+              control={control}
+              rules={{ required: 'Menu is required' }}
+              render={({ field }) => {
+                const selectedMenu = menus.find((menu) => menu.menu_id === field.value) || null;
+
+                return (
+                  <Autocomplete
+                    options={menus}
+                    getOptionLabel={(option) => option.menu_name || ''}
+                    value={selectedMenu}
+                    onChange={(_, value) => field.onChange(value?.menu_id || null)}
                     renderInput={(params) => (
-                        <TextField
-                            {...params}
-                            label="Department"
-                            error={Boolean(errors.department_id)}
-                            helperText={errors.department_id?.message}
-                        />
+                      <TextField {...params} label="Select Menu" error={Boolean(errors.menu_id)} helperText={errors.menu_id?.message} />
                     )}
+                  />
+                );
+              }}
+            />
+
+            {/* Calendar Date */}
+            <Controller
+              name="canteen_calendar_id"
+              control={control}
+              rules={{ required: 'Calendar date is required' }}
+              render={({ field }) => {
+                const selectedCalendar = calendars.find((cal) => cal.canteen_calendar_id === selectedCalender) || null;
+
+                useEffect(() => {
+                  if (selectedCalendar) {
+                    field.onChange(selectedCalendar.canteen_calendar_id);
+                    if (selectedCalendar.from_date && selectedCalendar.to_date) {
+                      setDateLimits({
+                        min: selectedCalendar.from_date.split('T')[0],
+                        max: selectedCalendar.to_date.split('T')[0]
+                      });
+                    }
+                  }
+                }, [selectedCalender, calendars]);
+
+                return (
+                  <Autocomplete
+                    options={selectedCalendar ? [selectedCalendar] : []}
+                    getOptionLabel={(option) => option.month_year || ''}
+                    value={selectedCalendar}
+                    disabled
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        label="Month & Year"
+                        error={Boolean(errors.canteen_calendar_id)}
+                        helperText={errors.canteen_calendar_id?.message}
+                      />
+                    )}
+                  />
+                );
+              }}
+            />
+
+            {/* Expense Date */}
+            <Controller
+              name="expense_date"
+              control={control}
+              rules={{ required: 'Expense date is required' }}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  label="Expense Date"
+                  type="date"
+                  InputLabelProps={{ shrink: true }}
+                  inputProps={{
+                    min: dateLimits.min,
+                    max: dateLimits.max
+                  }}
+                  error={Boolean(errors.expense_date)}
+                  helperText={errors.expense_date?.message}
                 />
-            )}
-        />
+              )}
+            />
 
-                        <FormControlLabel
-                            control={
-                                <Switch 
-                                    checked={premiumEnabled}
-                                    onChange={(e) => setPremiumEnabled(e.target.checked)}
-                                />
-                            }
-                            label="Premium Enabled"
-                        />
+            {/* Expense Amount */}
+            <Controller
+              name="expense_amount"
+              control={control}
+              rules={{
+                required: 'Amount is required',
+                min: {
+                  value: 0,
+                  message: 'Amount cannot be negative'
+                },
+                max: {
+                  value: 10000000,
+                  message: 'Amount cannot exceed 1 crore'
+                }
+              }}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  label="Expense Amount"
+                  type="number"
+                  error={Boolean(errors.expense_amount)}
+                  helperText={errors.expense_amount?.message}
+                  inputProps={{ min: 0, max: 10000000 }}
+                />
+              )}
+            />
 
-                        <FormControlLabel
-                            control={
-                                <Switch 
-                                    checked={active}
-                                    onChange={(e) => setActive(e.target.checked)}
-                                />
-                            }
-                            label="Active"
-                        />
+            {/* Remarks */}
+            <Controller
+              name="remarks"
+              control={control}
+              rules={{ required: 'Remarks are required' }}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  label="Remarks"
+                  multiline
+                  rows={3}
+                  error={Boolean(errors.remarks)}
+                  helperText={errors.remarks?.message}
+                />
+              )}
+            />
 
-                        <Button 
-                            variant='contained' 
-                            type='submit' 
-                            sx={{ width: '150px' }}
-                        >
-                            {isEdit ? 'Update' : 'Add'}
-                        </Button>
-                    </Stack>
-                </Container>
-            </form>
-        </StyledDialog>
-    );
+            <Button variant="contained" type="submit" sx={{ width: '150px', alignSelf: 'flex-end' }}>
+              {isEdit ? 'Update' : 'Add'} Expense
+            </Button>
+          </Stack>
+        </Container>
+      </form>
+    </StyledDialog>
+  );
 }
