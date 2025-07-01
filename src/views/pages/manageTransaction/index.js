@@ -100,6 +100,9 @@ export default function Index() {
           <FormControl fullWidth>
             <InputLabel>Menu</InputLabel>
             <Select value={selectedMenu} label="Menu" onChange={(e) => handleMenuChange(e.target.value)}>
+             <MenuItem key={''} value={''}>
+                  All
+                </MenuItem>
               {menu.map((type) => (
                 <MenuItem key={type.menu_id} value={type.menu_id}>
                   {type.menu_name}

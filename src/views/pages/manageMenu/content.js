@@ -8,7 +8,7 @@ import AddForm from './AddForm';
 import { formatTime } from 'utils/formatTime';
 import { editMenu } from 'utils/Service';
 
-const tableHeader = ['Menu Code', 'Menu Name', 'Start Time', 'End Time', 'Active'];
+const tableHeader = ['Menu', 'Fixed Menu Rate', 'Start Time', 'End Time', 'Active'];
 
 export default function Content({ data, updateData }) {
   const [formOpen, setFormOpen] = useState(false);
@@ -29,7 +29,7 @@ export default function Content({ data, updateData }) {
     return menuNameMatch && statusMatch;
   });
 
-  const tableData = tableHeaderReplace(filteredData, ['menu_code', 'menu_name', 'start_time', 'end_time', 'Active'], tableHeader).map(
+  const tableData = tableHeaderReplace(filteredData, [ 'menu_name','fixed_menu_rate', 'start_time', 'end_time', 'Active'], tableHeader).map(
     (item) => ({
       ...item,
       'Start Time': formatTime(item['Start Time']),
@@ -52,8 +52,10 @@ export default function Content({ data, updateData }) {
         });
     } else if (e.action === 'edit') {
       // Prepare the data for editing
+      console.log(e.data)
       const editData = {
         menu_id: e.data.menu_id,
+        fixed_menu_rate: e.data['Fixed Menu Rate'],
         start_time: e.data['Start Time'],
         end_time: e.data['End Time'],
         active: e.data['Active'] === 'Yes' ? 1 : 0

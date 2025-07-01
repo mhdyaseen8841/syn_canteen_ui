@@ -1,6 +1,6 @@
 import React from 'react';
 import MainCard from 'ui-component/cards/MainCard';
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
+import { Chip, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import TableActionButton from 'ui-component/TableActionButton';
 
 export default function StyledTable({
@@ -10,14 +10,13 @@ export default function StyledTable({
   isShowAction = false,
   actions = ['Edit', 'Delete'],
   onActionChange,
-  onClickAction,
+  onClickAction
 }) {
-  const handleClick = (data)=>{
-if(onClickAction){
-    onClickAction(data);
-}
-  }
-
+  const handleClick = (data) => {
+    if (onClickAction) {
+      onClickAction(data);
+    }
+  };
 
   return (
     <MainCard>
@@ -36,9 +35,8 @@ if(onClickAction){
           </TableHead>
           <TableBody>
             {data.map((dt, ind) => {
-            
               return (
-                <TableRow onClick={()=>handleClick(dt._id)} key={ind}>
+                <TableRow onClick={() => handleClick(dt._id)} key={ind}>
                   {isShowSerialNo && <TableCell>{ind + 1}</TableCell>}
                   {header.map((head, i) => {
                     if (head.toUpperCase() === 'IMAGE') {
@@ -47,37 +45,30 @@ if(onClickAction){
                           <img style={{ height: '100px' }} src={`${dt[`${head}`]}`} alt="img" />
                         </TableCell>
                       );
-                    } 
-                    else if (dt.status != 'is_settled' && head.toUpperCase() === 'IS_SETTLED') {
+                    } else if (dt.status != 'is_settled' && head.toUpperCase() === 'IS_SETTLED') {
+                      return <TableCell key={i}>{dt[`${head}`] ? 'Yes' : 'No'}</TableCell>;
+                    } else if (head.toUpperCase() === 'STATUS') {
+                      const isActive = dt[`${head}`] !== 0;
                       return (
                         <TableCell key={i}>
-                    {dt[`${head}`]?'Yes':'No'}
-                
+                          <Chip
+                            label={isActive ? 'Active' : 'Cancelled'}
+                            color={isActive ? 'success' : 'error'}
+                            size="small"
+                            variant="outlined"
+                          />
                         </TableCell>
                       );
-                    }
-                    else if (head.toUpperCase() === 'STATUS' ) {
-                     
-                      return (
-                        <TableCell key={i}>
-                    {dt[`${head}`]?'Active':'Inactive'}
-                
-                        </TableCell>
-                      );
-                    }
-                     else {
+                    } else {
                       return <TableCell key={i}>{dt[`${head}`]}</TableCell>;
                     }
                   })}
                   {isShowAction && (
                     <TableCell>
-                      <TableActionButton
-                        data={dt}
-                        onActionChange={(e) => {
-                          onActionChange(e);
-                        }}
-                        actions={actions}
-                      />
+                      {(() => {
+                        const status = dt.STATUS ?? dt.Status ?? dt.status;
+                        return status !== 0 ? <TableActionButton data={dt} onActionChange={onActionChange} actions={actions} /> : null;
+                      })()}
                     </TableCell>
                   )}
                 </TableRow>
@@ -86,7 +77,6 @@ if(onClickAction){
           </TableBody>
         </Table>
       </TableContainer>
-     
     </MainCard>
   );
 }

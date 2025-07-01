@@ -54,7 +54,7 @@ export default function Index() {
       // Prepare array of { menu_id, amount }
       const menuData = data.map(item => ({
         menu_id: item.menu_id,
-        amount: Number(item.Total_Expense || 0)
+        amount: Number(item.Regular_Amount || 0)
       }));
 
       await doSettlement({
@@ -63,7 +63,9 @@ export default function Index() {
       });
 
       toast.success('Settlement successful');
-      getData();
+    setSelectedCalender('');
+    getData('')
+    getCanteenCalenderData();
     } catch (err) {
       toast.error('Settlement failed');
       console.error(err);

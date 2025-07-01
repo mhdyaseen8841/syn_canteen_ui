@@ -10,9 +10,9 @@ export default function Index() {
   const [data, setData] = useState([]);
   const [companies, setCompanies] = useState([]);
   const [selectedCompany, setSelectedCompany] = useState('');
-  const [selectedType, setSelectedType] = useState('employee');
+  const [selectedType, setSelectedType] = useState('Employee');
 
-  const employeeTypes = ['employee', 'contractor', 'guest'];
+  const employeeTypes = ['Employee', 'Contractor', 'Guest'];
 
   // Fetch companies
   // const FetchCompanies = async () => {
@@ -42,8 +42,7 @@ export default function Index() {
   const getData = async () => {
     try {
       if (!selectedCompany) {
-        setData([]);
-        return;
+       setSelectedCompany(null)
       }
       const res = await getEmployee(selectedCompany, selectedType);
 

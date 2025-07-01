@@ -54,6 +54,14 @@ export default function Pages() {
       visibleTo: [Roles.ADMIN, Roles.FRONTOFFICE, Roles.MANAGER, Roles.EMPLOYEE]
     },
     {
+      id: 'manageTransactions',
+      title: 'Current Transactions',
+      type: 'item',
+      url: '/manage-transactions',
+      icon: icons.IconReceipt2,
+      visibleTo: [Roles.ADMIN, Roles.FRONTOFFICE, Roles.MANAGER, Roles.EMPLOYEE]
+    },
+    {
       id: 'expenses',
       title: 'Expenses',
       type: 'item',
@@ -67,14 +75,6 @@ export default function Pages() {
       type: 'item',
       url: '/manage-settlement',
       icon: icons.IconHeartHandshake, // or any icon you prefer
-      visibleTo: [Roles.ADMIN, Roles.FRONTOFFICE, Roles.MANAGER, Roles.EMPLOYEE]
-    },
-    {
-      id: 'manageTransactions',
-      title: 'Manage Current Transactions',
-      type: 'item',
-      url: '/manage-transactions',
-      icon: icons.IconReceipt2,
       visibleTo: [Roles.ADMIN, Roles.FRONTOFFICE, Roles.MANAGER, Roles.EMPLOYEE]
     }
     // ...add more items as needed, with their own visibleTo arrays
@@ -92,7 +92,7 @@ export default function Pages() {
       ...filteredPages,
       {
         id: 'manageOrganization',
-        title: 'Manage Company',
+        title: 'Master',
         type: 'collapse',
         icon: icons.IconAdjustments,
         children: [

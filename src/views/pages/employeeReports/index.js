@@ -2,8 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Box, FormControl, InputLabel, MenuItem, Select, Stack, Typography } from '@mui/material';
 import Content from './content';
 import Tools from './tools';
-import AddForm from './AddForm';
-import { getExpense,getCanteenCalender, getMenu,addExpense,editExpense, searchEmployee  } from '../../../utils/Service';
+import { getExpense,getCanteenCalender, getMenu,editExpense, searchEmployee ,getCanteenEmployeeReport  } from '../../../utils/Service';
 import { toast } from 'react-toastify';
 import Autocomplete from '@mui/material/Autocomplete';
 import TextField from '@mui/material/TextField';
@@ -27,7 +26,7 @@ const debounceRef = React.useRef();
 
 const handleEmployeeSearch = async (searchTerm = '') => {
   // if (!selectedCalender) return;
-  debugger;
+
   setLoadingEmployees(true);
   try {
     const response = await searchEmployee({
@@ -60,11 +59,12 @@ const handleEmployeeSearch = async (searchTerm = '') => {
 
 
 
-  const getData = async (calender = selectedCalender,menu = selectedMenu) => {
+  const getData = async (calender = selectedCalender,employee = selectedEmployee) => {
     console.log(selectedCalender)
     console.log(selectedMenu)
+    debugger;
     try {
-      const res = await getExpense(calender,menu);
+      const res = await getCanteenEmployeeReport({"canteenCalendarId":calender,"employeeId":employee});
       setData(res);
     } catch (err) {
       console.log(err);
@@ -135,7 +135,10 @@ const handleEmployeeSearch = async (searchTerm = '') => {
 
  <FormControl fullWidth>
             <InputLabel>Select Company</InputLabel>
-            <Select value={selectedCompany} label="Select Company" onChange={(e) => setSelectedCompany(e.target.value)}>
+            <Select value={selectedCompany} label="Select Company" onChange={(e) =>{
+              setSelectedEmployee('')
+              setSelectedEmployee(e.target.value)}}
+              >
               <MenuItem value="">
                 <em>Select a company</em>
               </MenuItem>
@@ -195,8 +198,7 @@ const handleEmployeeSearch = async (searchTerm = '') => {
               </Stack>
             </Box>
 
-      <AddForm open={formOpen} addData={addExpense} getData={getData} onClose={() => setFormOpen(false)} selectedCalender={selectedCalender} />
-   
+      
       <Content data={data} updateData={getData} selectedCalender={selectedCalender} editExpense={editExpense} menus={menu}/>
     </Stack>
   );

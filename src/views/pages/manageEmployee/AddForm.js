@@ -16,6 +16,7 @@ export default function AddForm({selectedCompany, getData, addData, open, onClos
         control,
         setValue,
         handleSubmit,
+         reset,
         formState: { errors },
     } = useForm({
         defaultValues: {
@@ -78,7 +79,7 @@ export default function AddForm({selectedCompany, getData, addData, open, onClos
                 console.log(response)
                 toast.success(isEdit ? "Employee Updated Successfully" : "Employee Added Successfully");
                 getData();
-                onClose();
+                CloseDialog();
             })
             .catch((error) => {
                 console.error(error);
@@ -86,8 +87,19 @@ export default function AddForm({selectedCompany, getData, addData, open, onClos
             });
     };
 
+    const CloseDialog = () => {
+        reset({
+            employee_code: '',
+            employee_name: '',
+                department_id: '',
+                premium_enabled: 0,
+                active: 1
+            });
+            onClose();
+        }
+
     return (
-        <StyledDialog open={open} fullWidth onClose={onClose} title={`${isEdit ? "Edit" : "Add"} ${type ? type : 'Employee'}`}>
+        <StyledDialog open={open} fullWidth onClose={CloseDialog} title={`${isEdit ? "Edit" : "Add"} ${type ? type : 'Employee'}`}>
             <form onSubmit={handleSubmit(onSubmit)}>
                 <Container>
                     <Stack direction={'column'} sx={{ p: 2 }} spacing={2}>

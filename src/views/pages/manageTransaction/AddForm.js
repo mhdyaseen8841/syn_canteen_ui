@@ -248,7 +248,7 @@ export default function AddForm({ getData, open, onClose, isEdit = false, data =
                         const searchTerm = newInputValue.slice(0, 15);
                         debounceRef.current = setTimeout(() => {
                           handleEmployeeSearch(searchTerm, watchedCompany);
-                        }, 2000); // 2 seconds debounce
+                        }, 500); // 500ms debounce
                       }
                     }}
                     renderInput={(params) => (

@@ -44,7 +44,7 @@ export default function Content({ data, deleteAd, updateData,selectedCompany,typ
       'employee_code',
       'employee_name',
       'employee_type',
-      'company_id',
+      'company_name',
       'department_name',
       'premium_enabled',
       'Active'

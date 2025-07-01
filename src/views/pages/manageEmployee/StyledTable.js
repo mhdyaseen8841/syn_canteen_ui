@@ -78,14 +78,13 @@ export default function StyledTable({
                         <Chip 
                           label={isPremium ? 'Yes' : 'No'}
                           size="small"
-                          variant="filled"
-                          sx={{
-                            color: '#fff',
-                            backgroundColor: isPremium ? 'success.main' : '#424242', // darker grey
-                          }}
+                          variant="outlined"
+                         color={isPremium ? 'success' : 'error'}
                         />
                       </TableCell>
                     );
+
+                  
                   } else if (fieldKey === 'PREMIUM_ENABLED') {
                     const isPremium = value === 'Yes' || value === 1 || value === true;
                     return (

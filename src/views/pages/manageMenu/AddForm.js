@@ -16,6 +16,7 @@ export default function AddForm({ getData, addData, open, onClose, isEdit = fals
     } = useForm({
         defaultValues: {
             menu_id: data?.menu_id || '',
+            fixed_menu_rate: data?.fixed_menu_rate || '',
             start_time: data?.start_time || '',
             end_time: data?.end_time || '',
             active: data?.active || 1
@@ -30,6 +31,7 @@ export default function AddForm({ getData, addData, open, onClose, isEdit = fals
 
         const submitData = {
             menu_id: isEdit ? data.menu_id : undefined, // Only include menu_id for edit
+            fixed_menu_rate: formData.fixed_menu_rate,
             start_time: formData.start_time,
             end_time: formData.end_time,
             active: active ? 1 : 0
@@ -53,6 +55,7 @@ console.log("trugger")
         if(isEdit) {
             console.log(data)
             reset({
+                fixed_menu_rate: data?.fixed_menu_rate || '',
                 start_time: convertTo24Hour(data?.start_time || '00:00'),
             end_time: convertTo24Hour(data?.end_time || '00:00'),
                 active: data?.active || 1
@@ -60,12 +63,31 @@ console.log("trugger")
             setActive(data?.active === 1);
         }
 
-    },[isEdit])
+    },[isEdit,data,reset])
     return (
         <StyledDialog open={open} fullWidth onClose={onClose} title={`${isEdit ? "Edit" : "Add"} Menu`}>
             <form onSubmit={handleSubmit(onSubmit)}>
                 <Container>
                     <Stack direction={'column'} sx={{ p: 2 }} spacing={2}>
+
+                              <Typography variant='h5'>Fixed Menu Rate</Typography>
+<Controller
+    name="fixed_menu_rate"
+    control={control}
+    rules={{ required: "Fixed Menu Rate is required" }}
+    render={({ field }) => (
+        <TextField
+            {...field}
+            type="number"
+            label="Fixed Menu Rate"
+            fullWidth
+            error={Boolean(errors.fixed_menu_rate)}
+            helperText={errors.fixed_menu_rate?.message}
+            inputProps={{ min: 0 }}
+        />
+    )}
+/>
+
                     <Typography variant='h5'>Start Time</Typography>
 <Controller
     name="start_time"
