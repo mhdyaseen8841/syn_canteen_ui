@@ -21,22 +21,19 @@ export default function StyledTable({
   actions = ['Edit', 'Delete'],
   onActionChange,
   onClickAction,
-  rowsPerPage = 10, // Default rows per page
+  rowsPerPage = 10,
+  page = 1,
+  onPageChange
 }) {
-  const [page, setPage] = useState(1);
   const totalPages = Math.ceil(data.length / rowsPerPage);
+
+  const paginatedData = data.slice((page - 1) * rowsPerPage, page * rowsPerPage);
 
   const handleClick = (data) => {
     if (onClickAction) {
       onClickAction(data);
     }
   };
-
-  const handlePageChange = (_, newPage) => {
-    setPage(newPage);
-  };
-
-  const paginatedData = data.slice((page - 1) * rowsPerPage, page * rowsPerPage);
 
   return (
     <MainCard>
@@ -65,28 +62,7 @@ export default function StyledTable({
                         <img style={{ height: '100px' }} src={value} alt="img" />
                       </TableCell>
                     );
-                  } else if (dt.status !== 'isHighRangeArea' && head.toUpperCase() === 'ISHIGHRANGEAREA') {
-                    return (
-                      <TableCell key={i}>{value ? 'Yes' : 'No'}</TableCell>
-                    );
-                  }
-                  else if (head.toUpperCase().replace(/\s+/g, '_') === 'PREMIUM_ENABLED') {
-                    const isPremium = dt[`${head}`] == 'Yes';
-                  
-                    return (
-                      <TableCell key={i}>
-                        <Chip 
-                          label={isPremium ? 'Yes' : 'No'}
-                          size="small"
-                          variant="filled"
-                          sx={{
-                            color: '#fff',
-                            backgroundColor: isPremium ? 'success.main' : '#424242', // darker grey
-                          }}
-                        />
-                      </TableCell>
-                    );
-                  } else if (fieldKey === 'PREMIUM_ENABLED') {
+                  } else if (head.toUpperCase().replace(/\s+/g, '_') === 'PREMIUM_ENABLED') {
                     const isPremium = value === 'Yes' || value === 1 || value === true;
                     return (
                       <TableCell key={i}>
@@ -124,13 +100,12 @@ export default function StyledTable({
         </Table>
       </TableContainer>
 
-      {/* Pagination Controls */}
       {totalPages > 1 && (
         <Stack direction="row" justifyContent="flex-end" sx={{ p: 2 }}>
           <Pagination
             count={totalPages}
             page={page}
-            onChange={handlePageChange}
+            onChange={onPageChange}
             color="primary"
             shape="rounded"
           />

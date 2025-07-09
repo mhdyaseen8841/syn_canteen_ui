@@ -71,9 +71,19 @@ export async function editMenu(data) {
 
 // Company Operations
 export async function getCompany() {
-  const response = await apiInstance.get('company');
-  return response.data;
+  try {
+    const companies = localStorage.getItem('companies');
+    if (companies) {
+      return JSON.parse(companies);
+    } else {
+      return []
+    }
+  } catch (error) {
+    console.error('Error reading companies from localStorage:', error);
+    throw error;
+  }
 }
+
 
 export async function addCompany(data) {
   const response = await apiInstance.post('company', data);
@@ -170,7 +180,7 @@ export async function getExpense(canteen_calendar_id, menu_id = null) {
   return response.data;
 }
 
-export async function getCanteenCalender(is_settled=0 ) {
+export async function getCanteenCalender(is_settled) {
   const response = await apiInstance.get(`canteen-calender?is_settled=${is_settled}`);
   return response.data;
 }
@@ -193,5 +203,10 @@ export async function getCanteenEmployeeReport(data) {
 
 export async function getCanteenReport(data) {
   const response = await apiInstance.post('get-canteen-report', data);
+  return response.data;
+}
+
+export async function addRating(data) {
+  const response = await apiInstance.post('rating', data);
   return response.data;
 }

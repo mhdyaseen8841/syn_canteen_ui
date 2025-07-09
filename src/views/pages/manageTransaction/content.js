@@ -66,7 +66,7 @@ const [reasonError, setReasonError] = useState('');
       setPendingDelete(e.data);
       setConfirmOpen(true);
     } else {
-      setSelectedData(null);
+      setPendingDelete(null);
     }
   };
 
