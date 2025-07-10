@@ -1,23 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
-import {
-  Box,
-  FormControl,
-  InputLabel,
-  MenuItem,
-  Select,
-  Stack,
-  Typography,
-  TextField
-} from '@mui/material';
+import { Box, FormControl, InputLabel, MenuItem, Select, Stack, Typography, TextField } from '@mui/material';
 import Autocomplete from '@mui/material/Autocomplete';
 import Content from './content';
 import Tools from './tools';
-import {
-  getCanteenCalender,
-  editExpense,
-  searchEmployee,
-  getCanteenEmployeeReport
-} from '../../../utils/Service';
+import { getCanteenCalender, editExpense, searchEmployee, getCanteenEmployeeReport } from '../../../utils/Service';
 import { toast } from 'react-toastify';
 
 export default function Index() {
@@ -74,7 +60,7 @@ export default function Index() {
       });
       setData(res);
     } catch (err) {
-      console.log(err)
+      console.log(err);
       toast.error('Error fetching report');
     }
   };
@@ -106,8 +92,7 @@ export default function Index() {
 
   const shouldEnableFetch =
     selectedCalender &&
-    ((role === 'employee' && selectedEmployee) ||
-      ((role === 'admin' || role === 'manager') && selectedEmployee && selectedCompany));
+    ((role === 'employee' && selectedEmployee) || ((role === 'admin' || role === 'manager') && selectedEmployee && selectedCompany));
 
   return (
     <Stack direction="column" gap={2}>
@@ -119,19 +104,12 @@ export default function Index() {
         {/* Date Dropdown - Always Visible */}
         <FormControl fullWidth>
           <InputLabel>Select Date</InputLabel>
-          <Select
-            value={selectedCalender}
-            label="Select Date"
-            onChange={(e) => setSelectedCalender(e.target.value)}
-          >
+          <Select value={selectedCalender} label="Select Date" onChange={(e) => setSelectedCalender(e.target.value)}>
             <MenuItem value="">
               <em>Select a Date</em>
             </MenuItem>
             {canteenCalenderData.map((calender) => (
-              <MenuItem
-                key={calender.canteen_calendar_id}
-                value={calender.canteen_calendar_id}
-              >
+              <MenuItem key={calender.canteen_calendar_id} value={calender.canteen_calendar_id}>
                 {calender.month_year}
               </MenuItem>
             ))}
@@ -164,75 +142,62 @@ export default function Index() {
 
         {/* Employee Dropdown - Admin/Manager */}
         {(role === 'admin' || role === 'manager') && selectedCompany && (
-       <FormControl fullWidth>
-  <Autocomplete
-    options={employeeOptions}
-    loading={loadingEmployees}
-    getOptionLabel={(option) =>
-      option?.employee_code && option?.employee_name
-        ? `${option.employee_code} - ${option.employee_name}`
-        : ''
-    }
-    value={
-      employeeOptions.find((emp) => emp.employee_id === Number(selectedEmployee)) || null
-    }
-    onChange={(_, newValue) => {
-      setSelectedEmployee(newValue ? newValue.employee_id : '');
-    }}
-    onInputChange={(_, newInputValue, reason) => {
-      if (debounceRef.current) clearTimeout(debounceRef.current);
-      if (newInputValue.length > 0 && reason === 'input') {
-        debounceRef.current = setTimeout(() => {
-          handleEmployeeSearch(newInputValue);
-        }, 400);
-      }
-    }}
-    renderInput={(params) => (
-      <TextField
-        {...params}
-        label="Employee (ID or Name)"
-        placeholder="Search by ID or Name..."
-        InputProps={{
-          ...params.InputProps,
-          endAdornment: (
-            <>
-              {loadingEmployees ? (
-                <Box sx={{ pr: 2 }}>
-                  <span>Loading...</span>
-                </Box>
-              ) : null}
-              {params.InputProps.endAdornment}
-            </>
-          ),
-        }}
-      />
-    )}
-    isOptionEqualToValue={(option, value) =>
-      option?.employee_id === value?.employee_id
-    }
-    noOptionsText={
-      !selectedCompany
-        ? 'Please select a company first'
-        : loadingEmployees
-        ? 'Searching employees...'
-        : 'No employees found'
-    }
-  />
-</FormControl>
-
-
+          <FormControl fullWidth>
+            <Autocomplete
+              options={employeeOptions}
+              loading={loadingEmployees}
+              getOptionLabel={(option) =>
+                option?.employee_code && option?.employee_name ? `${option.employee_code} - ${option.employee_name}` : ''
+              }
+              value={employeeOptions.find((emp) => emp.employee_id === Number(selectedEmployee)) || null}
+              onChange={(_, newValue) => {
+                setSelectedEmployee(newValue ? newValue.employee_id : '');
+              }}
+              onInputChange={(_, newInputValue, reason) => {
+                if (debounceRef.current) clearTimeout(debounceRef.current);
+                if (newInputValue.length > 0 && reason === 'input') {
+                  debounceRef.current = setTimeout(() => {
+                    handleEmployeeSearch(newInputValue);
+                  }, 400);
+                }
+              }}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label="Employee (ID or Name)"
+                  placeholder="Search by ID or Name..."
+                  InputProps={{
+                    ...params.InputProps,
+                    endAdornment: (
+                      <>
+                        {loadingEmployees ? (
+                          <Box sx={{ pr: 2 }}>
+                            <span>Loading...</span>
+                          </Box>
+                        ) : null}
+                        {params.InputProps.endAdornment}
+                      </>
+                    )
+                  }}
+                />
+              )}
+              isOptionEqualToValue={(option, value) => option?.employee_id === value?.employee_id}
+              noOptionsText={
+                !selectedCompany ? 'Please select a company first' : loadingEmployees ? 'Searching employees...' : 'No employees found'
+              }
+            />
+          </FormControl>
         )}
       </Stack>
 
-      {/* Info if employee */}
-      {role === 'employee' && currentEmployee && (
-        <Typography variant="body2" color="textSecondary">
-          Viewing report for: {currentEmployee.employee_code} - {currentEmployee.employee_name}
-        </Typography>
-      )}
-
-      {/* Fetch Report Button */}
-      <Box mt={2}>
+      <Box mt={2} display="flex" justifyContent="space-between" alignItems="center">
+        {role === 'employee' && currentEmployee ? (
+          <Typography variant="body2" color="textSecondary">
+            Viewing report for: {currentEmployee?.employee_id} - {currentEmployee?.display_name}
+          </Typography>
+        ) : (
+          <Box />
+        )}
         <button
           disabled={!shouldEnableFetch}
           onClick={getData}
@@ -250,13 +215,7 @@ export default function Index() {
       </Box>
 
       {/* Content */}
-      <Content
-        data={data}
-        updateData={getData}
-        selectedCalender={selectedCalender}
-        editExpense={editExpense}
-        role={role}
-      />
+      <Content data={data} updateData={getData} selectedCalender={selectedCalender} editExpense={editExpense} role={role} />
     </Stack>
   );
 }

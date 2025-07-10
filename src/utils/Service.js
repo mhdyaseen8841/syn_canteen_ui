@@ -3,7 +3,7 @@ import axios from 'axios';
 
 // const baseURL = `http://${window.location.hostname}:3005/`;
 
-const baseURL = process.env.REACT_APP_BASE_URL || 'http://localhost:4001/';
+const baseURL = process.env.REACT_APP_BASE_URL || 'https://72ec09d6b287.ngrok-free.app/';
 
 
 
@@ -208,5 +208,10 @@ export async function getCanteenReport(data) {
 
 export async function addRating(data) {
   const response = await apiInstance.post('rating', data);
+  return response.data;
+}
+
+export async function getComplaint(data) {
+  const response = await apiInstance.post('get-complaint', data);
   return response.data;
 }

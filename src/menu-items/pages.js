@@ -34,6 +34,7 @@ export const Roles = {
   MANAGER: 'manager',
   EMPLOYEE: 'employee'
 };
+
 // ==============================|| EXTRA PAGES MENU ITEMS ||============================== //
 
 export default function Pages() {
@@ -43,7 +44,6 @@ export default function Pages() {
     return null;
   }
 
-  // Menu items with role-based visibility
   const allPages = [
     {
       id: 'transaction',
@@ -51,7 +51,7 @@ export default function Pages() {
       type: 'item',
       url: '/transaction',
       icon: icons.IconReportAnalytics,
-      visibleTo: [Roles.ADMIN, Roles.FRONTOFFICE, Roles.MANAGER, Roles.EMPLOYEE]
+      visibleTo: [Roles.ADMIN, Roles.FRONTOFFICE]
     },
     {
       id: 'manageTransactions',
@@ -59,7 +59,7 @@ export default function Pages() {
       type: 'item',
       url: '/manage-transactions',
       icon: icons.IconReceipt2,
-      visibleTo: [Roles.ADMIN, Roles.FRONTOFFICE, Roles.MANAGER, Roles.EMPLOYEE]
+      visibleTo: [Roles.ADMIN]
     },
     {
       id: 'expenses',
@@ -67,93 +67,108 @@ export default function Pages() {
       type: 'item',
       url: '/expenses',
       icon: icons.IconReportMoney,
-      visibleTo: [Roles.ADMIN, Roles.FRONTOFFICE, Roles.MANAGER, Roles.EMPLOYEE]
+      visibleTo: [Roles.ADMIN]
     },
     {
       id: 'settlement',
       title: 'Settlement',
       type: 'item',
       url: '/manage-settlement',
-      icon: icons.IconHeartHandshake, // or any icon you prefer
-      visibleTo: [Roles.ADMIN, Roles.FRONTOFFICE, Roles.MANAGER, Roles.EMPLOYEE]
+      icon: icons.IconHeartHandshake,
+      visibleTo: [Roles.ADMIN]
     }
-    // ...add more items as needed, with their own visibleTo arrays
   ];
 
-  // Filter pages based on current role
   const filteredPages = allPages.filter((page) => page.visibleTo.includes(role));
 
-  // Add collapses and reports as needed, with their own visibility logic
   const pages = {
     id: 'pages',
     title: 'Pages',
     type: 'group',
     children: [
       ...filteredPages,
-      {
-        id: 'manageOrganization',
-        title: 'Master',
-        type: 'collapse',
-        icon: icons.IconAdjustments,
-        children: [
-          {
-            id: 'menu',
-            title: 'Manage Menu',
-            type: 'item',
-            url: '/menu',
-            icon: icons.IconToolsKitchen2,
-            visibleTo: [Roles.ADMIN, Roles.FRONTOFFICE, Roles.MANAGER, Roles.EMPLOYEE]
-          },
-          {
-            id: 'manageEmployees',
-            title: 'Manage Employees',
-            type: 'item',
-            url: '/employees',
-            icon: icons.IconUserPlus,
-            visibleTo: [Roles.ADMIN, Roles.FRONTOFFICE, Roles.MANAGER, Roles.EMPLOYEE]
-          },
-          {
-            id: 'manageDepartment',
-            title: 'Manage Departments',
-            type: 'item',
-            url: '/department',
-            icon: icons.IconBuildingCommunity,
-            visibleTo: [Roles.ADMIN, Roles.FRONTOFFICE, Roles.MANAGER, Roles.EMPLOYEE]
-          },
-          {
-            id: 'manageCompany',
-            title: 'View Companies',
-            type: 'item',
-            url: '/company',
-            icon: icons.IconBuildingSkyscraper,
-            visibleTo: [Roles.ADMIN, Roles.FRONTOFFICE, Roles.MANAGER, Roles.EMPLOYEE]
-          }
-        ].filter((item) => item.visibleTo.includes(role))
-      },
-      {
-        id: 'reports',
-        title: 'Reports',
-        type: 'collapse',
-        icon: icons.IconReportAnalytics,
-        children: [
-          {
-            id: 'companyReports',
-            title: 'Company Reports',
-            type: 'item',
-            url: '/companyReports',
-            icon: icons.IconReportAnalytics,
-            visibleTo: [Roles.ADMIN, Roles.FRONTOFFICE, Roles.MANAGER, Roles.EMPLOYEE]
-          },
-          {
-            id: 'employeeReports',
-            title: 'Employee Reports',
-            type: 'item',
-            url: '/employeeReports',
-            icon: icons.IconReportAnalytics,
-            visibleTo: [Roles.ADMIN, Roles.FRONTOFFICE, Roles.MANAGER, Roles.EMPLOYEE]
-          }
-        ].filter((item) => item.visibleTo.includes(role))
-      }
+
+      ...(role == Roles.ADMIN 
+        ? [
+            {
+              id: 'manageOrganization',
+              title: 'Master',
+              type: 'collapse',
+              icon: icons.IconAdjustments,
+              children: [
+                {
+                  id: 'menu',
+                  title: 'Manage Menu',
+                  type: 'item',
+                  url: '/menu',
+                  icon: icons.IconToolsKitchen2,
+                  visibleTo: [Roles.ADMIN]
+                },
+                {
+                  id: 'manageEmployees',
+                  title: 'Manage Employees',
+                  type: 'item',
+                  url: '/employees',
+                  icon: icons.IconUserPlus,
+                  visibleTo: [Roles.ADMIN]
+                },
+                {
+                  id: 'manageDepartment',
+                  title: 'Manage Departments',
+                  type: 'item',
+                  url: '/department',
+                  icon: icons.IconBuildingCommunity,
+                  visibleTo: [Roles.ADMIN]
+                },
+                {
+                  id: 'manageCompany',
+                  title: 'View Companies',
+                  type: 'item',
+                  url: '/company',
+                  icon: icons.IconBuildingSkyscraper,
+                  visibleTo: [Roles.ADMIN]
+                }
+              ].filter((item) => item.visibleTo.includes(role))
+            }
+          ]
+        : []),
+
+         ...(role !== Roles.FRONTOFFICE
+        ? [
+            {
+              id: 'reports',
+              title: 'Reports',
+              type: 'collapse',
+              icon: icons.IconReportAnalytics,
+              children: [
+                {
+                  id: 'companyReports',
+                  title: 'Company Reports',
+                  type: 'item',
+                  url: '/companyReports',
+                  icon: icons.IconReportAnalytics,
+                  visibleTo: [Roles.ADMIN]
+                },
+                {
+                  id: 'employeeReports',
+                  title: 'Employee Reports',
+                  type: 'item',
+                  url: '/employeeReports',
+                  icon: icons.IconReportAnalytics,
+                  visibleTo: [Roles.ADMIN, Roles.MANAGER, Roles.EMPLOYEE]
+                },
+                {
+                  id: 'complaintReports',
+                  title: 'Complaint Reports',
+                  type: 'item',
+                  url: '/complaintReports',
+                  icon: icons.IconReportAnalytics,
+                  visibleTo: [Roles.ADMIN]
+                }
+              ].filter((item) => item.visibleTo.includes(role))
+            }
+          ]
+        : [])
     ]
   };
 

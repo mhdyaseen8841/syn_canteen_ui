@@ -9,31 +9,30 @@ import { toast } from 'react-toastify';
 import { Paper } from '@mui/material';
 import RatingDialog from '../shared/RatingDialog';
 import { addRating } from 'utils/Service';
-
+import StarRateIcon from '@mui/icons-material/StarRate';
 export default function Content({ data, role }) {
   const [ratingOpen, setRatingOpen] = useState(false);
   const [selectedTransaction, setSelectedTransaction] = useState(null);
 
-const handleRatingSubmit = (ratingData) => {
-  const { stars, raiseComplaint, remarks, transaction } = ratingData;
+  const handleRatingSubmit = (ratingData) => {
+    const { stars, raiseComplaint, remarks, transaction } = ratingData;
 
-  const payload = {
-    transactionId: transaction.Transaction_No,
-    rating: stars,
-    isComplaint: raiseComplaint ? 1 : 0,
-    remarks: raiseComplaint ? remarks : ''
+    const payload = {
+      transactionId: transaction.Transaction_No,
+      rating: stars,
+      isComplaint: raiseComplaint ? 1 : 0,
+      remarks: raiseComplaint ? remarks : ''
+    };
+
+    addRating(payload)
+      .then(() => {
+        toast.success('Rating submitted successfully');
+      })
+      .catch((err) => {
+        console.error(err);
+        toast.error('Failed to submit rating');
+      });
   };
-
-  addRating(payload)
-    .then(() => {
-      toast.success('Rating submitted successfully');
-    })
-    .catch((err) => {
-      console.error(err);
-      toast.error('Failed to submit rating');
-    });
-};
-
 
   const summary = data?.summary || [];
   const transactionDetails = data?.transactionDetails || [];
@@ -123,35 +122,50 @@ const handleRatingSubmit = (ratingData) => {
               </Stack>
             </Paper>
           </Box>
-
-          <Typography variant="h2" mt={4} color="secondary.main">
-            🧾 Transactions
-          </Typography>
-
-          <StyledTable
-            data={transactionDetails.map((d) => ({
-              Date: formatDate(d.transaction_date),
-              Receipt: d.Transaction_No,
-              Menu: d.menu_name,
-              Action:
-                role === 'admin' ? (
-                  <Button
-                    size="small"
-                    variant="outlined"
-                    onClick={() => {
-                      setSelectedTransaction(d);
-                      setRatingOpen(true);
-                    }}
-                  >
-                    Rate
-                  </Button>
-                ) : null
-            }))}
-            header={['Date', 'Receipt', 'Menu', 'Action']}
-            isShowSerialNo={true}
-            isShowAction={false}
-          />
         </>
+      )}
+      <Typography variant="h2" mt={4} color="secondary.main">
+        🧾 Transactions
+      </Typography>
+
+      {transactionDetails.length > 0 ? (
+        <StyledTable
+          data={transactionDetails.map((d) => ({
+            Date: formatDate(d.transaction_date),
+            Receipt: d.Transaction_No,
+            Menu: d.menu_name,
+            Action:
+              role === 'employee' ? (
+                <Button
+                  size="small"
+                  variant="contained"
+                  startIcon={<StarRateIcon />}
+                  sx={{
+                    backgroundColor: '#f57c00', // deep orange
+                    color: '#fff',
+                    '&:hover': {
+                      backgroundColor: '#ef6c00'
+                    }
+                  }}
+                  onClick={() => {
+                    setSelectedTransaction(d);
+                    setRatingOpen(true);
+                  }}
+                >
+                  Rate
+                </Button>
+              ) : null
+          }))}
+          header={role === 'employee' ? ['Date', 'Receipt', 'Menu', 'Action'] : ['Date', 'Receipt', 'Menu']}
+          isShowSerialNo={true}
+          isShowAction={false}
+        />
+      ) : (
+        <Box mt={2} mb={2}>
+          <Typography variant="body1" color="textSecondary">
+            No transactions found for this employee.
+          </Typography>
+        </Box>
       )}
 
       <RatingDialog
