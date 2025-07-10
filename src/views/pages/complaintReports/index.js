@@ -33,14 +33,7 @@ export default function Index() {
     }
   };
 
-  const tableHeader = [
-    'Transaction Date',
-    'Employee Code',
-    'Employee Name',
-    'Employee Type',
-    'Menu',
-    'Complaint'
-  ];
+  const tableHeader = ['Transaction Date', 'Employee Code', 'Employee Name', 'Employee Type', 'Menu', 'Complaint'];
 
   const tableData = complaintData.map((item) => ({
     'Transaction Date': formatDate(item.transaction_date),
@@ -78,30 +71,15 @@ export default function Index() {
           InputLabelProps={{ shrink: true }}
           fullWidth
         />
-        <TextField
-          label="Search by Employee ID"
-          value={employeeId}
-          onChange={(e) => setEmployeeId(e.target.value)}
-          fullWidth
-        />
+        <TextField label="Search by Employee ID" value={employeeId} onChange={(e) => setEmployeeId(e.target.value)} fullWidth />
         <Button variant="contained" onClick={fetchComplaints}>
           Search
         </Button>
       </Stack>
 
-      <ExportButtons
-        data={tableData}
-        headers={tableHeader}
-        fileName="Canteen_Complaint_Report"
-        meta={meta}
-      />
+      {tableData.length > 0 && <ExportButtons data={tableData} headers={tableHeader} fileName="Canteen_Complaint_Report" meta={meta} />}
 
-      <StyledTable
-        data={tableData}
-        header={tableHeader}
-        isShowSerialNo={true}
-        isShowAction={false}
-      />
+      <StyledTable data={tableData} header={tableHeader} isShowSerialNo={true} isShowAction={false} />
     </Stack>
   );
 }
