@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import StyledTable from './StyledTable';
 import { tableHeaderReplace } from 'utils/tableHeaderReplace';
 import { TextField, Box, Grid } from '@mui/material';
-
+import ExportButtons from '../shared/ExportButtons'; 
 const tableHeader = [
   'Employee Code',
   'Employee Name',
@@ -12,7 +12,7 @@ const tableHeader = [
   'Total'
 ];
 
-export default function Content({ data }) {
+export default function Content({ data, meta }) {
   const [searchEmployee, setSearchEmployee] = useState('');
   const [page, setPage] = useState(1);
 
@@ -57,6 +57,15 @@ export default function Content({ data }) {
           </Grid>
         </Grid>
       </Box>
+
+   <ExportButtons
+  data={tableData}
+  headers={tableHeader} 
+  fileName="Company_Canteen_Report"
+  meta={meta} 
+/>
+
+
 
       <StyledTable
         data={tableData}

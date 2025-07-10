@@ -24,6 +24,8 @@
     "firebase": "^10.12.2",
     "formik": "^2.2.9",
     "framer-motion": "^6.3.16",
+    "jspdf": "^3.0.1",
+    "jspdf-autotable": "^5.0.2",
     "lodash": "^4.17.21",
     "lucide-react": "^0.507.0",
     "material-ui-popup-state": "^4.0.1",

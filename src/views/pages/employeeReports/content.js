@@ -10,9 +10,12 @@ import { Paper } from '@mui/material';
 import RatingDialog from '../shared/RatingDialog';
 import { addRating } from 'utils/Service';
 import StarRateIcon from '@mui/icons-material/StarRate';
-export default function Content({ data, role }) {
+import ExportButtons from '../shared/ExportButtons';
+export default function Content({ data, role, employeeMeta }) {
   const [ratingOpen, setRatingOpen] = useState(false);
   const [selectedTransaction, setSelectedTransaction] = useState(null);
+ const { companyName, employeeName, employeeCode, month } = employeeMeta || {};
+
 
   const handleRatingSubmit = (ratingData) => {
     const { stars, raiseComplaint, remarks, transaction } = ratingData;
@@ -49,8 +52,54 @@ export default function Content({ data, role }) {
   const grandTotal = summary.reduce((sum, item) => sum + parseFloat(item.Total), 0);
   const totalWithPremium = grandTotal + acDineCharge;
 
+
+  const summaryHeaders = ['Menu Name', 'Count', 'Rate', 'Total'];
+const summaryData = summary.map((item) => ({
+  'Menu Name': item.menu_name,
+  Count: item.Count,
+  Rate: item.Rate,
+  Total: item.Total
+}));
+
+const transactionHeaders = ['Date', 'Receipt', 'Menu'];
+
+const transactionData = transactionDetails.map((d) => ({
+  Date: formatDate(d.transaction_date),
+  Receipt: d.Transaction_No,
+  Menu: d.menu_name,
+}));
+
+
+const meta = {
+  total: grandTotal.toFixed(2),
+  premium: acDineCharge.toFixed(2),
+  total_with_premium: totalWithPremium.toFixed(2),
+  company: companyName, 
+  name: employeeName, 
+  code:employeeCode, month 
+};
+
   return (
     <>
+
+    <ExportButtons
+  sections={[
+    {
+      title: 'Summary',
+      headers: summaryHeaders,
+      data: summaryData
+    },
+    {
+      title: 'Transactions',
+      headers: transactionHeaders,
+      data: transactionData
+    }
+  ]}
+  fileName="Canteen_Report"
+  meta={meta}
+/>
+
+
       {isSettled && (
         <>
           <Typography variant="h2" mt={2} color="secondary.main">

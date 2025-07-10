@@ -47,7 +47,7 @@ export default function Index() {
         canteenCalenderId: selectedCalendar,
         companyId: selectedCompany,
         employeeType: selectedType
-      }
+      };
       const res = await getCanteenReport(data);
 
       setData(res);
@@ -68,8 +68,7 @@ export default function Index() {
 
   return (
     <Stack direction={'column'} gap={2}>
-
-        <Tools
+      <Tools
         selectedCompany
         buttonClick={() => {
           if (!selectedCompany) {
@@ -80,7 +79,6 @@ export default function Index() {
         }}
         type={selectedType}
       />
-
 
       <Box sx={{ mb: 2 }}>
         <Stack direction={{ xs: 'column', md: 'row' }} spacing={2}>
@@ -123,19 +121,23 @@ export default function Index() {
             </Select>
           </FormControl>
 
-         <Button
-  variant="contained"
-  onClick={getData}
-  disabled={!selectedCompany || !selectedType || !selectedCalendar}
-  color="primary"
->
-  Apply
-</Button>
+          <Button variant="contained" onClick={getData} disabled={!selectedCompany || !selectedType || !selectedCalendar} color="primary">
+            Apply
+          </Button>
         </Stack>
       </Box>
 
-    
-      <Content selectedCompany={selectedCompany} data={data} updateData={getData} type={selectedType} />
+      <Content
+        meta={{
+          month: calendars.find((c) => c.canteen_calendar_id === selectedCalendar)?.month_year || '',
+          company: companies.find((c) => c.company_id === selectedCompany)?.company_name || '',
+          type: selectedType.charAt(0).toUpperCase() + selectedType.slice(1)
+        }}
+        selectedCompany={selectedCompany}
+        data={data}
+        updateData={getData}
+        type={selectedType}
+      />
     </Stack>
   );
 }

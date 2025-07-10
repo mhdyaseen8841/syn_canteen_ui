@@ -19,6 +19,13 @@ export default function Index() {
   const [role, setRole] = useState(localStorage.getItem('role') || '');
   const [currentEmployee, setCurrentEmployee] = useState(null);
   const debounceRef = useRef();
+  const [selectedEmployeeDetails, setSelectedEmployeeDetails] = useState(null);
+  
+  useEffect(() => {
+  const employeeObj = employeeOptions.find((emp) => emp.employee_id === Number(selectedEmployee));
+  setSelectedEmployeeDetails(employeeObj || currentEmployee);
+}, [employeeOptions, selectedEmployee, currentEmployee]);
+
 
   const getCompanies = async () => {
     try {
@@ -215,7 +222,19 @@ export default function Index() {
       </Box>
 
       {/* Content */}
-      <Content data={data} updateData={getData} selectedCalender={selectedCalender} editExpense={editExpense} role={role} />
+      <Content
+        data={data}
+        updateData={getData}
+        selectedCalender={selectedCalender}
+        editExpense={editExpense}
+        role={role}
+        employeeMeta={{
+          month: canteenCalenderData.find((c) => c.canteen_calendar_id === selectedCalender)?.month_year || '',
+          companyName: companies.find((c) => c.company_id === selectedCompany)?.company_name || '',
+          employeeName: selectedEmployeeDetails?.employee_name || '',
+          employeeCode: selectedEmployeeDetails?.employee_code || ''
+        }}
+      />
     </Stack>
   );
 }
