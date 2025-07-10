@@ -8,14 +8,27 @@ import Tools from './tools';
 import ExportButtons from '../shared/ExportButtons';
 
 export default function Index() {
+  const today = new Date().toISOString().split('T')[0];
   const [fromDate, setFromDate] = useState('');
-  const [toDate, setToDate] = useState('');
+  const [toDate, setToDate] = useState(today);
   const [employeeId, setEmployeeId] = useState('');
   const [complaintData, setComplaintData] = useState([]);
 
   const fetchComplaints = async () => {
     if (!fromDate || !toDate) {
       toast.error('Please select From and To dates');
+      return;
+    }
+
+    const from = new Date(fromDate);
+    const to = new Date(toDate);
+
+    // Max range check: 3 months
+    const maxRangeDate = new Date(from);
+    maxRangeDate.setMonth(maxRangeDate.getMonth() + 3);
+
+    if (to > maxRangeDate) {
+      toast.error('Date range cannot exceed 3 months');
       return;
     }
 
@@ -69,8 +82,10 @@ export default function Index() {
           value={toDate}
           onChange={(e) => setToDate(e.target.value)}
           InputLabelProps={{ shrink: true }}
+          inputProps={{ max: today }}
           fullWidth
         />
+
         <TextField label="Search by Employee ID" value={employeeId} onChange={(e) => setEmployeeId(e.target.value)} fullWidth />
         <Button variant="contained" onClick={fetchComplaints}>
           Search
