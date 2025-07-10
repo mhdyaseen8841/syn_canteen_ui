@@ -79,34 +79,35 @@ export default function Content({ data, role, employeeMeta }) {
 
   return (
     <>
-      {transactionDetails.length > 0 && (
-        <ExportButtons
-          sections={
-            isSettled
-              ? [
-                  {
-                    title: 'Summary',
-                    headers: summaryHeaders,
-                    data: summaryData
-                  }
-                ]
-              : [
-                  {
-                    title: 'Summary',
-                    headers: summaryHeaders,
-                    data: summaryData
-                  },
-                  {
-                    title: 'Transactions',
-                    headers: transactionHeaders,
-                    data: transactionData
-                  }
-                ]
+     {transactionDetails.length > 0 && (
+      <ExportButtons
+  sections={
+    isSettled
+      ? [
+          {
+            title: 'Summary',
+            headers: summaryHeaders,
+            data: summaryData
+          },
+          {
+            title: 'Transactions',
+            headers: transactionHeaders,
+            data: transactionData
           }
-          fileName="Canteen_Report"
-          meta={meta}
-        />
-      )}
+        ]
+      : [
+          {
+            title: 'Transactions',
+            headers: transactionHeaders,
+            data: transactionData
+          }
+        ]
+  }
+  fileName="Employee_Report"
+  meta={meta}
+/>
+     )}
+
 
       {isSettled && (
         <>
