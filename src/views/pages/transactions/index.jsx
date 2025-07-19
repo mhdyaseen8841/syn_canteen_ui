@@ -28,50 +28,8 @@ import {
 } from '../../../utils/Service';
 // import CouponPrintComponent from './CouponPrint';
 import "./index.css";
-const COMPANIES = [
-  { id: 1, label: 'Tech Solutions Inc.' },
-  { id: 2, label: 'Global Finance Ltd.' },
-  { id: 3, label: 'Creative Designs Co.' },
-  { id: 4, label: 'Manufacturing Experts' }
-];
 
-const CONTRACTORS = {
-  1: [
-    { id: 1, label: 'John Smith' },
-    { id: 2, label: 'Sarah Johnson' }
-  ],
-  2: [
-    { id: 3, label: 'Michael Chen' },
-    { id: 4, label: 'Lisa Wong' }
-  ],
-  3: [
-    { id: 5, label: 'David Miller' },
-    { id: 6, label: 'Emma Davis' }
-  ],
-  4: [
-    { id: 7, label: 'Robert Taylor' },
-    { id: 8, label: 'Patricia Brown' }
-  ]
-};
-
-const GUESTS = {
-  1: [
-    { id: 1, label: 'Alex Turner' },
-    { id: 2, label: 'Sophie Wilson' }
-  ],
-  2: [
-    { id: 3, label: 'James Harris' },
-    { id: 4, label: 'Olivia Clark' }
-  ],
-  3: [
-    { id: 5, label: 'William Lee' },
-    { id: 6, label: 'Grace Lopez' }
-  ],
-  4: [
-    { id: 7, label: 'Daniel Martinez' },
-    { id: 8, label: 'Natalie Adams' }
-  ]
-};
+import { useNavigate } from 'react-router-dom';
 
 
 import {
@@ -82,30 +40,31 @@ import {
   render
 } from 'react-thermal-printer';
 
-const MyReceipt = () => {
-  const printerData = render(
-    <Printer>
-      <Text align="center" bold={true}>My Company</Text>
-      <Line />
-      <Row left="Item" right="$10.00" />
-      <Row left="Total" right="$10.00" />
-    </Printer>
-  );
+// const MyReceipt = () => {
+//   const printerData = render(
+//     <Printer>
+//       <Text align="center" bold={true}>My Company</Text>
+//       <Line />
+//       <Row left="Item" right="$10.00" />
+//       <Row left="Total" right="$10.00" />
+//     </Printer>
+//   );
 
-  const handlePrint = async () => {
-    await fetch('http://192.168.1.20:3001/print', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ data: printerData })
-    });
-  };
+//   const handlePrint = async () => {
+//     await fetch('http://localhost:3001/print', {
+//       method: 'POST',
+//       headers: { 'Content-Type': 'application/json' },
+//       body: JSON.stringify({ data: printerData })
+//     });
+//   };
 
-  return <button onClick={handlePrint}>Print</button>;
-};
+//   return <button onClick={handlePrint}>Print</button>;
+// };
 
 
 export default function Index() {
   const [openDialog, setOpenDialog] = useState(null);
+  const [isWindowsPrint, setIsWindowsPrint] = useState(true); 
   const [fixedData, setFixedData] = useState({
     menuItem: null,
     coupons: 1
@@ -140,17 +99,19 @@ export default function Index() {
 const [shouldPrint, setShouldPrint] = useState(false);
 
 
-  const filteredCompanies = COMPANIES.filter((company) => company.label.toLowerCase().includes(companySearch.toLowerCase()));
 
-  const availableContractors = contractorData.company ? CONTRACTORS[contractorData.company.id] || [] : [];
+const navigate = useNavigate();
 
-  const filteredContractors = availableContractors.filter((contractor) =>
-    contractor.label.toLowerCase().includes(contractorSearch.toLowerCase())
-  );
+useEffect(() => {
+  const role = localStorage.getItem('role');
+  if (role === 'employee' || role === 'manager') {
+    navigate('/employeeReports');
+  }
+}, [navigate]);
 
-  const availableGuests = guestData.company ? GUESTS[guestData.company.id] || [] : [];
 
-  const filteredGuests = availableGuests.filter((guest) => guest.label.toLowerCase().includes(guestSearch.toLowerCase()));
+ 
+  
 
   const handleOpenDialog = (type) => {
     setOpenDialog(type);

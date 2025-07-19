@@ -48,6 +48,7 @@ const FirebaseLogin = ({ adminLogin, ...others }) => {
               psw: values.psw
             })
               .then((res) => {
+                console.log("heyy")
                 console.log(res);
 
                 localStorage.setItem('user', JSON.stringify(res.user)); 

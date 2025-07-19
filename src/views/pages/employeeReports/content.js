@@ -194,24 +194,24 @@ export default function Content({ data, role, employeeMeta }) {
             Menu: d.menu_name,
             Action:
               role === 'employee' ? (
-                <Button
-                  size="small"
-                  variant="contained"
-                  startIcon={<StarRateIcon />}
-                  sx={{
-                    backgroundColor: '#f57c00', // deep orange
-                    color: '#fff',
-                    '&:hover': {
-                      backgroundColor: '#ef6c00'
-                    }
-                  }}
-                  onClick={() => {
-                    setSelectedTransaction(d);
-                    setRatingOpen(true);
-                  }}
-                >
-                  Rate
-                </Button>
+             <Button
+      size="small"
+      variant="contained"
+      startIcon={<StarRateIcon />}
+      sx={{
+        backgroundColor: d.rating ? '#1976d2' : '#f57c00', // blue if rating exists
+        color: '#fff',
+        '&:hover': {
+          backgroundColor: d.rating ? '#1565c0' : '#ef6c00'
+        }
+      }}
+      onClick={() => {
+        setSelectedTransaction(d);
+        setRatingOpen(true);
+      }}
+    >
+      {d.rating ? 'View Rating' : 'Rate'}
+    </Button>
               ) : null
           }))}
           header={role === 'employee' ? ['Date', 'Receipt', 'Menu', 'Action'] : ['Date', 'Receipt', 'Menu']}

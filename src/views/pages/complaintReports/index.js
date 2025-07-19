@@ -86,7 +86,7 @@ export default function Index() {
           fullWidth
         />
 
-        <TextField label="Search by Employee ID" value={employeeId} onChange={(e) => setEmployeeId(e.target.value)} fullWidth />
+        <TextField label="Search by Employee Cod" value={employeeId} onChange={(e) => setEmployeeId(e.target.value)} fullWidth />
         <Button variant="contained" onClick={fetchComplaints}>
           Search
         </Button>
