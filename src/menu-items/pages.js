@@ -67,7 +67,7 @@ export default function Pages() {
       type: 'item',
       url: '/expenses',
       icon: icons.IconReportMoney,
-      visibleTo: [Roles.ADMIN]
+      visibleTo: [Roles.ADMIN,Roles.FRONTOFFICE]
     },
     {
       id: 'settlement',

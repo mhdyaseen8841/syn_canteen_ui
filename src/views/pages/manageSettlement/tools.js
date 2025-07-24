@@ -16,7 +16,7 @@ export default function Tools({ settleClick, disableSettle }) {
                         onClick={settleClick}
                         disabled={disableSettle}
                     >
-                        Settle All
+                        Settle
                     </Button>
                 </Box>
             </Stack>

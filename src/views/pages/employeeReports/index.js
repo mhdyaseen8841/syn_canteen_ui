@@ -226,7 +226,6 @@ export default function Index() {
         data={data}
         updateData={getData}
         selectedCalender={selectedCalender}
-        editExpense={editExpense}
         role={role}
         employeeMeta={{
           month: canteenCalenderData.find((c) => c.canteen_calendar_id === selectedCalender)?.month_year || '',

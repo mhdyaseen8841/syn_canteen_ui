@@ -63,6 +63,8 @@ import {
 
 
 export default function Index() {
+
+  
   const [openDialog, setOpenDialog] = useState(null);
   const [isWindowsPrint, setIsWindowsPrint] = useState(true); 
   const [fixedData, setFixedData] = useState({
@@ -89,11 +91,7 @@ export default function Index() {
   const [companies, setCompanies] = useState([]);
   const [contractors, setContractors] = useState([]);
   const [guests, setGuests] = useState([]);
-  // Search state
-  const [menuSearch, setMenuSearch] = useState('');
-  const [companySearch, setCompanySearch] = useState('');
-  const [contractorSearch, setContractorSearch] = useState('');
-  const [guestSearch, setGuestSearch] = useState('');
+
 
   const [printData, setPrintData] = useState(null);
 const [shouldPrint, setShouldPrint] = useState(false);
@@ -116,10 +114,7 @@ useEffect(() => {
   const handleOpenDialog = (type) => {
     setOpenDialog(type);
     // Reset search states
-    setMenuSearch('');
-    setCompanySearch('');
-    setContractorSearch('');
-    setGuestSearch('');
+ 
 
     if (type === 'contractor' || type === 'guest') {
       getCompany()
@@ -186,15 +181,20 @@ useEffect(() => {
     addFixedTransaction({ menu_id: menuItem.menu_id, no_of_entries: coupons })
       .then((res) => {
         console.log(res);
-        setPrintData({
-      type: 'Fixed',
-      menu_name: menuItem.menu_name,
-      no_of_entries: coupons,
-      transaction_id: res.transaction_id,
-      date: new Date().toLocaleDateString()
-    });
-    setShouldPrint(true); // Trigger print
+toast.success(`${coupons} coupons for Fixed Transaction Submitted Successfully, TransactionID: ${res.transaction_id}`);
+  const dataToPrint = {
+        type: 'Fixed',
+        menu_name: menuItem.menu_name,
+        no_of_entries: coupons,
+        transaction_id: res.transaction_id,
+        date: new Date().toLocaleDateString()
+      };
+
+      setPrintData(dataToPrint);
+      setShouldPrint(true);
       })
+
+
       .catch((err) => {
         console.error(err);
         toast.error('Error submitting fixed transaction');
@@ -224,6 +224,7 @@ useEffect(() => {
     };
     addContractorTransaction(transactionData).then((res) => {
       console.log(res);
+      toast.success(`${coupons} coupons for Contractor Transaction Submitted Successfully`);
     }).catch((err) => {
       console.error(err);
       toast.error('Error submitting contractor transaction');
@@ -263,9 +264,10 @@ useEffect(() => {
 
     addGuestTransaction(transactionData).then((res) => {
       console.log(res);
+       toast.success(`${coupons} coupons for Guest Transaction Submitted Successfully`);
     }).catch((err) => {
       console.error(err);
-      toast.error('Error submitting contractor transaction');
+      toast.error('Error submitting Guest transaction');
     });
     handleCloseDialog();
     // Reset form
@@ -278,14 +280,84 @@ useEffect(() => {
     });
   };
 
-//   useEffect(() => {
-//   if (shouldPrint && printData) {
-//     setTimeout(() => {
-//       window.print();
-//       setShouldPrint(false);
-//     }, 500); // Short delay to render content
-//   }
-// }, [shouldPrint, printData]);
+useEffect(() => {
+  if (shouldPrint && printData) {
+    if (isWindowsPrint) {
+      const iframe = document.createElement('iframe');
+      iframe.style.display = 'none';
+      document.body.appendChild(iframe);
+
+      const content = `
+        <html>
+          <head>
+            <title>Print</title>
+            <style>
+              body {
+                font-family: monospace;
+                text-align: center;
+                padding: 10px;
+              }
+              .coupon {
+                border-top: 1px dashed #000;
+                border-bottom: 1px dashed #000;
+                margin-top: 10px;
+                padding: 10px;
+              }
+            </style>
+          </head>
+          <body>
+            <div class="coupon">
+              <h5>Synthite Industries Limited</h5>
+              <h6>---------------------------</h6>
+              <h6>CANTEEN PASS</h6>
+              <p><strong>Menu:</strong> ${printData.menu_name}</p>
+              <p><strong>Transaction ID:</strong> ${printData.transaction_id}</p>
+              <p><strong>Date:</strong> ${printData.date}</p>
+            </div>
+            <script>
+              window.onload = function() {
+                window.focus();
+                window.print();
+                setTimeout(() => window.close(), 500);
+              };
+            </script>
+          </body>
+        </html>
+      `;
+
+      const doc = iframe.contentWindow.document;
+      doc.open();
+      doc.write(content);
+      doc.close();
+
+      // Cleanup iframe after printing
+      setTimeout(() => {
+        document.body.removeChild(iframe);
+      }, 1000);
+    } else {
+      const printerPayload = render(
+        <Printer>
+          <Text align="center" bold={true}>CANTEEN COUPON</Text>
+          <Line />
+          <Row left="Menu" right={printData.menu_name} />
+          <Row left="Txn ID" right={printData.transaction_id.toString()} />
+          <Row left="Date" right={printData.date} />
+          <Line />
+        </Printer>
+      );
+
+      fetch('http://192.168.1.20:3001/print', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ data: printerPayload })
+      });
+    }
+
+    setShouldPrint(false);
+  }
+}, [shouldPrint, printData, isWindowsPrint]);
+
+
 
   // Fixed Dialog
   const renderFixedDialog = () => (

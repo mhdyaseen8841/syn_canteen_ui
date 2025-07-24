@@ -11,7 +11,7 @@ import RatingDialog from '../shared/RatingDialog';
 import { addRating } from 'utils/Service';
 import StarRateIcon from '@mui/icons-material/StarRate';
 import ExportButtons from '../shared/ExportButtons';
-export default function Content({ data, role, employeeMeta }) {
+export default function Content({ data, role, employeeMeta, updateData }) {
   const [ratingOpen, setRatingOpen] = useState(false);
   const [selectedTransaction, setSelectedTransaction] = useState(null);
   const { companyName, employeeName, employeeCode, month } = employeeMeta || {};
@@ -29,6 +29,7 @@ export default function Content({ data, role, employeeMeta }) {
     addRating(payload)
       .then(() => {
         toast.success('Rating submitted successfully');
+        updateData()
       })
       .catch((err) => {
         console.error(err);
