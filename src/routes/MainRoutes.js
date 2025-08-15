@@ -19,6 +19,8 @@ const ManageExpenses = Loadable(lazy(() => import('views/pages/manageExpense')))
 const CompanyReport = Loadable(lazy(() => import('views/pages/companyReports')));
 const EmployeeReport = Loadable(lazy(() => import('views/pages/employeeReports')));
 const ComplaintReport = Loadable(lazy(() => import('views/pages/complaintReports')));
+const PrintRequest = Loadable(lazy(() => import('views/pages/printRequest')));
+
 // const ManageUsers = Loadable(lazy(() => import('views/pages/manageUsers')));
 // ==============================|| MAIN ROUTING ||============================== //
 
@@ -64,6 +66,10 @@ const MainRoutes = {
       path: 'employees',
       element: <Employees />
      },
+      {
+      path: 'printRequest',
+      element: <PrintRequest />
+    },
   //  {
   //   path: 'contractor',
   //   element: <Contractor />

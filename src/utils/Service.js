@@ -215,3 +215,8 @@ export async function getComplaint(data) {
   const response = await apiInstance.post('get-complaint', data);
   return response.data;
 }
+
+export async function getFixedDashboard(data){
+  const response = await apiInstance.post('fixed-dashboard',data)
+  return response.data
+}

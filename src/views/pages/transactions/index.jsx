@@ -13,8 +13,11 @@ import {
   Grid,
   Paper,
   Stack,
-  CircularProgress
+  CircularProgress,
+  MenuItem
 } from '@mui/material';
+import { tableHeaderReplace } from 'utils/tableHeaderReplace';
+
 import { toast } from 'react-toastify';
 import Autocomplete from '@mui/material/Autocomplete';
 import { Utensils, Building, User } from 'lucide-react';
@@ -24,49 +27,20 @@ import {
   getEmployee,
   addFixedTransaction,
   addContractorTransaction,
-  addGuestTransaction
+  addGuestTransaction,
+  getFixedDashboard
 } from '../../../utils/Service';
 // import CouponPrintComponent from './CouponPrint';
-import "./index.css";
+import './index.css';
 
 import { useNavigate } from 'react-router-dom';
 
-
-import {
-  Printer,
-  Text,
-  Line,
-  Row,
-  render
-} from 'react-thermal-printer';
-
-// const MyReceipt = () => {
-//   const printerData = render(
-//     <Printer>
-//       <Text align="center" bold={true}>My Company</Text>
-//       <Line />
-//       <Row left="Item" right="$10.00" />
-//       <Row left="Total" right="$10.00" />
-//     </Printer>
-//   );
-
-//   const handlePrint = async () => {
-//     await fetch('http://localhost:3001/print', {
-//       method: 'POST',
-//       headers: { 'Content-Type': 'application/json' },
-//       body: JSON.stringify({ data: printerData })
-//     });
-//   };
-
-//   return <button onClick={handlePrint}>Print</button>;
-// };
-
+import { Printer, Text, Line, Row, render } from 'react-thermal-printer';
+import StyledTable from './StyledTable';
 
 export default function Index() {
-
-  
   const [openDialog, setOpenDialog] = useState(null);
-  const [isWindowsPrint, setIsWindowsPrint] = useState(true); 
+  const [isWindowsPrint, setIsWindowsPrint] = useState(false);
   const [fixedData, setFixedData] = useState({
     menuItem: null,
     coupons: 1
@@ -92,29 +66,21 @@ export default function Index() {
   const [contractors, setContractors] = useState([]);
   const [guests, setGuests] = useState([]);
 
-
   const [printData, setPrintData] = useState(null);
-const [shouldPrint, setShouldPrint] = useState(false);
+  const [shouldPrint, setShouldPrint] = useState(false);
 
+  const navigate = useNavigate();
 
-
-const navigate = useNavigate();
-
-useEffect(() => {
-  const role = localStorage.getItem('role');
-  if (role === 'employee' || role === 'manager') {
-    navigate('/employeeReports');
-  }
-}, [navigate]);
-
-
- 
-  
+  useEffect(() => {
+    const role = localStorage.getItem('role');
+    if (role === 'employee' || role === 'manager') {
+      navigate('/employeeReports');
+    }
+  }, [navigate]);
 
   const handleOpenDialog = (type) => {
     setOpenDialog(type);
     // Reset search states
- 
 
     if (type === 'contractor' || type === 'guest') {
       getCompany()
@@ -137,7 +103,7 @@ useEffect(() => {
       setContractorData({
         ...contractorData,
         company: company,
-        contractor: null,
+        contractor: null
       });
       getEmployee(company.company_id, 'contractor')
         .then((res) => {
@@ -151,7 +117,7 @@ useEffect(() => {
       setGuestData({
         ...guestData,
         company: company,
-        guest: null,
+        guest: null
       });
       getEmployee(company.company_id, 'guest')
         .then((res) => {
@@ -164,6 +130,33 @@ useEffect(() => {
     }
   };
 
+  const today = new Date().toISOString().split('T')[0];
+  const [dateFrom, setDateFrom] = useState(today);
+  const [dateTo, setDateTo] = useState(today);
+  const [menuFilter, setMenuFilter] = useState('');
+  const [dashboardData, setDashboardData] = useState([]);
+  const [dashboardLoading, setDashboardLoading] = useState(false);
+
+  const tableHeader = ['Menu Name', 'Fixed Rate (₹)', 'Transaction Count', 'Total (₹)'];
+
+  const tableData = tableHeaderReplace(dashboardData, ['menu_name', 'Fixed_Rate', 'tx_count', 'Total'], tableHeader);
+
+  const fetchDashboard = async () => {
+    if (!dateFrom || !dateTo) {
+      toast.error('Please select both dates');
+      return;
+    }
+    setDashboardLoading(true);
+    try {
+      const res = await getFixedDashboard({ from_date: dateFrom, to_date: dateTo, menu_id: menuFilter });
+      setDashboardData(res || []);
+    } catch (err) {
+      toast.error('Error fetching dashboard data');
+      setDashboardData([]);
+    }
+    setDashboardLoading(false);
+  };
+
   useEffect(() => {
     getMenu()
       .then((res) => {
@@ -173,6 +166,7 @@ useEffect(() => {
         console.error(err);
         toast.error('Error fetching menu items');
       });
+    fetchDashboard();
   }, []);
 
   const handleFixedSubmit = () => {
@@ -181,29 +175,34 @@ useEffect(() => {
     addFixedTransaction({ menu_id: menuItem.menu_id, no_of_entries: coupons })
       .then((res) => {
         console.log(res);
-toast.success(`${coupons} coupons for Fixed Transaction Submitted Successfully, TransactionID: ${res.transaction_id}`);
-  const dataToPrint = {
-        type: 'Fixed',
-        menu_name: menuItem.menu_name,
-        no_of_entries: coupons,
-        transaction_id: res.transaction_id,
-        date: new Date().toLocaleDateString()
-      };
+        toast.success(`${coupons} coupons for Fixed Transaction Submitted Successfully, TransactionID: ${res.transaction_id}`);
+        fetchDashboard();
 
-      setPrintData(dataToPrint);
-      setShouldPrint(true);
+        const transactionIds = (res.transaction_id || '')
+          .toString()
+          .split(',')
+          .map((id) => id.trim())
+          .filter((id) => id !== '');
+
+        // Create an array of objects for each transaction
+        const dataToPrintArray = transactionIds.map((id, index) => ({
+          report_type: 'fixed',
+          menu: menuItem.menu_name,
+          rate: menuItem.fixed_menu_rate,
+          transaction_id: id.trim(),
+        }));
+
+        console.log(dataToPrintArray);
+
+        setPrintData(dataToPrintArray);
+        setShouldPrint(true);
       })
-
 
       .catch((err) => {
         console.error(err);
         toast.error('Error submitting fixed transaction');
       });
-    for (let i = 0; i < coupons; i++) {
-      console.log(`Submitting Fixed Transaction ${i + 1}:`, menuItem.menu_id);
-      // Add your API call or transaction logic here
-    }
-
+ 
     handleCloseDialog();
     // Reset form
     setFixedData({
@@ -212,82 +211,149 @@ toast.success(`${coupons} coupons for Fixed Transaction Submitted Successfully, 
     });
   };
 
-  const handleContractorSubmit = () => {
-    const { company, contractor, menuItem, coupons, date } = contractorData;
+const handleContractorSubmit = () => {
+  const { company, contractor, menuItem, coupons, date } = contractorData;
 
-    let transactionData = {
-      company_id: company.company_id,
-      employee_id: contractor.employee_id,
-      menu_id: menuItem.menu_id,
-      no_of_entries: coupons,
-      trasaction_time: date
-    };
-    addContractorTransaction(transactionData).then((res) => {
+  const transactionData = {
+    company_id: company.company_id,
+    employee_id: contractor.employee_id,
+    menu_id: menuItem.menu_id,
+    no_of_entries: coupons,
+    trasaction_time: date
+  };
+
+  addContractorTransaction(transactionData)
+    .then((res) => {
       console.log(res);
-      toast.success(`${coupons} coupons for Contractor Transaction Submitted Successfully`);
-    }).catch((err) => {
+
+      toast.success(`${coupons} coupons for Contractor Transaction Submitted Successfully, TransactionID: ${res.transaction_id}`);
+      fetchDashboard();
+
+      // Split transaction IDs safely
+      const transactionIds = (res.transaction_id || '')
+        .toString()
+        .split(',')
+        .map((id) => id.trim())
+        .filter((id) => id !== '');
+
+      // Prepare array for printing
+      const dataToPrintArray = transactionIds.map((id) => ({
+        report_type: 'contractor',
+        company: company.company_name,
+        employee_name: contractor.employee_name,
+        employee_id: contractor.employee_id,
+        menu: menuItem.menu_name,
+        rate: menuItem.fixed_menu_rate, 
+        transaction_id: id,
+        coupon_date: date
+      }));
+
+      console.log(dataToPrintArray);
+
+      setPrintData(dataToPrintArray);
+      setShouldPrint(true);
+    })
+    .catch((err) => {
       console.error(err);
       toast.error('Error submitting contractor transaction');
     });
-    for (let i = 0; i < coupons; i++) {
-      console.log(`Submitting Contractor Transaction ${i + 1}:`, { company, contractor, menuItem, date });
-      // Add your API call or transaction logic here
-    }
 
-    handleCloseDialog();
-    // Reset form
-    setContractorData({
-      company: null,
-      contractor: null,
-      date: new Date().toISOString().split('T')[0],
-      menuItem: null,
-      coupons: 1
-    });
+
+
+  handleCloseDialog();
+
+  // Reset form
+  setContractorData({
+    company: null,
+    contractor: null,
+    date: new Date().toISOString().split('T')[0],
+    menuItem: null,
+    coupons: 1
+  });
+};
+
+
+ const handleGuestSubmit = () => {
+  const { company, guest, menuItem, coupons, date } = guestData;
+
+  const transactionData = {
+    company_id: company.company_id,
+    employee_id: guest.employee_id,
+    menu_id: menuItem.menu_id,
+    no_of_entries: coupons,
+    trasaction_time: date
   };
 
-  const handleGuestSubmit = () => {
-    const { company, guest, menuItem, coupons, date } = guestData;
-
-
-    let transactionData = {
-      company_id: company.company_id,
-      employee_id: guest.employee_id,
-      menu_id: menuItem.menu_id,
-      no_of_entries: coupons,
-      trasaction_time: date
-    };
-
-    
-    for (let i = 0; i < coupons; i++) {
-      console.log(`Submitting Guest Transaction ${i + 1}:`, { company, guest, menuItem, date });
-    }
-
-    addGuestTransaction(transactionData).then((res) => {
+  addGuestTransaction(transactionData)
+    .then((res) => {
       console.log(res);
-       toast.success(`${coupons} coupons for Guest Transaction Submitted Successfully`);
-    }).catch((err) => {
+
+      toast.success(`${coupons} coupons for Guest Transaction Submitted Successfully, TransactionID: ${res.transaction_id}`);
+      fetchDashboard();
+
+      // Split transaction IDs safely
+      const transactionIds = (res.transaction_id || '')
+        .toString()
+        .split(',')
+        .map((id) => id.trim())
+        .filter((id) => id !== '');
+
+      // Prepare array for printing
+      const dataToPrintArray = transactionIds.map((id) => ({
+        report_type: 'guest',
+        company: company.company_name,
+        menu: menuItem.menu_name, // Change if guest rate is different
+        transaction_id: id,
+        coupon_date: date
+      }));
+
+      console.log(dataToPrintArray);
+
+      setPrintData(dataToPrintArray);
+      setShouldPrint(true);
+    })
+    .catch((err) => {
       console.error(err);
       toast.error('Error submitting Guest transaction');
     });
-    handleCloseDialog();
-    // Reset form
-    setGuestData({
-      company: null,
-      guest: null,
-      menuItem: null,
-      coupons: 1,
-      date: new Date().toISOString().split('T')[0]
-    });
+
+  
+  handleCloseDialog();
+
+  // Reset form
+  setGuestData({
+    company: null,
+    guest: null,
+    menuItem: null,
+    coupons: 1,
+    date: new Date().toISOString().split('T')[0]
+  });
+};
+
+  const [transactions, setTransactions] = useState([]);
+
+  const fetchTransactions = async () => {
+    try {
+      // Adjust the API and params as per your backend
+      const res = await getCurrentTransaction({});
+      setTransactions(res);
+    } catch (err) {
+      toast.error('Error fetching transactions');
+    }
   };
 
-useEffect(() => {
-  if (shouldPrint && printData) {
-    if (isWindowsPrint) {
-      const iframe = document.createElement('iframe');
-      iframe.style.display = 'none';
-      document.body.appendChild(iframe);
+  useEffect(() => {
+    // fetchTransactions();
+  }, []);
 
-      const content = `
+  useEffect(() => {
+    if (shouldPrint && printData) {
+      if (isWindowsPrint) {
+        const iframe = document.createElement('iframe');
+        iframe.style.display = 'none';
+        document.body.appendChild(iframe);
+
+        const content = `
         <html>
           <head>
             <title>Print</title>
@@ -325,39 +391,54 @@ useEffect(() => {
         </html>
       `;
 
-      const doc = iframe.contentWindow.document;
-      doc.open();
-      doc.write(content);
-      doc.close();
+        const doc = iframe.contentWindow.document;
+        doc.open();
+        doc.write(content);
+        doc.close();
 
-      // Cleanup iframe after printing
-      setTimeout(() => {
-        document.body.removeChild(iframe);
-      }, 1000);
-    } else {
-      const printerPayload = render(
-        <Printer>
-          <Text align="center" bold={true}>CANTEEN COUPON</Text>
-          <Line />
-          <Row left="Menu" right={printData.menu_name} />
-          <Row left="Txn ID" right={printData.transaction_id.toString()} />
-          <Row left="Date" right={printData.date} />
-          <Line />
-        </Printer>
-      );
+        // Cleanup iframe after printing
+        setTimeout(() => {
+          document.body.removeChild(iframe);
+        }, 1000);
+      } else {
+        // const printerPayload = render(
+        //   <Printer>
+        //     <Text align="center" bold={true}>
+        //       CANTEEN COUPON
+        //     </Text>
+        //     <Line />
+        //     <Row left="Menu" right={printData.menu_name} />
+        //     <Row left="Txn ID" right={printData.transaction_id.toString()} />
+        //     <Row left="Date" right={printData.date} />
+        //     <Line />
+        //   </Printer>
+        // );
 
-      fetch('http://192.168.1.20:3001/print', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ data: printerPayload })
-      });
+        // fetch('http://192.168.220.43/print/api/print', {
+        //   method: 'POST',
+        //   headers: { 'Content-Type': 'application/json' },
+        //   body: JSON.stringify({ data: printerPayload })
+        // });
+
+        printData.forEach(item => {
+    fetch('http://192.168.220.43/print/api/print', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(item) // send each object directly
+    })
+    .then(res => res.json())
+    .then(result => {
+      console.log('Print result:', result);
+    })
+    .catch(err => {
+      console.error('Print error:', err);
+    });
+  });
+      }
+      setPrintData(null);
+      setShouldPrint(false);
     }
-
-    setShouldPrint(false);
-  }
-}, [shouldPrint, printData, isWindowsPrint]);
-
-
+  }, [shouldPrint, printData, isWindowsPrint]);
 
   // Fixed Dialog
   const renderFixedDialog = () => (
@@ -436,15 +517,7 @@ useEffect(() => {
             getOptionLabel={(option) => option.company_name}
             value={contractorData.company || null}
             onChange={(e, newValue) => handleCompanyChange('contractor', newValue)}
-            renderInput={(params) => (
-              <TextField
-                {...params}
-                label="Company"
-                placeholder="Search companies..."
-                fullWidth
-                size="medium" 
-              />
-            )}
+            renderInput={(params) => <TextField {...params} label="Company" placeholder="Search companies..." fullWidth size="medium" />}
             isOptionEqualToValue={(option, value) => option.id === value.id}
           />
 
@@ -651,18 +724,16 @@ useEffect(() => {
     </Dialog>
   );
 
+  useEffect(() => {
+    // Only call if both dates are selected
+    if (dateFrom && dateTo) {
+      fetchDashboard();
+    }
+    // eslint-disable-next-line
+  }, [dateFrom, dateTo, menuFilter]);
   return (
     <Box sx={{ p: 3, maxWidth: 1200, mx: 'auto' }}>
-      {/* <Paper elevation={3} sx={{ p: 3, mb: 4 }}>
-        <Typography variant="h4" component="h1" gutterBottom>
-          Canteen Counter
-        </Typography>
-        <Typography variant="body1" gutterBottom sx={{ mb: 4 }}>
-          Select a transaction type to continue
-        </Typography>
-      </Paper> */}
-
-      <Grid container spacing={3}>
+      <Grid container spacing={3} pb={2}>
         <Grid item xs={12} sm={4}>
           <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
             <CardContent
@@ -738,12 +809,76 @@ useEffect(() => {
         </Grid>
       </Grid>
 
-  {/* {printData && (
-  <div style={{ display: 'block' }}>
-    <CouponPrintComponent data={printData}  menuId={printData.menu_name} transactionId={printData.transaction_id} />
-  </div>
-)} */}
-{/* <MyReceipt/> */}
+      <Box>
+        {/* Filters */}
+        <Paper elevation={2} sx={{ p: 2, mb: 3 }}>
+          <Grid container spacing={2} alignItems="center">
+            {/* Date From */}
+            <Grid item xs={12} sm={4}>
+              <TextField
+                label="Date From"
+                type="date"
+                value={dateFrom}
+                onChange={(e) => setDateFrom(e.target.value)}
+                InputLabelProps={{ shrink: true }}
+                required
+                fullWidth
+              />
+            </Grid>
+
+            {/* Date To */}
+            <Grid item xs={12} sm={4}>
+              <TextField
+                label="Date To"
+                type="date"
+                value={dateTo}
+                onChange={(e) => setDateTo(e.target.value)}
+                InputLabelProps={{ shrink: true }}
+                required
+                fullWidth
+              />
+            </Grid>
+
+            {/* Menu Select */}
+            <Grid item xs={12} sm={4}>
+              <TextField
+                label="Menu"
+                select
+                value={menuFilter}
+                onChange={(e) => setMenuFilter(e.target.value)}
+                fullWidth
+                InputLabelProps={{ shrink: true }}
+              >
+                <MenuItem value="">All</MenuItem>
+                {menuItems.map((menu) => (
+                  <MenuItem key={menu.menu_id} value={menu.menu_id}>
+                    {menu.menu_name}
+                  </MenuItem>
+                ))}
+              </TextField>
+            </Grid>
+          </Grid>
+        </Paper>
+
+        {dashboardData.length > 0 ? (
+          <>
+            <StyledTable
+              data={tableData}
+              header={tableHeader}
+              isShowSerialNo={true}
+              isShowAction={false}
+              actions={['']}
+              totalColumnKey="Total"
+              dashboardData={dashboardData}
+            />
+          </>
+        ) : (
+          <Typography variant="body2" color="text.secondary" align="center" mb={3}>
+            {dashboardLoading ? 'Loading...' : 'No data found for selected filters.'}
+          </Typography>
+        )}
+      </Box>
+
       {renderFixedDialog()}
       {renderContractorDialog()}
       {renderGuestDialog()}

@@ -10,7 +10,8 @@ import {
   IconReportMoney,
   IconReceipt2,
   IconAdjustments,
-  IconHeartHandshake
+  IconHeartHandshake,
+  IconTicket
 } from '@tabler/icons';
 
 // constant
@@ -25,7 +26,8 @@ const icons = {
   IconReportMoney,
   IconReceipt2,
   IconAdjustments,
-  IconHeartHandshake
+  IconHeartHandshake,
+  IconTicket
 };
 
 export const Roles = {
@@ -76,7 +78,15 @@ export default function Pages() {
       url: '/manage-settlement',
       icon: icons.IconHeartHandshake,
       visibleTo: [Roles.ADMIN]
-    }
+    },
+    {
+      id: 'printRequest',
+      title: 'Print Request',
+      type: 'item',
+      url: '/printRequest',
+      icon: icons.IconTicket,
+      visibleTo: [Roles.ADMIN,Roles.MANAGER]
+    },
   ];
 
   const filteredPages = allPages.filter((page) => page.visibleTo.includes(role));
@@ -110,7 +120,7 @@ export default function Pages() {
                   type: 'item',
                   url: '/employees',
                   icon: icons.IconUserPlus,
-                  visibleTo: [Roles.ADMIN]
+                  visibleTo: [Roles.ADMIN,Roles.FRONTOFFICE]
                 },
                 {
                   id: 'manageDepartment',
