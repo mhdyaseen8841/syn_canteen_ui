@@ -98,7 +98,7 @@ export default function Pages() {
     children: [
       ...filteredPages,
 
-      ...(role == Roles.ADMIN 
+      ...(role == Roles.ADMIN || role == Roles.FRONTOFFICE
         ? [
             {
               id: 'manageOrganization',
