@@ -3,7 +3,7 @@ import axios from 'axios';
 
 // const baseURL = `http://${window.location.hostname}:3005/`;
 
-const baseURL = process.env.REACT_APP_BASE_URL || 'http://localhost:4001/';
+const baseURL = process.env.REACT_APP_BASE_URL || 'http://192.168.8.18:4001/';
 
 
 
