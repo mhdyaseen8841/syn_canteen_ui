@@ -220,3 +220,14 @@ export async function getFixedDashboard(data){
   const response = await apiInstance.post('fixed-dashboard',data)
   return response.data
 }
+
+
+export async function getCompanyCoupons(data){
+  const response = await apiInstance.post('get-company-coupons', data);
+  return response.data;
+}
+
+export async function issueCompanyCoupons(data){
+  const response = await apiInstance.post('issue-company-coupons', data);
+  return response.data;
+}

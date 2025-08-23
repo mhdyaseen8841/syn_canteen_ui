@@ -87,6 +87,14 @@ export default function Pages() {
       icon: icons.IconTicket,
       visibleTo: [Roles.ADMIN,Roles.MANAGER]
     },
+    {
+      id: 'issueCanteenCoupons',
+      title: 'Issue Canteen Coupons',
+      type: 'item',
+      url: '/issueCanteenCoupons',
+      icon: icons.IconTicket,
+      visibleTo: [Roles.ADMIN,Roles.MANAGER]
+    },
   ];
 
   const filteredPages = allPages.filter((page) => page.visibleTo.includes(role));
