@@ -63,7 +63,7 @@ export default function PrintRequest() {
       coupon_date: rowData.date
     };
 
-    const response = await fetch(process.env.REACT_APP_PRINTURL, {
+    const response = await fetch(process.env.REACT_APP_PRINT_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(printData)

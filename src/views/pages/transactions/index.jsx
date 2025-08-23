@@ -421,7 +421,7 @@ const handleContractorSubmit = () => {
         // });
 
         printData.forEach(item => {
-    fetch(process.env.REACT_APP_PRINTURL, {
+    fetch(process.env.REACT_APP_PRINT_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(item) // send each object directly
