@@ -15,6 +15,7 @@ const tableHeader = [
   'Company',
   'Department',
   'Premium Enabled',
+  'Reference ID',
   'Active'
 ];
 
@@ -47,6 +48,7 @@ export default function Content({ data, deleteAd, updateData,selectedCompany,typ
       'company_name',
       'department_name',
       'premium_enabled',
+      'reference_id',
       'Active'
     ], 
     tableHeader
