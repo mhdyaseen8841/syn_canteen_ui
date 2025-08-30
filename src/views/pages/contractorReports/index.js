@@ -1,35 +1,51 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Box, FormControl, InputLabel, MenuItem, Select, Stack, Typography, TextField } from '@mui/material';
-import Autocomplete from '@mui/material/Autocomplete';
-import Content from './content';
-import Tools from './tools';
-import { getCanteenCalender, editExpense, searchEmployee, getContractorDashboard } from '../../../utils/Service';
-import { toast } from 'react-toastify';
+import React, { useState, useEffect, useRef } from "react";
+import {
+  Box,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  Stack,
+  Typography,
+  TextField
+} from "@mui/material";
+import Autocomplete from "@mui/material/Autocomplete";
+import Content from "./content";
+import Tools from "./tools";
+import {
+  searchEmployee as searchContractor,
+  getContractorDashboard
+} from "../../../utils/Service";
+import { toast } from "react-toastify";
+import dayjs from "dayjs";
 
-export default function Index() {
+export default function ContractorReport() {
   const [formOpen, setFormOpen] = useState(false);
   const [data, setData] = useState([]);
-  const [canteenCalenderData, setCanteenCalenderData] = useState([]);
-  const [selectedCalender, setSelectedCalender] = useState('');
   const [companies, setCompanies] = useState([]);
-  const [selectedCompany, setSelectedCompany] = useState('');
-  const [employeeOptions, setEmployeeOptions] = useState([]);
-  const [selectedEmployee, setSelectedEmployee] = useState('');
-  const [loadingEmployees, setLoadingEmployees] = useState(false);
-  const [role, setRole] = useState(localStorage.getItem('role') || '');
-  const [currentEmployee, setCurrentEmployee] = useState(null);
+  const [selectedCompany, setSelectedCompany] = useState("");
+  const [contractorOptions, setContractorOptions] = useState([]);
+  const [selectedContractor, setSelectedContractor] = useState("");
+  const [loadingContractors, setLoadingContractors] = useState(false);
+  const [role, setRole] = useState(localStorage.getItem("role") || "");
+  const [currentContractor, setCurrentContractor] = useState(null);
   const debounceRef = useRef();
-  const [selectedEmployeeDetails, setSelectedEmployeeDetails] = useState(null);
-  
-  useEffect(() => {
-  const employeeObj = employeeOptions.find((emp) => emp.employee_id === Number(selectedEmployee));
-  setSelectedEmployeeDetails(employeeObj || currentEmployee);
-}, [employeeOptions, selectedEmployee, currentEmployee]);
+  const [selectedContractorDetails, setSelectedContractorDetails] = useState(null);
 
+  // 🔹 Default dates → Current month start & end
+  const [fromDate, setFromDate] = useState(dayjs().startOf("month").format("YYYY-MM-DD"));
+  const [toDate, setToDate] = useState(dayjs().endOf("month").format("YYYY-MM-DD"));
+
+  useEffect(() => {
+    const contractorObj = contractorOptions.find(
+      (con) => con.employee_id === Number(selectedContractor)
+    );
+    setSelectedContractorDetails(contractorObj || currentContractor);
+  }, [contractorOptions, selectedContractor, currentContractor]);
 
   const getCompanies = async () => {
     try {
-      const companyData = localStorage.getItem('companies');
+      const companyData = localStorage.getItem("companies");
       if (companyData) {
         const parsed = JSON.parse(companyData);
         setCompanies(parsed);
@@ -38,101 +54,134 @@ export default function Index() {
           setSelectedCompany(parsed[0].company_id);
         }
 
-        if (role === 'employee') {
-          const empData = JSON.parse(localStorage.getItem('user'));
-          setSelectedEmployee(empData.employee_id);
-          setCurrentEmployee(empData);
+        if (role === "contractor") {
+          const contractorData = JSON.parse(localStorage.getItem("user"));
+          setSelectedContractor(contractorData.employee_id);
+          setCurrentContractor(contractorData);
         }
       }
     } catch (err) {
-      toast.error('Error fetching companies');
-    }
-  };
-
-  const getCanteenCalenderData = async () => {
-    try {
-      const res = await getCanteenCalender();
-      setCanteenCalenderData(res);
-    } catch (err) {
-      console.error(err);
-      toast.error('Error fetching calendar data');
+      toast.error("Error fetching companies");
     }
   };
 
   const getData = async () => {
     try {
+      const start = dayjs(fromDate);
+      const end = dayjs(toDate);
+
+      // ✅ Validate date range → Max 5 months
+      if (end.diff(start, "month", true) > 5) {
+        toast.error("You cannot select more than 5 months");
+        return;
+      }
+
       const res = await getContractorDashboard({
-        canteenCalendarId: selectedCalender,
-        employeeId: selectedEmployee
+        fromDate,
+        toDate,
+        contractorId: selectedContractor // ✅ Changed key name
       });
+
       setData(res);
     } catch (err) {
       console.log(err);
-      toast.error('Error fetching report');
+      toast.error("Error fetching report");
     }
   };
 
-  const handleEmployeeSearch = async (searchTerm = '') => {
+  const handleContractorSearch = async (searchTerm = "") => {
     if (!selectedCompany) return;
-    setLoadingEmployees(true);
+    setLoadingContractors(true);
     try {
-      const response = await searchEmployee({
+      const response = await searchContractor({
         company_id: selectedCompany,
         search_text: searchTerm
       });
-      setEmployeeOptions(response || []);
+      setContractorOptions(response || []);
     } catch (error) {
-      toast.error('Error loading employees');
-      setEmployeeOptions([]);
+      toast.error("Error loading contractors");
+      setContractorOptions([]);
     } finally {
-      setLoadingEmployees(false);
+      setLoadingContractors(false);
     }
   };
 
   useEffect(() => {
     getCompanies();
-    getCanteenCalenderData();
   }, []);
 
   const disableCompanyDropdown = companies.length === 1;
-  const disableEmployeeDropdown = role === 'employee';
+  const disableContractorDropdown = role === "contractor";
 
   const shouldEnableFetch =
-    selectedCalender &&
-    ((role === 'employee' && selectedEmployee) || ((role === 'admin' || role === 'manager') && selectedEmployee && selectedCompany));
+    fromDate &&
+    toDate &&
+    ((role === "contractor" && selectedContractor) ||
+      ((role === "admin" || role === "manager") &&
+        selectedContractor &&
+        selectedCompany));
 
   return (
     <Stack direction="column" gap={2}>
       <Typography variant="h3" color="secondary.main">
-        Employee Report
+        Contractor Report
       </Typography>
 
-      <Stack direction={{ xs: 'column', md: 'row' }} spacing={2}>
-        {/* Date Dropdown - Always Visible */}
-        <FormControl fullWidth>
-          <InputLabel>Select Date</InputLabel>
-          <Select value={selectedCalender} label="Select Date" onChange={(e) => setSelectedCalender(e.target.value)}>
-            <MenuItem value="">
-              <em>Select a Date</em>
-            </MenuItem>
-            {canteenCalenderData.map((calender) => (
-              <MenuItem key={calender.canteen_calendar_id} value={calender.canteen_calendar_id}>
-                {calender.month_year}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
+      <Stack direction={{ xs: "column", md: "row" }} spacing={2}>
+        {/* 🔹 From Date */}
+        <TextField
+          label="From Date"
+          type="date"
+          value={fromDate}
+          onChange={(e) => {
+            const value = e.target.value;
+            setFromDate(value);
 
-        {/* Company Dropdown - Only for Admin/Manager */}
-        {(role === 'admin' || role === 'manager') && (
+            // Auto-correct if exceeds 5 months
+            const start = dayjs(value);
+            const end = dayjs(toDate);
+            if (end.diff(start, "month", true) > 5) {
+              const newToDate = start.add(5, "month").endOf("month").format("YYYY-MM-DD");
+              setToDate(newToDate);
+              toast.info("To Date adjusted to max 5 months limit");
+            }
+          }}
+          InputLabelProps={{ shrink: true }}
+          fullWidth
+        />
+
+        {/* 🔹 To Date */}
+        <TextField
+          label="To Date"
+          type="date"
+          value={toDate}
+          onChange={(e) => {
+            const value = e.target.value;
+            setToDate(value);
+
+            // Auto-correct if exceeds 5 months
+            const start = dayjs(fromDate);
+            const end = dayjs(value);
+            if (end.diff(start, "month", true) > 5) {
+              const newFromDate = end.subtract(5, "month").startOf("month").format("YYYY-MM-DD");
+              setFromDate(newFromDate);
+              toast.info("From Date adjusted to max 5 months limit");
+            }
+          }}
+          InputLabelProps={{ shrink: true }}
+          fullWidth
+        />
+
+        {/* Company Dropdown */}
+        {(role === "admin" || role === "manager") && (
           <FormControl fullWidth disabled={disableCompanyDropdown}>
             <InputLabel>Select Company</InputLabel>
             <Select
               value={selectedCompany}
               onChange={(e) => {
                 setSelectedCompany(e.target.value);
-                setSelectedEmployee('');
-                setEmployeeOptions([]);
+                setSelectedContractor("");
+                setContractorOptions([]);
               }}
             >
               <MenuItem value="">
@@ -147,37 +196,43 @@ export default function Index() {
           </FormControl>
         )}
 
-        {/* Employee Dropdown - Admin/Manager */}
-        {(role === 'admin' || role === 'manager') && selectedCompany && (
+        {/* Contractor Dropdown */}
+        {(role === "admin" || role === "manager") && selectedCompany && (
           <FormControl fullWidth>
             <Autocomplete
-              options={employeeOptions}
-              loading={loadingEmployees}
+              options={contractorOptions}
+              loading={loadingContractors}
               getOptionLabel={(option) =>
-                option?.employee_code && option?.employee_name ? `${option.employee_code} - ${option.employee_name}` : ''
+                option?.employee_code && option?.employee_name
+                  ? `${option.employee_code} - ${option.employee_name}`
+                  : ""
               }
-              value={employeeOptions.find((emp) => emp.employee_id === Number(selectedEmployee)) || null}
+              value={
+                contractorOptions.find(
+                  (con) => con.employee_id === Number(selectedContractor)
+                ) || null
+              }
               onChange={(_, newValue) => {
-                setSelectedEmployee(newValue ? newValue.employee_id : '');
+                setSelectedContractor(newValue ? newValue.employee_id : "");
               }}
               onInputChange={(_, newInputValue, reason) => {
                 if (debounceRef.current) clearTimeout(debounceRef.current);
-                if (newInputValue.length > 0 && reason === 'input') {
+                if (newInputValue.length > 0 && reason === "input") {
                   debounceRef.current = setTimeout(() => {
-                    handleEmployeeSearch(newInputValue);
+                    handleContractorSearch(newInputValue);
                   }, 400);
                 }
               }}
               renderInput={(params) => (
                 <TextField
                   {...params}
-                  label="Employee (ID or Name)"
+                  label="Contractor (ID or Name)"
                   placeholder="Search by ID or Name..."
                   InputProps={{
                     ...params.InputProps,
                     endAdornment: (
                       <>
-                        {loadingEmployees ? (
+                        {loadingContractors ? (
                           <Box sx={{ pr: 2 }}>
                             <span>Loading...</span>
                           </Box>
@@ -188,9 +243,15 @@ export default function Index() {
                   }}
                 />
               )}
-              isOptionEqualToValue={(option, value) => option?.employee_id === value?.employee_id}
+              isOptionEqualToValue={(option, value) =>
+                option?.employee_id === value?.employee_id
+              }
               noOptionsText={
-                !selectedCompany ? 'Please select a company first' : loadingEmployees ? 'Searching employees...' : 'No employees found'
+                !selectedCompany
+                  ? "Please select a company first"
+                  : loadingContractors
+                  ? "Searching contractors..."
+                  : "No contractors found"
               }
             />
           </FormControl>
@@ -198,9 +259,10 @@ export default function Index() {
       </Stack>
 
       <Box mt={2} display="flex" justifyContent="space-between" alignItems="center">
-        {role === 'employee' && currentEmployee ? (
+        {role === "contractor" && currentContractor ? (
           <Typography variant="body2" color="textSecondary">
-            Viewing report for: {currentEmployee?.employee_id} - {currentEmployee?.display_name}
+            Viewing report for: {currentContractor?.employee_id} -{" "}
+            {currentContractor?.display_name}
           </Typography>
         ) : (
           <Box />
@@ -209,12 +271,12 @@ export default function Index() {
           disabled={!shouldEnableFetch}
           onClick={getData}
           style={{
-            padding: '8px 16px',
-            backgroundColor: shouldEnableFetch ? '#1976d2' : '#ccc',
-            color: '#fff',
-            border: 'none',
-            borderRadius: '4px',
-            cursor: shouldEnableFetch ? 'pointer' : 'not-allowed'
+            padding: "8px 16px",
+            backgroundColor: shouldEnableFetch ? "#1976d2" : "#ccc",
+            color: "#fff",
+            border: "none",
+            borderRadius: "4px",
+            cursor: shouldEnableFetch ? "pointer" : "not-allowed"
           }}
         >
           Fetch Report
@@ -225,13 +287,14 @@ export default function Index() {
       <Content
         data={data}
         updateData={getData}
-        selectedCalender={selectedCalender}
+        selectedCalender={`${fromDate} to ${toDate}`}
         role={role}
-        employeeMeta={{
-          month: canteenCalenderData.find((c) => c.canteen_calendar_id === selectedCalender)?.month_year || '',
-          companyName: companies.find((c) => c.company_id === selectedCompany)?.company_name || '',
-          employeeName: selectedEmployeeDetails?.employee_name || '',
-          employeeCode: selectedEmployeeDetails?.employee_code || ''
+        contractorMeta={{
+          month: `${dayjs(fromDate).format("MMM YYYY")} - ${dayjs(toDate).format("MMM YYYY")}`,
+          companyName:
+            companies.find((c) => c.company_id === selectedCompany)?.company_name || "",
+          contractorName: selectedContractorDetails?.employee_name || "",
+          contractorCode: selectedContractorDetails?.employee_code || ""
         }}
       />
     </Stack>
