@@ -38,9 +38,19 @@ import { useNavigate } from 'react-router-dom';
 import { Printer, Text, Line, Row, render } from 'react-thermal-printer';
 import StyledTable from './StyledTable';
 
+export const Roles = {
+  ADMIN: 'admin',
+  FRONTOFFICE: 'front_office',
+  MANAGER: 'manager',
+  EMPLOYEE: 'employee',
+  FIXEDUSER: 'fixed_user'
+};
+
 export default function Index() {
   const [openDialog, setOpenDialog] = useState(null);
   const [isWindowsPrint, setIsWindowsPrint] = useState(false);
+    const [role, setRole] = useState(localStorage.getItem('role') || '');
+
   const [fixedData, setFixedData] = useState({
     menuItem: null,
     coupons: 1
@@ -73,6 +83,7 @@ export default function Index() {
 
   useEffect(() => {
     const role = localStorage.getItem('role');
+    setRole(role);
     if (role === 'employee' || role === 'manager') {
       navigate('/employeeReports');
     }
@@ -189,7 +200,7 @@ export default function Index() {
           report_type: 'fixed',
           menu: menuItem.menu_name,
           rate: menuItem.fixed_menu_rate,
-          transaction_id: id.trim(),
+          transaction_id: id.trim()
         }));
 
         console.log(dataToPrintArray);
@@ -202,7 +213,7 @@ export default function Index() {
         console.error(err);
         toast.error('Error submitting fixed transaction');
       });
- 
+
     handleCloseDialog();
     // Reset form
     setFixedData({
@@ -211,124 +222,120 @@ export default function Index() {
     });
   };
 
-const handleContractorSubmit = () => {
-  const { company, contractor, menuItem, coupons, date } = contractorData;
+  const handleContractorSubmit = () => {
+    const { company, contractor, menuItem, coupons, date } = contractorData;
 
-  const transactionData = {
-    company_id: company.company_id,
-    employee_id: contractor.employee_id,
-    menu_id: menuItem.menu_id,
-    no_of_entries: coupons,
-    trasaction_time: date
+    const transactionData = {
+      company_id: company.company_id,
+      employee_id: contractor.employee_id,
+      menu_id: menuItem.menu_id,
+      no_of_entries: coupons,
+      trasaction_time: date
+    };
+
+    addContractorTransaction(transactionData)
+      .then((res) => {
+        console.log(res);
+
+        toast.success(`${coupons} coupons for Contractor Transaction Submitted Successfully, TransactionID: ${res.transaction_id}`);
+        fetchDashboard();
+
+        // Split transaction IDs safely
+        const transactionIds = (res.transaction_id || '')
+          .toString()
+          .split(',')
+          .map((id) => id.trim())
+          .filter((id) => id !== '');
+
+        // Prepare array for printing
+        const dataToPrintArray = transactionIds.map((id) => ({
+          report_type: 'contractor',
+          company: company.company_name,
+          employee_name: contractor.employee_name,
+          employee_id: contractor.employee_id,
+          menu: menuItem.menu_name,
+          rate: menuItem.fixed_menu_rate,
+          transaction_id: id,
+          coupon_date: date
+        }));
+
+        console.log(dataToPrintArray);
+
+        setPrintData(dataToPrintArray);
+        setShouldPrint(true);
+      })
+      .catch((err) => {
+        console.error(err);
+        toast.error('Error submitting contractor transaction');
+      });
+
+    handleCloseDialog();
+
+    // Reset form
+    setContractorData({
+      company: null,
+      contractor: null,
+      date: new Date().toISOString().split('T')[0],
+      menuItem: null,
+      coupons: 1
+    });
   };
 
-  addContractorTransaction(transactionData)
-    .then((res) => {
-      console.log(res);
+  const handleGuestSubmit = () => {
+    const { company, guest, menuItem, coupons, date } = guestData;
 
-      toast.success(`${coupons} coupons for Contractor Transaction Submitted Successfully, TransactionID: ${res.transaction_id}`);
-      fetchDashboard();
+    const transactionData = {
+      company_id: company.company_id,
+      employee_id: guest.employee_id,
+      menu_id: menuItem.menu_id,
+      no_of_entries: coupons,
+      trasaction_time: date
+    };
 
-      // Split transaction IDs safely
-      const transactionIds = (res.transaction_id || '')
-        .toString()
-        .split(',')
-        .map((id) => id.trim())
-        .filter((id) => id !== '');
+    addGuestTransaction(transactionData)
+      .then((res) => {
+        console.log(res);
 
-      // Prepare array for printing
-      const dataToPrintArray = transactionIds.map((id) => ({
-        report_type: 'contractor',
-        company: company.company_name,
-        employee_name: contractor.employee_name,
-        employee_id: contractor.employee_id,
-        menu: menuItem.menu_name,
-        rate: menuItem.fixed_menu_rate, 
-        transaction_id: id,
-        coupon_date: date
-      }));
+        toast.success(`${coupons} coupons for Guest Transaction Submitted Successfully, TransactionID: ${res.transaction_id}`);
+        fetchDashboard();
 
-      console.log(dataToPrintArray);
+        // Split transaction IDs safely
+        const transactionIds = (res.transaction_id || '')
+          .toString()
+          .split(',')
+          .map((id) => id.trim())
+          .filter((id) => id !== '');
 
-      setPrintData(dataToPrintArray);
-      setShouldPrint(true);
-    })
-    .catch((err) => {
-      console.error(err);
-      toast.error('Error submitting contractor transaction');
+        // Prepare array for printing
+        const dataToPrintArray = transactionIds.map((id) => ({
+          report_type: 'guest',
+          company: company.company_name,
+          menu: menuItem.menu_name, // Change if guest rate is different
+          transaction_id: id,
+          coupon_date: date
+        }));
+
+        console.log(dataToPrintArray);
+
+        setPrintData(dataToPrintArray);
+        setShouldPrint(true);
+      })
+      .catch((err) => {
+        console.error(err);
+        toast.error('Error submitting Guest transaction');
+      });
+
+    handleCloseDialog();
+
+    // Reset form
+    setGuestData({
+      company: null,
+      guest: null,
+      menuItem: null,
+      coupons: 1,
+      date: new Date().toISOString().split('T')[0]
     });
-
-
-
-  handleCloseDialog();
-
-  // Reset form
-  setContractorData({
-    company: null,
-    contractor: null,
-    date: new Date().toISOString().split('T')[0],
-    menuItem: null,
-    coupons: 1
-  });
-};
-
-
- const handleGuestSubmit = () => {
-  const { company, guest, menuItem, coupons, date } = guestData;
-
-  const transactionData = {
-    company_id: company.company_id,
-    employee_id: guest.employee_id,
-    menu_id: menuItem.menu_id,
-    no_of_entries: coupons,
-    trasaction_time: date
   };
-
-  addGuestTransaction(transactionData)
-    .then((res) => {
-      console.log(res);
-
-      toast.success(`${coupons} coupons for Guest Transaction Submitted Successfully, TransactionID: ${res.transaction_id}`);
-      fetchDashboard();
-
-      // Split transaction IDs safely
-      const transactionIds = (res.transaction_id || '')
-        .toString()
-        .split(',')
-        .map((id) => id.trim())
-        .filter((id) => id !== '');
-
-      // Prepare array for printing
-      const dataToPrintArray = transactionIds.map((id) => ({
-        report_type: 'guest',
-        company: company.company_name,
-        menu: menuItem.menu_name, // Change if guest rate is different
-        transaction_id: id,
-        coupon_date: date
-      }));
-
-      console.log(dataToPrintArray);
-
-      setPrintData(dataToPrintArray);
-      setShouldPrint(true);
-    })
-    .catch((err) => {
-      console.error(err);
-      toast.error('Error submitting Guest transaction');
-    });
-
-  
-  handleCloseDialog();
-
-  // Reset form
-  setGuestData({
-    company: null,
-    guest: null,
-    menuItem: null,
-    coupons: 1,
-    date: new Date().toISOString().split('T')[0]
-  });
-};
 
   const [transactions, setTransactions] = useState([]);
 
@@ -344,6 +351,7 @@ const handleContractorSubmit = () => {
 
   useEffect(() => {
     // fetchTransactions();
+    const role = localStorage.getItem('role');
   }, []);
 
   useEffect(() => {
@@ -420,20 +428,20 @@ const handleContractorSubmit = () => {
         //   body: JSON.stringify({ data: printerPayload })
         // });
 
-        printData.forEach(item => {
-    fetch(process.env.REACT_APP_PRINT_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(item) // send each object directly
-    })
-    .then(res => res.json())
-    .then(result => {
-      console.log('Print result:', result);
-    })
-    .catch(err => {
-      console.error('Print error:', err);
-    });
-  });
+        printData.forEach((item) => {
+          fetch(process.env.REACT_APP_PRINT_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(item) // send each object directly
+          })
+            .then((res) => res.json())
+            .then((result) => {
+              console.log('Print result:', result);
+            })
+            .catch((err) => {
+              console.error('Print error:', err);
+            });
+        });
       }
       setPrintData(null);
       setShouldPrint(false);
@@ -756,57 +764,79 @@ const handleContractorSubmit = () => {
           </Card>
         </Grid>
 
-        <Grid item xs={12} sm={4}>
-          <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-            <CardContent
-              onClick={() => handleOpenDialog('contractor')}
-              sx={{ cursor: 'pointer', flexGrow: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}
-            >
-              <Box sx={{ p: 2, backgroundColor: '#6a3d8c', borderRadius: '50%', mb: 2 }}>
-                <Building size={40} color="#fff" />
-              </Box>
-              <Typography variant="h5" component="h2" gutterBottom>
-                Contractor
-              </Typography>
-              <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-                Process transactions for contractors from registered companies
-              </Typography>
-              <Button variant="contained" color="secondary" sx={{ mt: 'auto' }} fullWidth>
-                Select
-              </Button>
-            </CardContent>
-          </Card>
-        </Grid>
+        {role !== Roles.FIXEDUSER && (
+          <>
+            <Grid item xs={12} sm={4}>
+              <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+                <CardContent
+                  onClick={() => handleOpenDialog('contractor')}
+                  sx={{
+                    cursor: 'pointer',
+                    flexGrow: 1,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    textAlign: 'center'
+                  }}
+                >
+                  <Box sx={{ p: 2, backgroundColor: '#6a3d8c', borderRadius: '50%', mb: 2 }}>
+                    <Building size={40} color="#fff" />
+                  </Box>
+                  <Typography variant="h5" component="h2" gutterBottom>
+                    Contractor
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+                    Process transactions for contractors from registered companies
+                  </Typography>
+                  <Button variant="contained" color="secondary" sx={{ mt: 'auto' }} fullWidth>
+                    Select
+                  </Button>
+                </CardContent>
+              </Card>
+            </Grid>
+          </>
+        )}
 
-        <Grid item xs={12} sm={4}>
-          <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-            <CardContent
-              onClick={() => handleOpenDialog('guest')}
-              sx={{ cursor: 'pointer', flexGrow: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}
-            >
-              <Box sx={{ p: 2, bgcolor: '#388e3c', borderRadius: '50%', mb: 2 }}>
-                <User size={40} color="#fff" />
-              </Box>
-              <Typography variant="h5" component="h2" gutterBottom>
-                Guest
-              </Typography>
-              <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-                Process transactions for guests visiting from registered companies
-              </Typography>
-              <Button
-                variant="contained"
-                color="success" // Green background
-                sx={{
-                  mt: 'auto',
-                  color: 'white' // Set text color to white
-                }}
-                fullWidth
-              >
-                Select
-              </Button>
-            </CardContent>
-          </Card>
-        </Grid>
+        {role !== Roles.FIXEDUSER && (
+          <>
+            <Grid item xs={12} sm={4}>
+              <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+                <CardContent
+                  onClick={() => handleOpenDialog('guest')}
+                  sx={{
+                    cursor: 'pointer',
+                    flexGrow: 1,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    textAlign: 'center'
+                  }}
+                >
+                  <Box sx={{ p: 2, bgcolor: '#388e3c', borderRadius: '50%', mb: 2 }}>
+                    <User size={40} color="#fff" />
+                  </Box>
+                  <Typography variant="h5" component="h2" gutterBottom>
+                    Guest
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+                    Process transactions for guests visiting from registered companies
+                  </Typography>
+                  <Button
+                    variant="contained"
+                    color="success" // Green background
+                    sx={{
+                      mt: 'auto',
+                      color: 'white' // Set text color to white
+                    }}
+                    fullWidth
+                  >
+                    Select
+                  </Button>
+                </CardContent>
+              </Card>
+            </Grid>
+          </>
+        )}
       </Grid>
 
       <Box>

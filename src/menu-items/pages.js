@@ -34,7 +34,8 @@ export const Roles = {
   ADMIN: 'admin',
   FRONTOFFICE: 'front_office',
   MANAGER: 'manager',
-  EMPLOYEE: 'employee'
+  EMPLOYEE: 'employee',
+  FIXEDUSER: 'fixed_user'
 };
 
 // ==============================|| EXTRA PAGES MENU ITEMS ||============================== //
@@ -53,7 +54,7 @@ export default function Pages() {
       type: 'item',
       url: '/transaction',
       icon: icons.IconReportAnalytics,
-      visibleTo: [Roles.ADMIN, Roles.FRONTOFFICE]
+      visibleTo: [Roles.ADMIN, Roles.FRONTOFFICE, Roles.FIXEDUSER]
     },
     {
       id: 'manageTransactions',
@@ -69,7 +70,7 @@ export default function Pages() {
       type: 'item',
       url: '/expenses',
       icon: icons.IconReportMoney,
-      visibleTo: [Roles.ADMIN,Roles.FRONTOFFICE]
+      visibleTo: [Roles.ADMIN, Roles.FRONTOFFICE]
     },
     {
       id: 'settlement',
@@ -80,12 +81,20 @@ export default function Pages() {
       visibleTo: [Roles.ADMIN]
     },
     {
+      id: 'ContractorReports',
+      title: 'Contractor Reports',
+      type: 'item',
+      url: '/ContractorReports',
+      icon: icons.IconReportAnalytics,
+      visibleTo: [Roles.ADMIN, Roles.FRONTOFFICE]
+    },
+    {
       id: 'printRequest',
       title: 'Print Request',
       type: 'item',
       url: '/printRequest',
       icon: icons.IconTicket,
-      visibleTo: [Roles.ADMIN,Roles.MANAGER]
+      visibleTo: [Roles.ADMIN, Roles.MANAGER]
     },
     {
       id: 'issueCanteenCoupons',
@@ -93,8 +102,8 @@ export default function Pages() {
       type: 'item',
       url: '/issueCanteenCoupons',
       icon: icons.IconTicket,
-      visibleTo: [Roles.ADMIN,Roles.MANAGER]
-    },
+      visibleTo: [Roles.ADMIN, Roles.MANAGER]
+    }
   ];
 
   const filteredPages = allPages.filter((page) => page.visibleTo.includes(role));
@@ -128,7 +137,7 @@ export default function Pages() {
                   type: 'item',
                   url: '/employees',
                   icon: icons.IconUserPlus,
-                  visibleTo: [Roles.ADMIN,Roles.FRONTOFFICE]
+                  visibleTo: [Roles.ADMIN, Roles.FRONTOFFICE]
                 },
                 {
                   id: 'manageDepartment',
@@ -151,7 +160,7 @@ export default function Pages() {
           ]
         : []),
 
-         ...(role !== Roles.FRONTOFFICE
+      ...(role !== Roles.FRONTOFFICE
         ? [
             {
               id: 'reports',

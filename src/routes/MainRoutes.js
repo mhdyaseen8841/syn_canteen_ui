@@ -18,6 +18,7 @@ const ManageSettlement = Loadable(lazy(()=>import('views/pages/manageSettlement'
 const ManageExpenses = Loadable(lazy(() => import('views/pages/manageExpense')));
 const CompanyReport = Loadable(lazy(() => import('views/pages/companyReports')));
 const EmployeeReport = Loadable(lazy(() => import('views/pages/employeeReports')));
+const ContractorReport = Loadable(lazy(() => import('views/pages/contractorReports')));
 const ComplaintReport = Loadable(lazy(() => import('views/pages/complaintReports')));
 const PrintRequest = Loadable(lazy(() => import('views/pages/printRequest')));
 const IssueCanteenCoupons = Loadable(lazy(()=> import('views/pages/issueCanteenCoupons')))
@@ -93,6 +94,10 @@ const MainRoutes = {
    {
     path: 'employeeReports',
     element: <EmployeeReport />
+   },
+   {
+    path:'/contractorReports',
+    element: <ContractorReport/>
    },
    {
     path: 'complaintReports',
