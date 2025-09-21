@@ -80,14 +80,14 @@ export default function Pages() {
       icon: icons.IconHeartHandshake,
       visibleTo: [Roles.ADMIN]
     },
-    {
-      id: 'ContractorReports',
-      title: 'Contractor Reports',
-      type: 'item',
-      url: '/ContractorReports',
-      icon: icons.IconReportAnalytics,
-      visibleTo: [Roles.ADMIN, Roles.FRONTOFFICE]
-    },
+    // {
+    //   id: 'ContractorReports',
+    //   title: 'Contractor Reports',
+    //   type: 'item',
+    //   url: '/ContractorReports',
+    //   icon: icons.IconReportAnalytics,
+    //   visibleTo: [Roles.ADMIN, Roles.FRONTOFFICE]
+    // },
     // {
     //   id: 'printRequest',
     //   title: 'Print Request',
