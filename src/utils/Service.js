@@ -8,7 +8,7 @@ const baseURL = process.env.REACT_APP_BASE_URL || 'http://192.168.8.18:4001/';
 
 
 
-const apiInstance = axios.create({
+export const apiInstance = axios.create({
   baseURL: `${baseURL}api/`,
   headers: {
     'Content-Type': 'application/json'

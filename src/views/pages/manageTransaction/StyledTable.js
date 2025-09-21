@@ -20,13 +20,13 @@ export default function StyledTable({
 
   return (
     <MainCard>
-      <TableContainer>
+      <TableContainer sx={{ overflowX: 'auto' }}>
         <Table>
-          <TableHead>
+          <TableHead  sx={{ minWidth: header.length * 150 }} >
             <TableRow>
               {isShowSerialNo && <TableCell sx={{ color: 'primary.main' }}>SLNO</TableCell>}
               {header.map((head, i) => (
-                <TableCell key={i} sx={{ color: 'primary.main' }}>
+                <TableCell  key={i} sx={{ color: 'primary.main', minWidth: 120 }}>
                   {head}
                 </TableCell>
               ))}

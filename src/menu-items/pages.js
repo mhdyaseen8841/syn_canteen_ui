@@ -88,22 +88,22 @@ export default function Pages() {
       icon: icons.IconReportAnalytics,
       visibleTo: [Roles.ADMIN, Roles.FRONTOFFICE]
     },
-    {
-      id: 'printRequest',
-      title: 'Print Request',
-      type: 'item',
-      url: '/printRequest',
-      icon: icons.IconTicket,
-      visibleTo: [Roles.ADMIN, Roles.MANAGER]
-    },
-    {
-      id: 'issueCanteenCoupons',
-      title: 'Issue Canteen Coupons',
-      type: 'item',
-      url: '/issueCanteenCoupons',
-      icon: icons.IconTicket,
-      visibleTo: [Roles.ADMIN, Roles.MANAGER]
-    }
+    // {
+    //   id: 'printRequest',
+    //   title: 'Print Request',
+    //   type: 'item',
+    //   url: '/printRequest',
+    //   icon: icons.IconTicket,
+    //   visibleTo: [Roles.ADMIN, Roles.MANAGER]
+    // },
+    // {
+    //   id: 'issueCanteenCoupons',
+    //   title: 'Issue Canteen Coupons',
+    //   type: 'item',
+    //   url: '/issueCanteenCoupons',
+    //   icon: icons.IconTicket,
+    //   visibleTo: [Roles.ADMIN, Roles.MANAGER]
+    // }
   ];
 
   const filteredPages = allPages.filter((page) => page.visibleTo.includes(role));

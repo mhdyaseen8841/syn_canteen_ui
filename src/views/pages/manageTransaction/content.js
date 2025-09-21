@@ -7,7 +7,7 @@ import { toast } from 'react-toastify';
 import AddForm from './AddForm';
 import { deleteEmployeeTransaction } from 'utils/Service';
 import DeleteConfirmationDialog from 'ui-component/DeleteConfirmationDialog';
-
+import {  formatDateTime } from 'utils/formatDateTime';
 const tableHeader = [
   'Transaction ID',
   'Company Name',
@@ -42,8 +42,15 @@ const [reasonError, setReasonError] = useState('');
     return item;
   });
 
+  const preFormattedData = data.map((item) => ({
+  ...item,
+  transaction_date: formatDateTime(item.transaction_date),
+}));
+
+  
+
   const tableData = tableHeaderReplace(
-    data,
+    preFormattedData,
     [
       'transaction_id',
       'company_name',
@@ -59,6 +66,31 @@ const [reasonError, setReasonError] = useState('');
     ],
     tableHeader
   );
+
+
+
+//   const tableData = tableHeaderReplace(
+//   data,
+//   [
+//     'transaction_id',
+//     'company_name',
+//     'employee_code',
+//     'employee_name',
+//     'employee_type',
+//     'menu_name',
+//     'transaction_date',
+//     'status',
+//     'remarks',
+//     'cancelled_by',
+//     'cancelled_reason'
+//   ],
+//   tableHeader
+// ).map((item) => ({
+//   ...item,
+//   'Transaction Date': formatDate(item.transaction_date), // format the date
+//   'Cancelled By': item['Cancelled By'] || '-',               // handle empty values
+//   'Cancelled Reason': item['Cancelled Reason'] || '-',
+// }));
 
   const actionHandle = (e) => {
     if (e.action === 'delete') {
@@ -167,7 +199,7 @@ const handleDeleteConfirm = () => {
       <StyledTable
         data={tableData}
         header={tableHeader}
-        isShowSerialNo={false}
+        isShowSerialNo={true}
         isShowAction={true}
         actions={['delete']}
         onActionChange={actionHandle}

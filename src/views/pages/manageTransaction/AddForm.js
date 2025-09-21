@@ -45,7 +45,7 @@ export default function AddForm({ getData, open, onClose, isEdit = false, data =
           empId: '',
           menu: '',
           no_of_coupons: '',
-          remarks: ''
+          remarks: ' '
         }
   });
 
@@ -58,8 +58,8 @@ export default function AddForm({ getData, open, onClose, isEdit = false, data =
       companyId: '',
       empId: '',
       menu: '',
-      no_of_coupons: '',
-      remarks: ''
+      no_of_coupons: '1',
+      remarks: ' '
     });
   }
 }, [selectedCalender, open, reset]);
@@ -360,7 +360,6 @@ export default function AddForm({ getData, open, onClose, isEdit = false, data =
             <Controller
               name="remarks"
               control={control}
-              rules={{ required: 'Remarks is required' }}
               render={({ field }) => (
                 <FormControl fullWidth error={Boolean(errors.remarks)}>
                   <TextField

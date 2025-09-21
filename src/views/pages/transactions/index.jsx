@@ -53,7 +53,8 @@ export default function Index() {
 
   const [fixedData, setFixedData] = useState({
     menuItem: null,
-    coupons: 1
+    coupons: 1,
+    date: new Date().toISOString().split('T')[0]
   });
   const [menuLoading, setMenuLoading] = useState(false);
   const [contractorData, setContractorData] = useState({
@@ -181,9 +182,9 @@ export default function Index() {
   }, []);
 
   const handleFixedSubmit = () => {
-    const { menuItem, coupons } = fixedData;
+    const { menuItem, coupons , date } = fixedData;
 
-    addFixedTransaction({ menu_id: menuItem.menu_id, no_of_entries: coupons })
+    addFixedTransaction({ menu_id: menuItem.menu_id, no_of_entries: coupons, trasaction_time : date })
       .then((res) => {
         console.log(res);
         toast.success(`${coupons} coupons for Fixed Transaction Submitted Successfully, TransactionID: ${res.transaction_id}`);
@@ -218,7 +219,7 @@ export default function Index() {
     // Reset form
     setFixedData({
       menuItem: null,
-      coupons: 1
+      coupons: 1,
     });
   };
 
@@ -409,39 +410,22 @@ export default function Index() {
           document.body.removeChild(iframe);
         }, 1000);
       } else {
-        // const printerPayload = render(
-        //   <Printer>
-        //     <Text align="center" bold={true}>
-        //       CANTEEN COUPON
-        //     </Text>
-        //     <Line />
-        //     <Row left="Menu" right={printData.menu_name} />
-        //     <Row left="Txn ID" right={printData.transaction_id.toString()} />
-        //     <Row left="Date" right={printData.date} />
-        //     <Line />
-        //   </Printer>
-        // );
+      
 
-        // fetch('http://192.168.220.43/print/api/print', {
-        //   method: 'POST',
-        //   headers: { 'Content-Type': 'application/json' },
-        //   body: JSON.stringify({ data: printerPayload })
+        // printData.forEach((item) => {
+        //   fetch('http://192.168.8.221/CanteenPrint/api/print', {
+        //     method: 'POST',
+        //     headers: { 'Content-Type': 'application/json' },
+        //     body: JSON.stringify(item) // send each object directly
+        //   })
+        //     .then((res) => res.json())
+        //     .then((result) => {
+        //       console.log('Print result:', result);
+        //     })
+        //     .catch((err) => {
+        //       console.error('Print error:', err);
+        //     });
         // });
-
-        printData.forEach((item) => {
-          fetch(process.env.REACT_APP_PRINT_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(item) // send each object directly
-          })
-            .then((res) => res.json())
-            .then((result) => {
-              console.log('Print result:', result);
-            })
-            .catch((err) => {
-              console.error('Print error:', err);
-            });
-        });
       }
       setPrintData(null);
       setShouldPrint(false);
@@ -486,6 +470,21 @@ export default function Index() {
               noOptionsText={menuLoading ? 'Loading...' : 'No items found'}
             />
           </Box>
+
+  <TextField
+  sx={{ mb: 3 }}
+            type="date"
+            label="Date"
+            fullWidth
+            value={fixedData.date}
+            onChange={(e) => setFixedData({ ...fixedData, date: e.target.value })}
+            // InputProps={{
+            //   inputProps: {
+            //     min: new Date().toISOString().split('T')[0]
+            //   }
+            // }}
+            size="medium" // Larger input size (like Menu Item)
+          />
 
           {/* Number of Coupons */}
           <TextField
@@ -555,11 +554,11 @@ export default function Index() {
             fullWidth
             value={contractorData.date}
             onChange={(e) => setContractorData({ ...contractorData, date: e.target.value })}
-            InputProps={{
-              inputProps: {
-                min: new Date().toISOString().split('T')[0]
-              }
-            }}
+            // InputProps={{
+            //   inputProps: {
+            //     min: new Date().toISOString().split('T')[0]
+            //   }
+            // }}
             size="medium" // Larger input size (like Menu Item)
           />
 
@@ -692,11 +691,11 @@ export default function Index() {
             fullWidth
             value={guestData.date}
             onChange={(e) => setGuestData({ ...guestData, date: e.target.value })}
-            InputProps={{
-              inputProps: {
-                min: new Date().toISOString().split('T')[0]
-              }
-            }}
+            // InputProps={{
+            //   inputProps: {
+            //     min: new Date().toISOString().split('T')[0]
+            //   }
+            // }}
             size="medium" // Larger input size (like Menu Item)
           />
 
