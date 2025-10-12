@@ -221,6 +221,11 @@ export async function getFixedDashboard(data){
   return response.data
 }
 
+export async function getSettledFixedDashboard(data){
+  const response = await apiInstance.post('settled-fixed-dashboard',data)
+  return response.data
+}
+
 export async function getContractorDashboard(data){
   const response = await apiInstance.post('contractor-dashboard',data)
   return response.data

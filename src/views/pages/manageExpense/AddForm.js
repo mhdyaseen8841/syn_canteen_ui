@@ -201,10 +201,6 @@ export default function AddForm({ getData, addData, open, onClose, isEdit = fals
               control={control}
               rules={{
                 required: 'Amount is required',
-                min: {
-                  value: 0,
-                  message: 'Amount cannot be negative'
-                },
                 max: {
                   value: 10000000,
                   message: 'Amount cannot exceed 1 crore'
@@ -217,7 +213,7 @@ export default function AddForm({ getData, addData, open, onClose, isEdit = fals
                   type="number"
                   error={Boolean(errors.expense_amount)}
                   helperText={errors.expense_amount?.message}
-                  inputProps={{ min: 0, max: 10000000 }}
+                  inputProps={{  max: 10000000 }}
                 />
               )}
             />

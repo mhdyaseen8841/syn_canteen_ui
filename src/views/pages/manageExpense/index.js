@@ -113,7 +113,7 @@ export default function Index() {
 
       <AddForm open={formOpen} addData={addExpense} getData={getData} onClose={() => setFormOpen(false)} selectedCalender={selectedCalender} />
    
-      <Content data={data} updateData={getData} selectedCalender={selectedCalender} editExpense={editExpense} menus={menu}/>
+      <Content data={data} updateData={getData} canteenCalenderData={canteenCalenderData} selectedCalender={selectedCalender} editExpense={editExpense} menus={menu}/>
     </Stack>
   );
 }

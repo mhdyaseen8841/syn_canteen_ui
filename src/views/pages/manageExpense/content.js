@@ -13,7 +13,7 @@ import autoTable from 'jspdf-autotable';
 const tableHeader = ['Menu Id', 'Menu name', 'Expense Date', 'Amount', 'Remarks'];
 const exportHeader = tableHeader.filter(h => h !== 'Menu Id');
 
-export default function Content({ data, updateData,selectedCalender,editExpense,menus }) {
+export default function Content({ data, updateData,selectedCalender,editExpense,menus, canteenCalenderData }) {
   const [formOpen, setFormOpen] = useState(false);
   const [selectedData, setselectedData] = useState();
   // const [searchName, setSearchName] = useState('');
@@ -59,7 +59,9 @@ const handleExportExcel = () => {
   const ws = XLSX.utils.json_to_sheet(exportData, { header: exportHeader });
   const wb = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb, ws, 'Expenses');
-  XLSX.writeFile(wb, 'Expenses.xlsx');
+    const calenderObj = canteenCalenderData.find(m => m.canteen_calendar_id === selectedCalender);
+  const monthYear = calenderObj?.month_year || 'Report';
+  XLSX.writeFile(wb, `Expense_${monthYear}.xlsx`);
 };
 
   // PDF Export
@@ -73,7 +75,11 @@ const handleExportExcel = () => {
       body: tableData.map(row => exportHeader.map(h => row[h] ?? '')),
       startY: 20
     });
-    doc.save('Expenses.pdf');
+      const calenderObj = canteenCalenderData.find(m => m.canteen_calendar_id === selectedCalender);
+      console.log(calenderObj)
+      console.log(selectedCalender)
+  const monthYear = calenderObj?.month_year || 'Report';
+    doc.save(`Expenses_${monthYear}.pdf`);
   };
 
   const actionHandle = (e) => {

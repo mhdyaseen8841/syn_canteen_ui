@@ -51,6 +51,14 @@ export default function Pages() {
 
   const allPages = [
     {
+      id: 'transaction',
+      title: 'Fixed Transactions',
+      type: 'item',
+      url: '/transaction',
+      icon: icons.IconReportAnalytics,
+      visibleTo: [Roles.ADMIN, Roles.FRONTOFFICE, Roles.FIXEDUSER]
+    },
+    {
       id: 'manageTransactions',
       title: 'Current Transactions',
       type: 'item',
@@ -203,13 +211,13 @@ export default function Pages() {
                   visibleTo: [Roles.ADMIN, Roles.MANAGER, Roles.FRONTOFFICE]
                 },
                 {
-                  id: 'transaction',
+                  id: 'fixedReports',
                   title: 'Fixed Reports',
                   type: 'item',
-                  url: '/transaction',
+                  url: '/fixedReports',
                   icon: icons.IconReportAnalytics,
                   visibleTo: [Roles.ADMIN, Roles.FRONTOFFICE, Roles.FIXEDUSER]
-                },
+                }
                 // {
                 //   id: 'complaintReports',
                 //   title: 'Complaint Reports',
