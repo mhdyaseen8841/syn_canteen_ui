@@ -919,7 +919,7 @@ const exportData = tableData.map(row => ({
           from_date: dateFrom,
           to_date: dateTo,
           menu: menuItems.find(m => m.menu_id === menuFilter)?.menu_name || 'All',
-          GrandTotal: exportData.map()
+              GrandTotal: exportData.reduce((sum, row) => sum + (parseFloat(row['Total']) || 0), 0)
         }}
       />
     </Box>

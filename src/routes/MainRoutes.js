@@ -35,7 +35,7 @@ const MainRoutes = {
   children: [
     {
       path: '',
-      element: <Navigate to="transaction" />
+      element: <Navigate to="manage-transactions" />
     },
       {
       path: 'dashboard',
