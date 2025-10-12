@@ -235,3 +235,9 @@ export async function issueCompanyCoupons(data){
   const response = await apiInstance.post('issue-company-coupons', data);
   return response.data;
 }
+
+//coupon canel
+export async function cancelCoupon(data) {
+  const response = await apiInstance.put('cancel-coupon', data);
+  return response.data;
+}

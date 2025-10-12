@@ -39,7 +39,7 @@ export default function Index() {
   // Fetch employees
   const getData = async () => {
     try {
-      if (!selectedCompany || !selectedType || !selectedCalendar) {
+      if (!selectedType || !selectedCalendar) {
         setData([]);
         return;
       }
@@ -68,17 +68,7 @@ export default function Index() {
 
   return (
     <Stack direction={'column'} gap={2}>
-      <Tools
-        selectedCompany
-        buttonClick={() => {
-          if (!selectedCompany) {
-            toast.error('Please select a company first');
-            return;
-          }
-          setFormOpen(true);
-        }}
-        type={selectedType}
-      />
+      <Tools />
 
       <Box sx={{ mb: 2 }}>
         <Stack direction={{ xs: 'column', md: 'row' }} spacing={2}>
@@ -121,7 +111,7 @@ export default function Index() {
             </Select>
           </FormControl>
 
-          <Button variant="contained" onClick={getData} disabled={!selectedCompany || !selectedType || !selectedCalendar} color="primary">
+          <Button variant="contained" onClick={getData} disabled={  (selectedType !== "fixed" && !selectedCompany) || !selectedType || !selectedCalendar} color="primary">
             Apply
           </Button>
         </Stack>

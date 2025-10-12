@@ -78,12 +78,12 @@ export default function Index() {
     try {
       const response = await searchEmployee({
         company_id: selectedCompany,
-        employee_type: 'contractor',
+        employee_type: 'guest',
         search_text: searchTerm
       });
       setEmployeeOptions(response || []);
     } catch (error) {
-      toast.error('Error loading contractors');
+      toast.error('Error loading guests');
       setEmployeeOptions([]);
     } finally {
       setLoadingEmployees(false);
@@ -105,7 +105,7 @@ export default function Index() {
   return (
     <Stack direction="column" gap={2}>
       <Typography variant="h3" color="secondary.main">
-        Contractor Report
+        Guest Report
       </Typography>
 
       <Stack direction={{ xs: 'column', md: 'row' }} spacing={2}>
@@ -172,7 +172,7 @@ export default function Index() {
               renderInput={(params) => (
                 <TextField
                   {...params}
-                  label="Contractor (ID or Name)"
+                  label="Guest (ID or Name)"
                   placeholder="Search by ID or Name..."
                   InputProps={{
                     ...params.InputProps,

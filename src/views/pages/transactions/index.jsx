@@ -143,6 +143,7 @@ export default function Index() {
     }
   };
 
+
   const today = new Date().toISOString().split('T')[0];
   const [dateFrom, setDateFrom] = useState(today);
   const [dateTo, setDateTo] = useState(today);
@@ -732,6 +733,19 @@ export default function Index() {
     </Dialog>
   );
 
+  
+
+  const exportHeaders = ['Menu Name', 'Fixed Rate', 'Transaction Count', 'Total'];
+
+// For Excel export: data without ₹
+const exportData = tableData.map(row => ({
+  'Menu Name': row['Menu Name'],
+  'Fixed Rate': String(row['Fixed Rate (₹)']).replace(/[₹]/g, '').trim(),
+  'Transaction Count': row['Transaction Count'],
+  'Total': String(row['Total (₹)']).replace(/[₹]/g, '').trim()
+}));
+
+
   useEffect(() => {
     // Only call if both dates are selected
     if (dateFrom && dateTo) {
@@ -740,8 +754,8 @@ export default function Index() {
     // eslint-disable-next-line
   }, [dateFrom, dateTo, menuFilter]);
   return (
-    <Box sx={{ p: 3, maxWidth: 1200, mx: 'auto' }}>
-       <Stack direction={'row'} sx={{ justifyContent: 'space-between', alignItems: 'center', paddingY:2 }}>
+    <Box >
+       <Stack direction={'row'} sx={{ paddingY:2 }}>
                       <Typography variant='h3' color={'secondary.main'}> Fixed Transactions</Typography>
                   </Stack>
       {/* <Grid container spacing={3} pb={2}>
@@ -898,18 +912,14 @@ export default function Index() {
     {/* Export buttons */}
     <Box sx={{ mb: 2, display: 'flex', justifyContent: 'flex-end' }}>
       <ExportButtons
-        headers={['Menu Name', 'Fixed Rate ', 'Transaction Count', 'Total ']}
-        data={tableData.map(row => ({
-          'Menu Name': row['Menu Name'],
-          'Fixed Rate (₹)': row['Fixed Rate (₹)'],
-          'Transaction Count': row['Transaction Count'],
-          'Total (₹)': row['Total (₹)']
-        }))}
+        headers={exportHeaders}
+        data={exportData}
         fileName="Fixed_Dashboard_Report"
         meta={{
           from_date: dateFrom,
           to_date: dateTo,
-          menu: menuItems.find(m => m.menu_id === menuFilter)?.menu_name || 'All'
+          menu: menuItems.find(m => m.menu_id === menuFilter)?.menu_name || 'All',
+          GrandTotal: exportData.map()
         }}
       />
     </Box>

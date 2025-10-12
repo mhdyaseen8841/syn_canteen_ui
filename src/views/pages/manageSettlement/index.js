@@ -54,7 +54,7 @@ export default function Index() {
       // Prepare array of { menu_id, amount }
       const menuData = data.map(item => ({
         menu_id: item.menu_id,
-        amount: Number(item.Regular_Amount || 0)
+        amount: Number(item.menu_price || 0)
       }));
 
       await doSettlement({

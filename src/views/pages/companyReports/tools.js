@@ -3,7 +3,7 @@ import { Button, Stack, Typography } from '@mui/material';
 import React from 'react';
 import MainCard from 'ui-component/cards/MainCard';
 
-export default function Tools({ buttonClick, type, selectedCompany }) {
+export default function Tools() {
 
   return (
     <MainCard>

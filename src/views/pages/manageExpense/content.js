@@ -6,8 +6,12 @@ import { toast } from 'react-toastify';
 import AddForm from './AddForm';
 import { deformatDate, formatDate } from 'utils/formatDate';
 import DeleteConfirmationDialog from 'ui-component/DeleteConfirmationDialog';
-
+import { Button, Stack } from '@mui/material';
+import * as XLSX from 'xlsx';
+import { jsPDF } from 'jspdf';
+import autoTable from 'jspdf-autotable';
 const tableHeader = ['Menu Id', 'Menu name', 'Expense Date', 'Amount', 'Remarks'];
+const exportHeader = tableHeader.filter(h => h !== 'Menu Id');
 
 export default function Content({ data, updateData,selectedCalender,editExpense,menus }) {
   const [formOpen, setFormOpen] = useState(false);
@@ -41,6 +45,37 @@ export default function Content({ data, updateData,selectedCalender,editExpense,
       'Expense Date': formatDate(item['Expense Date']),
     };
   });
+
+  // Excel Export
+const handleExportExcel = () => {
+  if (!tableData.length) return;
+  // Only include exportHeader columns, in order
+  const exportData = tableData.map(row =>
+    exportHeader.reduce((acc, key) => {
+      acc[key] = row[key] ?? '';
+      return acc;
+    }, {})
+  );
+  const ws = XLSX.utils.json_to_sheet(exportData, { header: exportHeader });
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Expenses');
+  XLSX.writeFile(wb, 'Expenses.xlsx');
+};
+
+  // PDF Export
+  const handleExportPDF = () => {
+    if (!tableData.length) return;
+    const doc = new jsPDF();
+    doc.setFontSize(12);
+    doc.text('Expenses', 10, 10);
+    autoTable(doc, {
+      head: [exportHeader],
+      body: tableData.map(row => exportHeader.map(h => row[h] ?? '')),
+      startY: 20
+    });
+    doc.save('Expenses.pdf');
+  };
+
   const actionHandle = (e) => {
     if (e.action == 'delete') {
       setPendingDelete(e);
@@ -147,6 +182,17 @@ export default function Content({ data, updateData,selectedCalender,editExpense,
         getData={updateData}
         addData={editExpense}
       />
+
+      {tableData.length > 0 && (
+        <Stack direction="row" spacing={2} sx={{ mb: 2, justifyContent: 'flex-end' }}>
+          <Button variant="outlined" onClick={handleExportExcel}>
+            Export Excel
+          </Button>
+          <Button variant="outlined" onClick={handleExportPDF}>
+            Export PDF
+          </Button>
+        </Stack>
+      )}
       <StyledTable
         data={tableData}
         header={tableHeader}

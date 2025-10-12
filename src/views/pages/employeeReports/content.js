@@ -112,19 +112,11 @@ export default function Content({ data, role, employeeMeta, updateData }) {
 
       {isSettled && (
         <>
-          <Typography variant="h2" mt={2} color="secondary.main">
-            🧾 Summary
-          </Typography>
 
-          <StyledTable
-            data={transformedSummary}
-            header={['Menu Name', 'Count', 'Rate', 'Total']}
-            isShowSerialNo={true}
-            isShowAction={false}
-            rowsPerPage={20}
-          />
+        
+       
 
-          <Box display="flex" justifyContent="flex-end" mt={4}>
+          <Box display="flex" justifyContent="flex-start" mt={4}>
             <Paper
               elevation={8}
               sx={{
@@ -167,7 +159,7 @@ export default function Content({ data, role, employeeMeta, updateData }) {
                     fontWeight={500}
                     sx={{ color: '#546e7a' }}
                   >
-                    Premium (AC Dine) : <span style={{ color: '#546e7a' }}>₹{acDineCharge ? acDineCharge.toFixed(2) : 0}</span>
+                    AC Dine : <span style={{ color: '#546e7a' }}>₹{acDineCharge ? acDineCharge.toFixed(2) : 0}</span>
                   </Typography>
 
                   <Typography
@@ -175,12 +167,26 @@ export default function Content({ data, role, employeeMeta, updateData }) {
                     fontWeight={600}
                     sx={{ color: '#c0392b' }}
                   >
-                    Total with Premium : <span style={{ color: '#c0392b' }}>₹{totalWithPremium.toFixed(2)}</span>
+                    Total with AC Dine : <span style={{ color: '#c0392b' }}>₹{totalWithPremium.toFixed(2)}</span>
                   </Typography>
                 </>
               </Stack>
             </Paper>
           </Box>
+
+   <Typography variant="h2" mt={2} color="secondary.main">
+            🧾 Summary
+          </Typography>
+          
+          <StyledTable
+            data={transformedSummary}
+            header={['Menu Name', 'Count', 'Rate', 'Total']}
+            isShowSerialNo={true}
+            isShowAction={false}
+            rowsPerPage={20}
+          />
+
+          
         </>
       )}
       <Typography variant="h2" mt={4} color="secondary.main">

@@ -22,6 +22,8 @@ const ContractorReport = Loadable(lazy(() => import('views/pages/contractorRepor
 const ComplaintReport = Loadable(lazy(() => import('views/pages/complaintReports')));
 const PrintRequest = Loadable(lazy(() => import('views/pages/printRequest')));
 const IssueCanteenCoupons = Loadable(lazy(()=> import('views/pages/issueCanteenCoupons')))
+const CancelCanteenCoupons = Loadable(lazy(()=> import('views/pages/cancelCanteenCoupons')))
+const GuestReport = Loadable(lazy(() => import('views/pages/guestReports')));
 // const ManageUsers = Loadable(lazy(() => import('views/pages/manageUsers')));
 // ==============================|| MAIN ROUTING ||============================== //
 
@@ -75,6 +77,10 @@ const MainRoutes = {
       path: 'issueCanteenCoupons',
       element: <IssueCanteenCoupons />
     },
+    {
+      path: 'cancel-transaction',
+      element: <CancelCanteenCoupons />
+    },
   //  {
   //   path: 'contractor',
   //   element: <Contractor />
@@ -98,6 +104,10 @@ const MainRoutes = {
    {
     path:'/contractorReports',
     element: <ContractorReport/>
+   },
+   {
+    path: 'guestReports',
+    element: <GuestReport />
    },
    {
     path: 'complaintReports',

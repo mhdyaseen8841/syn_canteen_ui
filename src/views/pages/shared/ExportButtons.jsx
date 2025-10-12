@@ -13,7 +13,7 @@ const metaTitles = {
   emp_id: 'Employee ID',
   total: 'Total',
   premium: 'AC Dine Charge',
-  total_with_premium: 'Total with Premium'
+  total_with_premium: 'Grand Total'
 };
 
 export default function ExportButtons({ sections, data, headers, fileName = 'export', meta = {} }) {

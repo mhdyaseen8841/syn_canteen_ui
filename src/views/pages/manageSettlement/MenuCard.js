@@ -63,7 +63,7 @@ const Value = styled(Typography)(({ theme }) => ({
 
 export default function MenuCard({ data }) {
   const isFixed = data.Fixed_Count > 0 || data.Fixed_Amount !== null || data.Fixed_Total_Amount !== null;
-  const isRegular = data.Regular_Count > 0 || data.Regular_Amount !== null;
+  const isRegular = data.Regular_Count > 0 || data.menu_price !== null;
 
   return (
     <StyledCard >
@@ -81,20 +81,20 @@ export default function MenuCard({ data }) {
       <CardContent sx={{ flexGrow: 1 }}> {/* flexGrow to make content fill available space */}
   
           <Box sx={{ mb: 2 }}>
-            <Typography variant="subtitle1" sx={{ fontWeight: 'bold', color: 'primary.dark', mb: 1 }}>
+            {/* <Typography variant="subtitle1" sx={{ fontWeight: 'bold', color: 'primary.dark', mb: 1 }}>
               Fixed Menu Details
-            </Typography>
+            </Typography> */}
             <InfoRow>
-              <Label variant="body2">Fixed Count:</Label>
-              <Value variant="body2">{data.Fixed_Count ?? '0'}</Value>
+              <Label variant="body2">Count:</Label>
+              <Value variant="body2">{data.tx_Count ?? '0'}</Value>
             </InfoRow>
-            <InfoRow>
+            {/* <InfoRow>
               <Label variant="body2">Fixed Amount (Per Person):</Label>
               <Value variant="body2">{data.Fixed_Amount ? `₹${data.Fixed_Amount}` : 'N/A'}</Value>
-            </InfoRow>
+            </InfoRow> */}
             <InfoRow>
-              <Label variant="body2">Fixed Total Amount:</Label>
-              <Value variant="body2">{data.Fixed_Total_Amount ? `₹${data.Fixed_Total_Amount}` : '₹0'}</Value>
+              <Label variant="body2">Collected From Fixed :</Label>
+              <Value variant="body2">{data.Fixed_Amount ? `₹${data.Fixed_Amount}` : '₹0'}</Value>
             </InfoRow>
             <Divider sx={{ my: 1.5 }} />
           </Box>
@@ -103,7 +103,7 @@ export default function MenuCard({ data }) {
  
         <InfoRow>
           <Label variant="body2">AC Dine Share:</Label>
-          <Value variant="body2">{data.AC_Dine_Share !== null ? `${data.AC_Dine_Share}` : 'N/A'}</Value>
+          <Value variant="body2">{data.Ac_Dine_Share !== null ? `${data.Ac_Dine_Share}` : 'N/A'}</Value>
         </InfoRow>
         <InfoRow>
           <Label variant="body1" sx={{ color: 'error.dark' }}>Total Expense:</Label>
@@ -115,29 +115,29 @@ export default function MenuCard({ data }) {
      
      
           <Box sx={{ mb: 2 }}>
-            <Typography variant="subtitle1" sx={{ fontWeight: 'bold', color: 'primary.dark', mb: 1 }}>
+            {/* <Typography variant="subtitle1" sx={{ fontWeight: 'bold', color: 'primary.dark', mb: 1 }}>
               Regular Menu Details
             </Typography>
             <InfoRow>
               <Label variant="body2">Regular Count:</Label>
               <Value variant="body2">{data.Regular_Count ?? '0'}</Value>
-            </InfoRow>
+            </InfoRow> */}
          
-            <Divider sx={{ my: 1.5 }} />
+            {/* <Divider sx={{ my: 1.5 }} /> */}
 
          
-{data.Regular_Amount > 0 ? ( // Only show if Regular_Amount is greater than 0}
+{data.menu_price > 0 ? ( // Only show if Regular_Amount is greater than 0}
              <HighlightedInfoRow> {/* Using the new styled component */}
-              <Label variant="body1" sx={{ color: 'success.dark' }}>Regular Amount (Per Person):</Label>
+              <Label variant="body1" sx={{ color: 'success.dark' }}>Menu Price (Calculated):</Label>
               <Value variant="h2" sx={{ color: 'success.dark', fontWeight: 'bold' }}>
-                {data.Regular_Amount ? `₹${data.Regular_Amount}` : '₹0'}
+                {data.menu_price ? `₹${data.menu_price}` : '₹0'}
               </Value>
             </HighlightedInfoRow>
 ) : (
      <HighlightedInfoRow> {/* Using the new styled component */}
-              <Label variant="body1" sx={{ color: 'error.dark' }}>Regular Amount (Per Person):</Label>
+              <Label variant="body1" sx={{ color: 'error.dark' }}>Menu Price (Calculated):</Label>
               <Value variant="h2" sx={{ color: 'error.dark', fontWeight: 'bold' }}>
-                {data.Regular_Amount ? `₹${data.Regular_Amount}` : '₹0'}
+                {data.menu_price ? `₹${data.menu_price}` : '₹0'}
               </Value>
             </HighlightedInfoRow>
 )}

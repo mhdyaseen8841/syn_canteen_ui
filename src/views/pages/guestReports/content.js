@@ -104,7 +104,7 @@ export default function Content({ data, role, employeeMeta, updateData }) {
           }
         ]
   }
-  fileName="Contractor_Report"
+  fileName="Guest_Report"
   meta={meta}
 />
      )}
@@ -225,7 +225,7 @@ export default function Content({ data, role, employeeMeta, updateData }) {
       ) : (
         <Box mt={2} mb={2}>
           <Typography variant="body1" color="textSecondary">
-            No transactions found for this contractor.
+            No transactions found for this Guest.
           </Typography>
         </Box>
       )}
