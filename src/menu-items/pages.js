@@ -50,7 +50,7 @@ export default function Pages() {
   const allPages = [
     {
       id: 'transaction',
-      title: 'Fixed/Guest/Contractor',
+      title: 'Fixed Transactions',
       type: 'item',
       url: '/transaction',
       icon: icons.IconReportAnalytics,

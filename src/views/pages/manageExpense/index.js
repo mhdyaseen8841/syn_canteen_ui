@@ -92,7 +92,7 @@ export default function Index() {
                     ))}
                   </Select>
                 </FormControl>
-
+{/* 
                  <FormControl fullWidth>
                             <InputLabel>Menu</InputLabel>
                             <Select
@@ -106,7 +106,7 @@ export default function Index() {
                                 </MenuItem>
                               ))}
                             </Select>
-                          </FormControl>
+                          </FormControl> */}
       
               </Stack>
             </Box>

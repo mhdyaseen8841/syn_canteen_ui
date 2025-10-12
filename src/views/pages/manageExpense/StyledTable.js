@@ -18,7 +18,7 @@ if(onClickAction){
 }
   }
 
-
+  const filteredHeader = header.filter((head) => head.trim().toLowerCase() !== 'menu id');
   return (
     <MainCard>
       <TableContainer>
@@ -26,7 +26,7 @@ if(onClickAction){
           <TableHead>
             <TableRow>
               {isShowSerialNo && <TableCell sx={{ color: 'primary.main' }}>SLNO</TableCell>}
-              {header.map((head, i) => (
+              {filteredHeader.map((head, i) => (
                 <TableCell key={i} sx={{ color: 'primary.main' }}>
                   {head}
                 </TableCell>
@@ -40,7 +40,7 @@ if(onClickAction){
               return (
                 <TableRow onClick={()=>handleClick(dt._id)} key={ind}>
                   {isShowSerialNo && <TableCell>{ind + 1}</TableCell>}
-                  {header.map((head, i) => {
+                  {filteredHeader.map((head, i) => {
                             const fieldKey = head.replace(/\s+/g, '_');
                             const value = dt[head];
                     if (head.toUpperCase() === 'IMAGE') {

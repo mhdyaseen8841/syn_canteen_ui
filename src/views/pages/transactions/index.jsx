@@ -37,6 +37,7 @@ import { useNavigate } from 'react-router-dom';
 
 import { Printer, Text, Line, Row, render } from 'react-thermal-printer';
 import StyledTable from './StyledTable';
+import ExportButtons from '../shared/ExportButtons';
 
 export const Roles = {
   ADMIN: 'admin',
@@ -740,7 +741,10 @@ export default function Index() {
   }, [dateFrom, dateTo, menuFilter]);
   return (
     <Box sx={{ p: 3, maxWidth: 1200, mx: 'auto' }}>
-      <Grid container spacing={3} pb={2}>
+       <Stack direction={'row'} sx={{ justifyContent: 'space-between', alignItems: 'center', paddingY:2 }}>
+                      <Typography variant='h3' color={'secondary.main'}> Fixed Transactions</Typography>
+                  </Stack>
+      {/* <Grid container spacing={3} pb={2}>
         <Grid item xs={12} sm={4}>
           <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
             <CardContent
@@ -836,7 +840,7 @@ export default function Index() {
             </Grid>
           </>
         )}
-      </Grid>
+      </Grid> */}
 
       <Box>
         {/* Filters */}
@@ -889,19 +893,38 @@ export default function Index() {
           </Grid>
         </Paper>
 
-        {dashboardData.length > 0 ? (
-          <>
-            <StyledTable
-              data={tableData}
-              header={tableHeader}
-              isShowSerialNo={true}
-              isShowAction={false}
-              actions={['']}
-              totalColumnKey="Total"
-              dashboardData={dashboardData}
-            />
-          </>
-        ) : (
+       {dashboardData.length > 0 ? (
+  <>
+    {/* Export buttons */}
+    <Box sx={{ mb: 2, display: 'flex', justifyContent: 'flex-end' }}>
+      <ExportButtons
+        headers={['Menu Name', 'Fixed Rate ', 'Transaction Count', 'Total ']}
+        data={tableData.map(row => ({
+          'Menu Name': row['Menu Name'],
+          'Fixed Rate (₹)': row['Fixed Rate (₹)'],
+          'Transaction Count': row['Transaction Count'],
+          'Total (₹)': row['Total (₹)']
+        }))}
+        fileName="Fixed_Dashboard_Report"
+        meta={{
+          from_date: dateFrom,
+          to_date: dateTo,
+          menu: menuItems.find(m => m.menu_id === menuFilter)?.menu_name || 'All'
+        }}
+      />
+    </Box>
+
+    <StyledTable
+      data={tableData}
+      header={tableHeader}
+      isShowSerialNo={true}
+      isShowAction={false}
+      actions={['']}
+      totalColumnKey="Total"
+      dashboardData={dashboardData}
+    />
+  </>
+) : (
           <Typography variant="body2" color="text.secondary" align="center" mb={3}>
             {dashboardLoading ? 'Loading...' : 'No data found for selected filters.'}
           </Typography>

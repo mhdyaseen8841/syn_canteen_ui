@@ -7,7 +7,7 @@ import AddForm from './AddForm';
 import { deformatDate, formatDate } from 'utils/formatDate';
 import DeleteConfirmationDialog from 'ui-component/DeleteConfirmationDialog';
 
-const tableHeader = ['Menu Id', 'Menu Name', 'Expense Date', 'Amount', 'Remarks'];
+const tableHeader = ['Menu Id', 'Menu name', 'Expense Date', 'Amount', 'Remarks'];
 
 export default function Content({ data, updateData,selectedCalender,editExpense,menus }) {
   const [formOpen, setFormOpen] = useState(false);
@@ -29,15 +29,14 @@ export default function Content({ data, updateData,selectedCalender,editExpense,
   
   const tableData = tableHeaderReplace(
     filteredData,
-    ['menu_id', 'menu_name', 'expense_date', 'expense_amount', 'remarks'],
+    [ 'menu_id','Menu Name', 'expense_date', 'expense_amount', 'remarks'],
     tableHeader
   ).map((item) => {
     // Find the corresponding menu name using the menu_id from the menus prop
     const menu = menus.find((menu) => menu.menu_id === item['Menu Id']);
     return {
       ...item,
-       'Menu Name': menu ? menu.menu_name : item['Menu Id'], // Use menu_name if found
-      'Settled': item['Settled'] === 1 ? 'Yes' : 'No',
+       'Menu Name': item['menu_name'], // Use menu_name if found
       'Active': item['Active'] === 1 ? 'Yes' : 'No',
       'Expense Date': formatDate(item['Expense Date']),
     };
