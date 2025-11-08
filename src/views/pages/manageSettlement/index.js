@@ -13,6 +13,7 @@ export default function Index() {
   const [data, setData] = useState([]);
   const [canteenCalenderData, setCanteenCalenderData] = useState([]);
   const [selectedCalender, setSelectedCalender] = useState('');
+   const [isSelectedCalendarSettled, setIsSelectedCalendarSettled] = useState(false); // Add this state
  const [confirmOpen, setConfirmOpen] = useState(false);
 
   const getData = async (calender = selectedCalender) => {
@@ -27,7 +28,7 @@ export default function Index() {
 
   const getCanteenCalenderData = async () => {
     try {
-      const res = await getCanteenCalender(0);
+      const res = await getCanteenCalender(3);
       setCanteenCalenderData(res);
     } catch (err) {
       console.error(err);
@@ -37,6 +38,10 @@ export default function Index() {
 
   const handleCalenderDate = (data) => {
     setSelectedCalender(data);
+
+    const selectedCal = canteenCalenderData.find(cal => cal.canteen_calendar_id === data);
+   
+    setIsSelectedCalendarSettled(selectedCal?.is_settled || false);
     getData(data);
   };
 
@@ -73,15 +78,19 @@ export default function Index() {
       setConfirmOpen(false);
     }
   };
-
+   const selectedCalendarData = canteenCalenderData.find(
+        cal => cal.canteen_calendar_id === selectedCalender
+    );
   return (
     <Stack direction="column" gap={2}>
-      <Tools
-        buttonClick={() => setFormOpen(true)}
-        selectedCalender={selectedCalender}
-        settleClick={handleSettle}
-        disableSettle={!data.length}
-      />
+       <Tools
+                buttonClick={() => setFormOpen(true)}
+                selectedCalender={isSelectedCalendarSettled}
+                settleClick={handleSettle}
+                disableSettle={!data.length}
+                data={data}
+                monthYear={selectedCalendarData?.month_year}
+            />
 
       <Typography variant="h3" color="secondary.main">
         Select Calendar
