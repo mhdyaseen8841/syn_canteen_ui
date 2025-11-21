@@ -51,7 +51,7 @@ export default function Index() {
 
   const getCanteenCalenderData = async () => {
     try {
-      const res = await getCanteenCalender();
+      const res = await getCanteenCalender(1);
       setCanteenCalenderData(res);
     } catch (err) {
       console.error(err);
