@@ -41,7 +41,7 @@ export default function AddForm({ getData, addData, open, onClose, isEdit = fals
         console.log(err);
         toast.error('Error loading menus');
       });
-    getCanteenCalender()
+    getCanteenCalender(3)
       .then(setCalendars)
       .catch((err) => {
         console.log(err);
