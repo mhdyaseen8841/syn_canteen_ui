@@ -12,7 +12,7 @@ export default function Index() {
   const [selectedCompany, setSelectedCompany] = useState('');
   const [selectedType, setSelectedType] = useState('Employee');
 
-  const employeeTypes = ['Employee', 'Contractor', 'Guest'];
+  const employeeTypes = ['Employee', 'Contractor', 'Guest', 'Overtime'];
 
   // Fetch companies
   // const FetchCompanies = async () => {
