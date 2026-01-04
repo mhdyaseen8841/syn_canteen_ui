@@ -1,16 +1,4 @@
-import {
-  Button,
-  Container,
-  Stack,
-  TextField,
-  Autocomplete,
-  FormControl,
-  FormLabel,
-  RadioGroup,
-  FormControlLabel,
-  Radio,
-  FormHelperText
-} from '@mui/material';
+import { Button, Container, Stack, TextField, Autocomplete } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { toast } from 'react-toastify';
@@ -18,23 +6,16 @@ import StyledDialog from 'ui-component/StyledDialog';
 import { getMenu, getCanteenCalender } from 'utils/Service';
 
 export default function AddForm({ getData, addData, open, onClose, isEdit = false, data = {}, selectedCalender }) {
-   const {
+  const {
     control,
     handleSubmit,
     setValue,
     formState: { errors }
   } = useForm({
     defaultValues: isEdit
-      ? {
-          ...data,
-          menu_id: Array.isArray(data.menu_id)
-            ? data.menu_id
-            : typeof data.menu_id === 'string'
-              ? data.menu_id.split(',').map(id => id.trim())
-              : []
-        }
+      ? data
       : {
-          menu_id: [],
+          menu_id: null,
           canteen_calendar_id: null,
           expense_date: '',
           expense_amount: '',
@@ -66,31 +47,27 @@ export default function AddForm({ getData, addData, open, onClose, isEdit = fals
     return `${year}-${month}-${day}`; // Convert to YYYY-MM-DD
   }
 
- useEffect(() => {
-  if (isEdit) {
-    let menuIds = [];
-    if (Array.isArray(data.menu_id)) {
-      menuIds = data.menu_id;
-    } else if (typeof data.menu_id === 'string') {
-      menuIds = data.menu_id.split(',').map(id => id.trim());
+  useEffect(() => {
+    if (isEdit) {
+      console.log(data);
+      console.log(isEdit);
+      setValue('menu_id', data.menu_id);
+      setValue('canteen_calendar_id', data.canteen_calendar_id);
+      setValue('expense_date', data.expense_date ? parseDDMMYYYY(data.expense_date) : '');
+
+      setValue('expense_amount', data.expense_amount);
+      setValue('remarks', data.remarks);
+    } else {
+      setValue('menu_id', null);
+      setValue('canteen_calendar_id', null);
+      setValue('expense_date', '');
+      setValue('expense_amount', '');
+      setValue('remarks', '');
     }
-    setValue('menu_id', menuIds);
-    setValue('canteen_calendar_id', data.canteen_calendar_id);
-    setValue('expense_date', data.expense_date ? parseDDMMYYYY(data.expense_date) : '');
-    setValue('expense_amount', data.expense_amount);
-    setValue('remarks', data.remarks);
-  } else {
-    setValue('menu_id', []);
-    setValue('canteen_calendar_id', null);
-    setValue('expense_date', '');
-    setValue('expense_amount', '');
-    setValue('remarks', '');
-  }
-}, [open]);;
+  }, [open]);
 
   const onSubmit = (formData) => {
     console.log(formData);
-    formData.menu_id = Array.isArray(formData.menu_id) ? formData.menu_id.join(',') : formData.menu_id;
     if (isEdit) {
       formData.expense_id = data.expense_id;
       formData.active = 1;
@@ -125,27 +102,25 @@ export default function AddForm({ getData, addData, open, onClose, isEdit = fals
           <Stack direction={'column'} sx={{ p: 2 }} spacing={2}>
             {/* Menu */}
             <Controller
-  name="menu_id"
-  control={control}
-  rules={{ required: 'Menu is required' }}
-  render={({ field }) => {
-    const selectedMenus = menus.filter(menu =>
-      (field.value || []).map(String).includes(String(menu.menu_id))
-    );
-    return (
-      <Autocomplete
-        multiple
-        options={menus}
-        getOptionLabel={(option) => option.menu_name || ''}
-        value={selectedMenus}
-        onChange={(_, value) => field.onChange(value.map(v => v.menu_id))}
-        renderInput={(params) => (
-          <TextField {...params} label="Select Menu(s)" error={Boolean(errors.menu_id)} helperText={errors.menu_id?.message} />
-        )}
-      />
-    );
-  }}
-/>
+              name="menu_id"
+              control={control}
+              rules={{ required: 'Menu is required' }}
+              render={({ field }) => {
+                const selectedMenu = menus.find((menu) => menu.menu_id === field.value) || null;
+
+                return (
+                  <Autocomplete
+                    options={menus}
+                    getOptionLabel={(option) => option.menu_name || ''}
+                    value={selectedMenu}
+                    onChange={(_, value) => field.onChange(value?.menu_id || null)}
+                    renderInput={(params) => (
+                      <TextField {...params} label="Select Menu" error={Boolean(errors.menu_id)} helperText={errors.menu_id?.message} />
+                    )}
+                  />
+                );
+              }}
+            />
 
             {/* Calendar Date */}
             <Controller
@@ -213,6 +188,10 @@ export default function AddForm({ getData, addData, open, onClose, isEdit = fals
               control={control}
               rules={{
                 required: 'Amount is required',
+                min: {
+                  value: 0,
+                  message: 'Amount cannot be negative'
+                },
                 max: {
                   value: 10000000,
                   message: 'Amount cannot exceed 1 crore'
@@ -225,33 +204,10 @@ export default function AddForm({ getData, addData, open, onClose, isEdit = fals
                   type="number"
                   error={Boolean(errors.expense_amount)}
                   helperText={errors.expense_amount?.message}
-                  inputProps={{  max: 10000000 }}
+                  inputProps={{ min: 0, max: 10000000 }}
                 />
               )}
             />
-
-<Controller
-  name="expense_category"
-  control={control}
-  rules={{ required: "Please select a category" }}
-  render={({ field }) => (
-    <FormControl component="fieldset" error={Boolean(errors.expense_category)}>
-      <FormLabel component="legend">Category of Expense</FormLabel>
-      <RadioGroup
-        row
-        {...field}
-        value={field.value || ""}
-        onChange={(e) => field.onChange(e.target.value)}
-      >
-        <FormControlLabel value="canteen" control={<Radio />} label="Canteen" />
-        <FormControlLabel value="mess" control={<Radio />} label="Mess" />
-      </RadioGroup>
-      {errors.expense_category && (
-        <FormHelperText>{errors.expense_category.message}</FormHelperText>
-      )}
-    </FormControl>
-  )}
-/>
 
             {/* Remarks */}
             <Controller

@@ -84,9 +84,17 @@ export default function Pages() {
     },
     {
       id: 'settlement',
-      title: 'Settlement',
+      title: 'Canteen Settlement',
       type: 'item',
       url: '/manage-settlement',
+      icon: icons.IconHeartHandshake,
+      visibleTo: [Roles.ADMIN]
+    },
+     {
+      id: 'messSettlement',
+      title: 'Mess Settlement',
+      type: 'item',
+      url: '/manage-mess-settlement',
       icon: icons.IconHeartHandshake,
       visibleTo: [Roles.ADMIN]
     }
@@ -158,6 +166,14 @@ export default function Pages() {
                   visibleTo: [Roles.ADMIN]
                 },
                 {
+                  id: 'managePlants',
+                  title: 'Manage Plants',
+                  type: 'item',
+                  url: '/plants',
+                  icon: icons.IconBuildingCommunity,
+                  visibleTo: [Roles.ADMIN]
+                },
+                {
                   id: 'manageCompany',
                   title: 'View Companies',
                   type: 'item',
@@ -183,6 +199,14 @@ export default function Pages() {
                   title: 'Company Reports',
                   type: 'item',
                   url: '/companyReports',
+                  icon: icons.IconReportAnalytics,
+                  visibleTo: [Roles.ADMIN]
+                },
+                {
+                  id: 'plantReports',
+                  title: 'Plant Reports',
+                  type: 'item',
+                  url: '/plantReports',
                   icon: icons.IconReportAnalytics,
                   visibleTo: [Roles.ADMIN]
                 },

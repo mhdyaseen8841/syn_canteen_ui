@@ -11,12 +11,15 @@ const Menu = Loadable(lazy(() => import('views/pages/manageMenu')));
 const Company = Loadable(lazy(() => import('views/pages/manageCompany')));
 // const Contractor = Loadable(lazy(() => import('views/pages/manageContractor')));
 const Department = Loadable(lazy(() => import('views/pages/manageDepartment')));
+const Plants = Loadable(lazy(() => import('views/pages/managePlants')));
 const Employees = Loadable(lazy(() => import('views/pages/manageEmployee')));
 const Transaction = Loadable(lazy(() => import('views/pages/transactions')));
 const ManageTransactions = Loadable(lazy(()=>import('views/pages/manageTransaction')))
 const ManageSettlement = Loadable(lazy(()=>import('views/pages/manageSettlement')))
+const ManageMessSettlement = Loadable(lazy(()=>import('views/pages/manageMessSettlement')))
 const ManageExpenses = Loadable(lazy(() => import('views/pages/manageExpense')));
 const CompanyReport = Loadable(lazy(() => import('views/pages/companyReports')));
+const PlantReport = Loadable(lazy(() => import('views/pages/plantReports')));
 const EmployeeReport = Loadable(lazy(() => import('views/pages/employeeReports')));
 const ContractorReport = Loadable(lazy(() => import('views/pages/contractorReports')));
 const ComplaintReport = Loadable(lazy(() => import('views/pages/complaintReports')));
@@ -63,6 +66,10 @@ const MainRoutes = {
       element: <ManageSettlement />
     },
     {
+      path: 'manage-mess-settlement',
+      element: <ManageMessSettlement />
+    },
+    {
       path: 'expenses',
       element: <ManageExpenses />
     },
@@ -91,12 +98,20 @@ const MainRoutes = {
     element: <Company />
    },
    {
+    path: 'plants',
+    element: <Plants />
+   },
+   {
     path: 'department',
     element: <Department />
    },
    {
     path: 'companyReports',
     element: <CompanyReport />
+   },
+   {
+    path: 'plantReports',
+    element: <PlantReport />
    },
    {
     path: 'employeeReports',

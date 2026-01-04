@@ -180,7 +180,7 @@ export default function AddForm({ getData, open, onClose, isEdit = false, data =
   };
 
   return (
-    <StyledDialog open={open} fullWidth maxWidth="sm" onClose={handleClose} title={`${isEdit ? 'Edit' : 'Add'} Transaction - ${selectedCalender?.month_year}`}>
+    <StyledDialog open={open} fullWidth maxWidth="sm" onClose={handleClose} title={`${isEdit ? 'Edit' : 'Add'} Transaction `}>
       <form onSubmit={handleSubmit(onSubmit)}>
         <Container>
           <Stack direction={'column'} sx={{ p: 2 }} spacing={2}>
@@ -205,6 +205,44 @@ export default function AddForm({ getData, open, onClose, isEdit = false, data =
                       <TextField
                         {...params}
                         label="Company"
+                        error={Boolean(errors.companyId)}
+                        helperText={errors.companyId?.message}
+                        InputProps={{
+                          ...params.InputProps,
+                          endAdornment: (
+                            <>
+                              {loadingCompanies ? <CircularProgress color="inherit" size={20} /> : null}
+                              {params.InputProps.endAdornment}
+                            </>
+                          )
+                        }}
+                      />
+                    )}
+                  />
+                </FormControl>
+              )}
+            />
+
+               <Controller
+              name="plantId"
+              control={control}
+              rules={{ required: 'Plant is required' }}
+              render={({ field }) => (
+                <FormControl fullWidth error={Boolean(errors.companyId)}>
+                  <Autocomplete
+                    options={companies}
+                    loading={loadingCompanies}
+                    getOptionLabel={(option) => option.company_name || ''}
+                    value={companies.find((c) => c.company_id === field.value) || null}
+                    onChange={(_, newValue) => {
+                      field.onChange(newValue ? newValue.company_id : '');
+                      setSelectedCompany(newValue ? newValue.company_id : null);
+                    }}
+                    isOptionEqualToValue={(option, value) => option.company_id === value.company_id}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        label="Plant"
                         error={Boolean(errors.companyId)}
                         helperText={errors.companyId?.message}
                         InputProps={{

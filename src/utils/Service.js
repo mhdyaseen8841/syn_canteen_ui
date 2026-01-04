@@ -90,6 +90,22 @@ export async function addCompany(data) {
   return response.data;
 }
 
+// Plant Operations
+export async function getPlant(company_id = null) {
+  const query = company_id ? `?company_id=${company_id}` : '';
+  const response = await apiInstance.get(`plant${query}`);
+  return response.data;
+}
+
+export async function addPlant(data) {
+  const response = await apiInstance.post('plant', data);
+  return response.data;
+}
+
+export async function editPlant(data) {
+  const response = await apiInstance.put('plant', data);
+  return response.data;
+}
 // Department Operations
 export async function getDepartment() {
   const response = await apiInstance.get('department');

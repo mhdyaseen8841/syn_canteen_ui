@@ -183,6 +183,35 @@ export default function AddForm({selectedCompany, getData, addData, open, onClos
             )}
         />
 
+
+        <Controller
+            name="department_id"
+            control={control}
+            rules={{ required: "Plant is required" }}
+            render={({ field }) => (
+                <Autocomplete
+                    options={departments}
+                    getOptionLabel={(option) => option.department_name || ''}
+                    value={departments.find(d => d.department_id === field.value) || null}
+                    onChange={(_, newValue) => {
+                        field.onChange(newValue?.department_id);
+                        setSelectedDepartment(newValue);
+                    }}
+                    isOptionEqualToValue={(option, value) => 
+                        option.department_id === value.department_id
+                    }
+                    renderInput={(params) => (
+                        <TextField
+                            {...params}
+                            label="Plant"
+                            error={Boolean(errors.department_id)}
+                            helperText={errors.department_id?.message}
+                        />
+                    )}
+                />
+            )}
+        />
+
                         <FormControlLabel
                             control={
                                 <Switch 

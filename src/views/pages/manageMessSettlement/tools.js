@@ -27,7 +27,7 @@ export default function Tools({ settleClick, disableSettle, selectedCalender, da
     return (
         <MainCard>
             <Stack direction={'row'} sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
-                <Typography variant='h3' color={'secondary.main'}>Manage Canteen Settlement</Typography>
+                <Typography variant='h3' color={'secondary.main'}>Manage Mess Settlement</Typography>
                 <Box>
                     {selectedCalender && data?.length > 0 && (
                         <Button
