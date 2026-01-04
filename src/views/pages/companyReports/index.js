@@ -2,18 +2,26 @@ import React, { useState, useEffect } from 'react';
 import { MenuItem, Box, Stack, FormControl, InputLabel, Select, Button } from '@mui/material';
 import Content from './content';
 import Tools from './tools';
-import { getCompany, getCanteenCalender, getCanteenReport } from '../../../utils/Service';
+import { getCompany, getCanteenCalender, getCanteenReport, getPlant } from '../../../utils/Service';
 import { toast } from 'react-toastify';
 export default function Index() {
   const [formOpen, setFormOpen] = useState(false);
   const [data, setData] = useState([]);
   const [companies, setCompanies] = useState([]);
   const [selectedCompany, setSelectedCompany] = useState('');
-  const [selectedType, setSelectedType] = useState('employee');
+  const [selectedType, setSelectedType] = useState(null);
+  const [plants, setPlants] = useState([]);
+  const [selectedPlant, setSelectedPlant] = useState(null);
   const [calendars, setCalendars] = useState([]);
   const [selectedCalendar, setSelectedCalendar] = useState('');
 
-  const employeeTypes = ['employee', 'contractor', 'guest', 'fixed'];
+  const employeeTypes = [
+    { label: 'All', value: null },
+    { label: 'Employee', value: 'employee' },
+    { label: 'Contractor', value: 'contractor' },
+    { label: 'Guest', value: 'guest' },
+    { label: 'Overtime', value: 'overtime' }
+  ];
 
   // Fetch companies
   const getCompanies = async () => {
@@ -36,17 +44,34 @@ export default function Index() {
     }
   };
 
+  const getPlants = async (companyId) => {
+    try {
+      if (!companyId) {
+        setPlants([]);
+        setSelectedPlant(null);
+        return;
+      }
+      const res = await getPlant(companyId);
+      setPlants(res || []);
+    } catch (err) {
+      console.error(err);
+      toast.error('Error fetching plants');
+    }
+  };
+
   // Fetch employees
   const getData = async () => {
     try {
-      if (!selectedType || !selectedCalendar) {
+      if (!selectedCalendar) {
         setData([]);
         return;
       }
+      console.log(selectedPlant)
       let data = {
         canteenCalenderId: selectedCalendar,
-        companyId: selectedCompany,
-        employeeType: selectedType
+        companyId: selectedCompany || null,
+        employeeType: selectedType, // may be null to indicate All,
+        plant_id: selectedPlant || null
       };
       const res = await getCanteenReport(data);
 
@@ -61,6 +86,11 @@ export default function Index() {
     getCompanies();
     getCalendars();
   }, []);
+
+  useEffect(() => {
+    if (selectedCompany) getPlants(selectedCompany);
+    else setPlants([]);
+  }, [selectedCompany]);
 
   // useEffect(() => {
   //   getData();
@@ -101,17 +131,40 @@ export default function Index() {
           </FormControl>
 
           <FormControl fullWidth>
-            <InputLabel>Employee Type</InputLabel>
-            <Select value={selectedType} label="Employee Type" onChange={(e) => setSelectedType(e.target.value)}>
-              {employeeTypes.map((type) => (
-                <MenuItem key={type} value={type}>
-                  {type.charAt(0).toUpperCase() + type.slice(1)}
+            <InputLabel>Select Plant </InputLabel>
+            <Select value={selectedPlant || ''} label="Select Plant (optional)" onChange={(e) => setSelectedPlant(e.target.value || null)}>
+              <MenuItem value="">
+                <em>All Plants</em>
+              </MenuItem>
+              {plants.map((p) => (
+                <MenuItem key={p.plant_id} value={p.plant_id}>
+                  {p.plant_name}
                 </MenuItem>
               ))}
             </Select>
           </FormControl>
 
-          <Button variant="contained" onClick={getData} disabled={  (selectedType !== "fixed" && !selectedCompany) || !selectedType || !selectedCalendar} color="primary">
+          <FormControl fullWidth>
+            <InputLabel>Employee Type</InputLabel>
+            <Select
+              value={selectedType}
+              label="Employee Type"
+              onChange={(e) => setSelectedType(e.target.value === '' ? null : e.target.value)}
+            >
+              {employeeTypes.map((t) => (
+                <MenuItem key={String(t.value)} value={t.value}>
+                  {t.label}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+
+          <Button
+            variant="contained"
+            onClick={getData}
+            disabled={(selectedType !== 'fixed' && !selectedCompany) || !selectedCalendar}
+            color="primary"
+          >
             Apply
           </Button>
         </Stack>
@@ -121,7 +174,7 @@ export default function Index() {
         meta={{
           month: calendars.find((c) => c.canteen_calendar_id === selectedCalendar)?.month_year || '',
           company: companies.find((c) => c.company_id === selectedCompany)?.company_name || '',
-          type: selectedType.charAt(0).toUpperCase() + selectedType.slice(1)
+          type: selectedType ? (selectedType.charAt(0).toUpperCase() + selectedType.slice(1)) : 'All'
         }}
         selectedCompany={selectedCompany}
         data={data}

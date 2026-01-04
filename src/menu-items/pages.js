@@ -90,14 +90,14 @@ export default function Pages() {
       icon: icons.IconHeartHandshake,
       visibleTo: [Roles.ADMIN]
     },
-     {
-      id: 'messSettlement',
-      title: 'Mess Settlement',
-      type: 'item',
-      url: '/manage-mess-settlement',
-      icon: icons.IconHeartHandshake,
-      visibleTo: [Roles.ADMIN]
-    }
+    //  {
+    //   id: 'messSettlement',
+    //   title: 'Mess Settlement',
+    //   type: 'item',
+    //   url: '/manage-mess-settlement',
+    //   icon: icons.IconHeartHandshake,
+    //   visibleTo: [Roles.ADMIN]
+    // }
     // {
     //   id: 'ContractorReports',
     //   title: 'Contractor Reports',
