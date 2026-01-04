@@ -49,7 +49,6 @@ export default function AddForm({ getData, addData, open, onClose, isEdit = fals
 
     useEffect(() => {
         if (open) {
-            console.log("dddddddddddd")
             reset({
                 department_name: data?.department_name || '',
             });

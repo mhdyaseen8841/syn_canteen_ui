@@ -4,13 +4,15 @@ import React, { useEffect, useState } from 'react'
 import { useForm, Controller } from "react-hook-form";
 import { toast } from 'react-toastify';
 import StyledDialog from 'ui-component/StyledDialog';
-import {  getDepartment } from 'utils/Service';
+import {  getDepartment, getPlant } from 'utils/Service';
 
 export default function AddForm({selectedCompany, getData, addData, open, onClose, isEdit = false, data = {},type }) {
     const [active, setActive] = useState(data?.active === 1);
     const [premiumEnabled, setPremiumEnabled] = useState(data?.premium_enabled === 1);
     const [departments, setDepartments] = useState([]);
     const [selectedDepartment, setSelectedDepartment] = useState(null);
+    const [plants, setPlants] = useState([]);
+    const [selectedPlant, setSelectedPlant] = useState(null);
 
     const {
         control,
@@ -23,6 +25,7 @@ export default function AddForm({selectedCompany, getData, addData, open, onClos
             employee_code: data?.employee_code || '',
             employee_name: data?.employee_name || '',
             department_id: data?.department_id || '',
+            plant_id: data?.plant_id || '',
             premium_enabled: data?.premium_enabled || 0,
             active: data?.Active || data?.active || 1
         }
@@ -51,6 +54,57 @@ export default function AddForm({selectedCompany, getData, addData, open, onClos
         fetchData();
     }, [isEdit]);
 
+    // fetch plants when company selection changes or on edit
+    useEffect(() => {
+        const fetchPlants = async () => {
+            if (!selectedCompany) {
+                setPlants([]);
+                setSelectedPlant(null);
+                return;
+            }
+            try {
+                const plantRes = await getPlant(selectedCompany);
+                setPlants(plantRes || []);
+                if (isEdit && data?.plant_id) {
+                    const pl = (plantRes || []).find(p => p.plant_id === data.plant_id);
+                    if (pl) {
+                        setSelectedPlant(pl);
+                        setValue('plant_id', pl.plant_id);
+                    }
+                }
+            } catch (err) {
+                console.error('Error fetching plants:', err);
+                toast.error('Error loading plants');
+            }
+        };
+        fetchPlants();
+    }, [selectedCompany, isEdit]);
+
+    // Reset form when data changes (for editing) - auto-fill plant and other fields
+    useEffect(() => {
+        if (isEdit && data) {
+            reset({
+                employee_code: data?.employee_code || '',
+                employee_name: data?.employee_name || '',
+                department_id: data?.department_id || '',
+                plant_id: data?.plant_id || '',
+                premium_enabled: data?.premium_enabled || 0,
+                active: data?.Active || data?.active || 1
+            });
+
+            setActive(data?.active === 1);
+            setPremiumEnabled(data?.premium_enabled === 1);
+
+            // Auto-populate plant if data has plant_id and plants are loaded
+            if (data?.plant_id && plants.length > 0) {
+                const plant = plants.find(p => p.plant_id === data.plant_id);
+                if (plant) {
+                    setSelectedPlant(plant);
+                }
+            }
+        }
+    }, [data, isEdit, plants]);
+
     const onSubmit = (formData) => {
  
         if(selectedCompany === '' || selectedCompany === undefined) {   
@@ -67,6 +121,7 @@ export default function AddForm({selectedCompany, getData, addData, open, onClos
             employee_type:  type,
             company_id: selectedCompany,
             department_id: formData.department_id,
+            plant_id: formData.plant_id,
             premium_enabled: premiumEnabled ? 1 : 0,
             active: active ? 1 : 0
         };
@@ -91,12 +146,13 @@ export default function AddForm({selectedCompany, getData, addData, open, onClos
         reset({
             employee_code: '',
             employee_name: '',
-                department_id: '',
-                premium_enabled: 0,
-                active: 1
-            });
-            onClose();
-        }
+            department_id: '',
+            plant_id: '',
+            premium_enabled: 0,
+            active: 1
+        });
+        onClose();
+    }
 
     return (
         <StyledDialog open={open} fullWidth onClose={CloseDialog} title={`${isEdit ? "Edit" : "Add"} ${type ? type : 'Employee'}`}>
@@ -185,27 +241,27 @@ export default function AddForm({selectedCompany, getData, addData, open, onClos
 
 
         <Controller
-            name="department_id"
+            name="plant_id"
             control={control}
             rules={{ required: "Plant is required" }}
             render={({ field }) => (
                 <Autocomplete
-                    options={departments}
-                    getOptionLabel={(option) => option.department_name || ''}
-                    value={departments.find(d => d.department_id === field.value) || null}
+                    options={plants}
+                    getOptionLabel={(option) => option.plant_name || ''}
+                    value={plants.find(p => p.plant_id === field.value) || null}
                     onChange={(_, newValue) => {
-                        field.onChange(newValue?.department_id);
-                        setSelectedDepartment(newValue);
+                        field.onChange(newValue?.plant_id);
+                        setSelectedPlant(newValue);
                     }}
-                    isOptionEqualToValue={(option, value) => 
-                        option.department_id === value.department_id
+                    isOptionEqualToValue={(option, value) =>
+                        option.plant_id === value.plant_id
                     }
                     renderInput={(params) => (
                         <TextField
                             {...params}
                             label="Plant"
-                            error={Boolean(errors.department_id)}
-                            helperText={errors.department_id?.message}
+                            error={Boolean(errors.plant_id)}
+                            helperText={errors.plant_id?.message}
                         />
                     )}
                 />

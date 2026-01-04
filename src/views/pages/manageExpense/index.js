@@ -48,6 +48,7 @@ export default function Index() {
   }
 
   const handleCalenderDate = (data) =>{
+    console.log(data)
     setSelectedCalender(data)
     getData(data,selectedMenu);
   }

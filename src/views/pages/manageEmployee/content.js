@@ -13,6 +13,7 @@ const tableHeader = [
   'Employee Name',
   'Employee Type',
   'Company',
+  'plant',
   'Department',
   'Premium Enabled',
   'Reference ID',
@@ -46,6 +47,7 @@ export default function Content({ data, deleteAd, updateData,selectedCompany,typ
       'employee_name',
       'employee_type',
       'company_name',
+      'plant_code',
       'department_name',
       'premium_enabled',
       'reference_id',
@@ -71,6 +73,7 @@ export default function Content({ data, deleteAd, updateData,selectedCompany,typ
         employee_name: e.data['Employee Name'],
         company_id: e.data.company_id,
         department_id: e.data.department_id,
+        plant_id: e.data.plant_id,
         premium_enabled: e.data['Premium Enabled'] === 'Yes' ? 1 : 0,
         active: e.data['Active'] === 'Yes' ? 1 : 0
       };

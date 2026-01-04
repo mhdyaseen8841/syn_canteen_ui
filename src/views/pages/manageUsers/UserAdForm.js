@@ -51,7 +51,6 @@ import {
       if (open) {
         getAllCompany()
           .then((res) =>{ 
-            console.log("heyyy")
             setCompanies(res)
       })
           .catch((err) => {
@@ -59,7 +58,6 @@ import {
             toast.error('Failed to fetch companies');
           });
   
-          console.log(data)
        
       }
     }, [open]);

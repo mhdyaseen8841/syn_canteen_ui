@@ -196,7 +196,7 @@ export async function getExpense(canteen_calendar_id, menu_id = null) {
   return response.data;
 }
 
-export async function getCanteenCalender(is_settled) {
+export async function getCanteenCalender(is_settled=3) {
   const response = await apiInstance.get(`canteen-calender?is_settled=${is_settled}`);
   return response.data;
 }

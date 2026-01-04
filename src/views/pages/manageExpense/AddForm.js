@@ -5,11 +5,14 @@ import {
   TextField,
   Autocomplete,
   FormControl,
-  FormLabel,
+   FormLabel,
   RadioGroup,
   FormControlLabel,
   Radio,
-  FormHelperText
+  FormHelperText,
+  Select,
+  MenuItem,
+  InputLabel
 } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
@@ -38,7 +41,8 @@ export default function AddForm({ getData, addData, open, onClose, isEdit = fals
           canteen_calendar_id: null,
           expense_date: '',
           expense_amount: '',
-          remarks: ''
+          remarks: '',
+          expense_category: ''
         }
   });
 
@@ -53,13 +57,13 @@ export default function AddForm({ getData, addData, open, onClose, isEdit = fals
         console.log(err);
         toast.error('Error loading menus');
       });
-    getCanteenCalender()
+    getCanteenCalender(3)
       .then(setCalendars)
       .catch((err) => {
         console.log(err);
         toast.error('Error loading calendar dates');
       });
-  }, []);
+  }, [selectedCalender]);
 
   function parseDDMMYYYY(dateStr) {
     const [day, month, year] = dateStr.split('-');
@@ -79,12 +83,23 @@ export default function AddForm({ getData, addData, open, onClose, isEdit = fals
     setValue('expense_date', data.expense_date ? parseDDMMYYYY(data.expense_date) : '');
     setValue('expense_amount', data.expense_amount);
     setValue('remarks', data.remarks);
+    // normalize category casing to match Select option values
+    const normalizeCategory = (cat) => {
+      if (!cat && cat !== 0) return '';
+      const c = String(cat).toLowerCase();
+      if (c === 'mess') return 'Mess';
+      if (c === 'canteen') return 'Canteen';
+      // fallback to original
+      return cat;
+    };
+    setValue('expense_category', normalizeCategory(data.expense_category));
   } else {
     setValue('menu_id', []);
     setValue('canteen_calendar_id', null);
     setValue('expense_date', '');
     setValue('expense_amount', '');
     setValue('remarks', '');
+    setValue('expense_category', '');
   }
 }, [open]);;
 
@@ -230,28 +245,26 @@ export default function AddForm({ getData, addData, open, onClose, isEdit = fals
               )}
             />
 
-<Controller
-  name="expense_category"
-  control={control}
-  rules={{ required: "Please select a category" }}
-  render={({ field }) => (
-    <FormControl component="fieldset" error={Boolean(errors.expense_category)}>
-      <FormLabel component="legend">Category of Expense</FormLabel>
-      <RadioGroup
-        row
-        {...field}
-        value={field.value || ""}
-        onChange={(e) => field.onChange(e.target.value)}
-      >
-        <FormControlLabel value="canteen" control={<Radio />} label="Canteen" />
-        <FormControlLabel value="mess" control={<Radio />} label="Mess" />
-      </RadioGroup>
-      {errors.expense_category && (
-        <FormHelperText>{errors.expense_category.message}</FormHelperText>
-      )}
-    </FormControl>
-  )}
-/>
+            <FormControl fullWidth error={Boolean(errors.expense_category)}>
+              <InputLabel id="expense-category-label">Expense Category</InputLabel>
+              <Controller
+                name="expense_category"
+                control={control}
+                rules={{ required: 'Please select a category' }}
+                render={({ field }) => (
+                  <Select
+                    labelId="expense-category-label"
+                    label="Expense Category"
+                    {...field}
+                    value={field.value || ''}
+                  >
+                    <MenuItem value="Mess">Mess</MenuItem>
+                    <MenuItem value="Canteen">Canteen</MenuItem>
+                  </Select>
+                )}
+              />
+              {errors.expense_category && <FormHelperText>{errors.expense_category.message}</FormHelperText>}
+            </FormControl>
 
             {/* Remarks */}
             <Controller

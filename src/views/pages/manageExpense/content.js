@@ -10,7 +10,7 @@ import { Button, Stack } from '@mui/material';
 import * as XLSX from 'xlsx';
 import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
-const tableHeader = ['Menu Id', 'Menu name', 'Expense Date', 'Amount', 'Remarks'];
+const tableHeader = ['Menu Id', 'Menu name', 'Expense Category', 'Expense Date', 'Amount', 'Remarks'];
 const exportHeader = tableHeader.filter(h => h !== 'Menu Id');
 
 export default function Content({ data, updateData,selectedCalender,editExpense,menus, canteenCalenderData }) {
@@ -19,7 +19,6 @@ export default function Content({ data, updateData,selectedCalender,editExpense,
   // const [searchName, setSearchName] = useState('');
    const [confirmOpen, setConfirmOpen] = useState(false);
   const [pendingDelete, setPendingDelete] = useState(null);
-
 
 
   const filteredData = data.filter((item) => {
@@ -33,7 +32,7 @@ export default function Content({ data, updateData,selectedCalender,editExpense,
   
   const tableData = tableHeaderReplace(
     filteredData,
-    [ 'menu_id','Menu Name', 'expense_date', 'expense_amount', 'remarks'],
+    [ 'menu_id','Menu Name', 'expense_category', 'expense_date', 'expense_amount', 'remarks'],
     tableHeader
   ).map((item) => {
     // Find the corresponding menu name using the menu_id from the menus prop
@@ -117,6 +116,7 @@ const handleExportExcel = () => {
         active: e.data['Active'] === 'Yes' ? 1 : 0,
         remarks: e.data['Remarks'],
         expense_id: e.data.expense_id,
+        expense_category: e.data['Expense Category'],
       };
       setselectedData(editData);
       setFormOpen(true);
