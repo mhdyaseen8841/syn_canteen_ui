@@ -116,15 +116,16 @@ export default function AddForm({selectedCompany, getData, addData, open, onClos
             return;
         }
         const submitData = {
-            employee_code: formData.employee_code,
-            employee_name: formData.employee_name,
-            employee_type:  type,
-            company_id: selectedCompany,
-            department_id: formData.department_id,
-            plant_id: formData.plant_id,
-            premium_enabled: premiumEnabled ? 1 : 0,
-            active: active ? 1 : 0
-        };
+  employee_code: formData.employee_code,
+  employee_name: formData.employee_name,
+  employee_type: type,
+  company_id: selectedCompany,
+  department_id: formData.department_id,
+  ...(formData.plant_id && { plant_id: formData.plant_id }),
+  premium_enabled: premiumEnabled ? 1 : 0,
+  active: active ? 1 : 0
+};
+
         if(isEdit) {
             submitData.employee_id = data.employee_id; 
         }
@@ -243,15 +244,16 @@ export default function AddForm({selectedCompany, getData, addData, open, onClos
         <Controller
             name="plant_id"
             control={control}
-            rules={{ required: "Plant is required" }}
+            rules={{  }}
             render={({ field }) => (
                 <Autocomplete
+                   disabled={!selectedCompany}
                     options={plants}
                     getOptionLabel={(option) => option.plant_name || ''}
                     value={plants.find(p => p.plant_id === field.value) || null}
                     onChange={(_, newValue) => {
                         field.onChange(newValue?.plant_id);
-                        setSelectedPlant(newValue);
+                        setSelectedPlant(newValue || null);
                     }}
                     isOptionEqualToValue={(option, value) =>
                         option.plant_id === value.plant_id
