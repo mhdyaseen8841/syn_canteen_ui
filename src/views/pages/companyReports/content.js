@@ -3,7 +3,7 @@ import StyledTable from './StyledTable';
 import { tableHeaderReplace } from 'utils/tableHeaderReplace';
 import { TextField, Box, Grid } from '@mui/material';
 import ExportButtons from '../shared/ExportButtons';
-const tableHeader = ['Employee Code', 'Employee Name', 'Employee Type', 'Canteen Total', 'AC Dine Charge', 'Total'];
+const tableHeader = ['Employee Code', 'Employee Name', 'Employee Type', 'Breakfast Count', 'Breakfast Amount','Lunch Count','Lunch Amount', 'Dinner Count', 'Dinner Amount', 'Tea Count', 'Tea Amount', 'Snacks Count', 'Snacks Amount', 'Casual Meals Count', 'Casual Meals Amount', 'Canteen Total', 'AC Dine Charge', 'Total'];
 
 export default function Content({ data, meta }) {
   const [searchEmployee, setSearchEmployee] = useState('');
@@ -20,7 +20,7 @@ export default function Content({ data, meta }) {
 
   const tableData = tableHeaderReplace(
     filteredData,
-    ['employee_code', 'employee_name', 'employee_type', 'Canteen_Total', 'AC_Dine_Charge', 'Total'],
+    ['employee_code', 'employee_name', 'employee_type', 'Breakfast_Count','Breakfast_Amount','Lunch_Count','Lunch_Amount', 'Dinner_Count', 'Dinner_Amount', 'Tea_Count', 'Tea_Amount', 'Snacks_Count', 'Snacks_Amount', 'Casual_Meals_Count', 'Casual_Meals_Amount', 'Canteen_Total', 'AC_Dine_Charge', 'Total'],
     tableHeader
   );
 
