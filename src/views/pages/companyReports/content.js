@@ -109,43 +109,54 @@ export default function Content({
 
   return (
     <>
-      <Box sx={{ mb: 2 }}>
-        <Grid container spacing={2}>
-          <Grid item xs={12} md={4}>
-            <TextField
-              label="Search by Employee Name/Code"
-              size="small"
-              fullWidth
-              value={searchEmployee}
-              onChange={(e) => setSearchEmployee(e.target.value)}
-            />
-          </Grid>
+     <Box sx={{ mb: 2 }}>
+  <Grid container spacing={2} alignItems="center">
+    {/* Search */}
+    <Grid item xs={12} md={6}>
+      <TextField
+        label="Search by Employee Name/Code"
+        size="small"
+        fullWidth
+        value={searchEmployee}
+        onChange={(e) => setSearchEmployee(e.target.value)}
+      />
+    </Grid>
 
-          <Grid item xs={12} md={4}>
-            <FormControlLabel
-              control={
-                <Switch
-                  checked={countOnly}
-                  onChange={(e) => setCountOnly(e.target.checked)}
-                />
-              }
-              label="Count Only"
+    {/* Switches */}
+    <Grid item xs={12} md={6}>
+      <Box
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: { xs: 'flex-start', md: 'flex-end' },
+          gap: 3,
+          flexWrap: 'wrap'
+        }}
+      >
+        <FormControlLabel
+          control={
+            <Switch
+              checked={countOnly}
+              onChange={(e) => setCountOnly(e.target.checked)}
             />
-          </Grid>
+          }
+          label="Count Only"
+        />
 
-          <Grid item xs={12} md={4}>
-            <FormControlLabel
-              control={
-                <Switch
-                  checked={dateReport}
-                  onChange={(e) => onDateToggle(e.target.checked)}
-                />
-              }
-              label="Date"
+        <FormControlLabel
+          control={
+            <Switch
+              checked={dateReport}
+              onChange={(e) => onDateToggle(e.target.checked)}
             />
-          </Grid>
-        </Grid>
+          }
+          label="Date"
+        />
       </Box>
+    </Grid>
+  </Grid>
+</Box>
+
 
       {tableData.length > 0 && (
         <ExportButtons
