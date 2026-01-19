@@ -1,32 +1,105 @@
 import React, { useState, useEffect } from 'react';
 import StyledTable from './StyledTable';
 import { tableHeaderReplace } from 'utils/tableHeaderReplace';
-import { TextField, Box, Grid, FormControlLabel, Switch } from '@mui/material';
+import {
+  TextField,
+  Box,
+  Grid,
+  FormControlLabel,
+  Switch
+} from '@mui/material';
 import ExportButtons from '../shared/ExportButtons';
-const tableHeader = ['Employee Code', 'Employee Name', 'Employee Type', 'Plant code', 'Breakfast Count', 'Breakfast Amount','Lunch Count','Lunch Amount', 'Dinner Count', 'Dinner Amount', 'Tea Count', 'Tea Amount', 'Snacks Count', 'Snacks Amount', 'Casual Meals Count', 'Casual Meals Amount', 'Canteen Total', 'GST (2.5%) ', 'AC Dine Charge', 'Total'];
 
-const tableDataKeys = ['employee_code', 'employee_name', 'employee_type', 'plant_code', 'Breakfast_Count','Breakfast_Amount','Lunch_Count','Lunch_Amount', 'Dinner_Count', 'Dinner_Amount', 'Tea_Count', 'Tea_Amount', 'Snacks_Count', 'Snacks_Amount', 'Casual_Meals_Count', 'Casual_Meals_Amount', 'Canteen_Total', 'GST','AC_Dine_Charge', 'Total'];
+/* ================= HEADERS ================= */
 
-const countOnlyHeader = ['Employee Code', 'Employee Name', 'Employee Type', 'Plant code', 'Breakfast Count', 'Lunch Count', 'Dinner Count', 'Tea Count', 'Snacks Count', 'Casual Meals Count'];
+const tableHeader = [
+  'Employee Code', 'Employee Name', 'Employee Type', 'Plant code',
+  'Breakfast Count', 'Breakfast Amount',
+  'Lunch Count', 'Lunch Amount',
+  'Dinner Count', 'Dinner Amount',
+  'Tea Count', 'Tea Amount',
+  'Snacks Count', 'Snacks Amount',
+  'Casual Meals Count', 'Casual Meals Amount',
+  'Canteen Total', 'GST (2.5%) ', 'AC Dine Charge', 'Total'
+];
 
-const countOnlyKeys = ['employee_code', 'employee_name', 'employee_type', 'plant_code', 'Breakfast_Count', 'Lunch_Count', 'Dinner_Count', 'Tea_Count', 'Snacks_Count', 'Casual_Meals_Count'];
+const tableDataKeys = [
+  'employee_code', 'employee_name', 'employee_type', 'plant_code',
+  'Breakfast_Count', 'Breakfast_Amount',
+  'Lunch_Count', 'Lunch_Amount',
+  'Dinner_Count', 'Dinner_Amount',
+  'Tea_Count', 'Tea_Amount',
+  'Snacks_Count', 'Snacks_Amount',
+  'Casual_Meals_Count', 'Casual_Meals_Amount',
+  'Canteen_Total', 'GST', 'AC_Dine_Charge', 'Total'
+];
 
-export default function Content({ data, meta }) {
+const countOnlyHeader = [
+  'Employee Code', 'Employee Name', 'Employee Type', 'Plant code',
+  'Breakfast Count', 'Lunch Count', 'Dinner Count',
+  'Tea Count', 'Snacks Count', 'Casual Meals Count'
+];
+
+const countOnlyKeys = [
+  'employee_code', 'employee_name', 'employee_type', 'plant_code',
+  'Breakfast_Count', 'Lunch_Count', 'Dinner_Count',
+  'Tea_Count', 'Snacks_Count', 'Casual_Meals_Count'
+];
+
+const dateReportHeader = [
+  'Employee Code', 'Employee Name', 'Employee Type', 'Plant code',
+  'Breakfast Count', 'Breakfast Amount',
+  'Lunch Count', 'Lunch Amount',
+  'Dinner Count', 'Dinner Amount',
+  'Tea Count', 'Tea Amount',
+  'Snacks Count', 'Snacks Amount',
+  'Casual Meals Count', 'Casual Meals Amount'
+];
+
+const dateReportKeys = [
+  'employee_code', 'employee_name', 'employee_type', 'plant_code',
+  'Breakfast_Count', 'Breakfast_Amount',
+  'Lunch_Count', 'Lunch_Amount',
+  'Dinner_Count', 'Dinner_Amount',
+  'Tea_Count', 'Tea_Amount',
+  'Snacks_Count', 'Snacks_Amount',
+  'Casual_Meals_Count', 'Casual_Meals_Amount'
+];
+
+/* ================= COMPONENT ================= */
+
+export default function Content({
+  data,
+  meta,
+  dateReport,
+  onDateToggle
+}) {
   const [searchEmployee, setSearchEmployee] = useState('');
   const [page, setPage] = useState(1);
   const [countOnly, setCountOnly] = useState(false);
 
   useEffect(() => {
-    setPage(1); // reset to first page on search
-  }, [searchEmployee]);
+    setPage(1);
+  }, [searchEmployee, countOnly, dateReport]);
 
   const filteredData = data.filter((item) => {
-    const searchText = searchEmployee.trim().toLowerCase();
-    return item.employee_name.toLowerCase().includes(searchText) || item.employee_code.toLowerCase().includes(searchText);
+    const s = searchEmployee.trim().toLowerCase();
+    return (
+      item.employee_name?.toLowerCase().includes(s) ||
+      item.employee_code?.toLowerCase().includes(s)
+    );
   });
 
-  const currentHeaders = countOnly ? countOnlyHeader : tableHeader;
-  const currentKeys = countOnly ? countOnlyKeys : tableDataKeys;
+  let currentHeaders = tableHeader;
+  let currentKeys = tableDataKeys;
+
+  if (countOnly) {
+    currentHeaders = countOnlyHeader;
+    currentKeys = countOnlyKeys;
+  } else if (dateReport) {
+    currentHeaders = dateReportHeader;
+    currentKeys = dateReportKeys;
+  }
 
   const tableData = tableHeaderReplace(
     filteredData,
@@ -38,31 +111,55 @@ export default function Content({ data, meta }) {
     <>
       <Box sx={{ mb: 2 }}>
         <Grid container spacing={2}>
-          <Grid item xs={12} md={6}>
+          <Grid item xs={12} md={4}>
             <TextField
               label="Search by Employee Name/Code"
-              variant="outlined"
               size="small"
               fullWidth
               value={searchEmployee}
               onChange={(e) => setSearchEmployee(e.target.value)}
             />
           </Grid>
-          <Grid item xs={12} md={6}>
+
+          <Grid item xs={12} md={4}>
             <FormControlLabel
-              control={<Switch checked={countOnly} onChange={(e) => setCountOnly(e.target.checked)} />}
+              control={
+                <Switch
+                  checked={countOnly}
+                  onChange={(e) => setCountOnly(e.target.checked)}
+                />
+              }
               label="Count Only"
+            />
+          </Grid>
+
+          <Grid item xs={12} md={4}>
+            <FormControlLabel
+              control={
+                <Switch
+                  checked={dateReport}
+                  onChange={(e) => onDateToggle(e.target.checked)}
+                />
+              }
+              label="Date"
             />
           </Grid>
         </Grid>
       </Box>
 
-      {tableData.length > 0 && <ExportButtons data={tableData} headers={currentHeaders} fileName="Company_Canteen_Report" meta={meta} />}
+      {tableData.length > 0 && (
+        <ExportButtons
+          data={tableData}
+          headers={currentHeaders}
+          fileName="Company_Canteen_Report"
+          meta={meta}
+        />
+      )}
 
       <StyledTable
         data={tableData}
         header={currentHeaders}
-        isShowSerialNo={true}
+        isShowSerialNo
         isShowAction={false}
         rowsPerPage={10}
         page={page}

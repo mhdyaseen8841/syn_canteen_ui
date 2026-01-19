@@ -1,11 +1,25 @@
 import React, { useState, useEffect } from 'react';
-import { MenuItem, Box, Stack, FormControl, InputLabel, Select, Button } from '@mui/material';
+import {
+  MenuItem,
+  Box,
+  Stack,
+  FormControl,
+  InputLabel,
+  Select,
+  Button
+} from '@mui/material';
 import Content from './content';
 import Tools from './tools';
-import { getCompany, getCanteenCalender, getCanteenReport, getPlant } from '../../../utils/Service';
+import {
+  getCompany,
+  getCanteenCalender,
+  getCanteenReport,
+  getCanteenReportDate,
+  getPlant
+} from '../../../utils/Service';
 import { toast } from 'react-toastify';
+
 export default function Index() {
-  const [formOpen, setFormOpen] = useState(false);
   const [data, setData] = useState([]);
   const [companies, setCompanies] = useState([]);
   const [selectedCompany, setSelectedCompany] = useState('');
@@ -14,6 +28,7 @@ export default function Index() {
   const [selectedPlant, setSelectedPlant] = useState(null);
   const [calendars, setCalendars] = useState([]);
   const [selectedCalendar, setSelectedCalendar] = useState('');
+  const [dateReport, setDateReport] = useState(false);
 
   const employeeTypes = [
     { label: 'All', value: null },
@@ -23,94 +38,71 @@ export default function Index() {
     { label: 'Overtime', value: 'overtime' }
   ];
 
-  // Fetch companies
-  const getCompanies = async () => {
-    try {
-      const response = await getCompany();
-      setCompanies(response);
-    } catch (err) {
-      console.error(err);
-      toast.error('Error fetching companies');
-    }
-  };
+  useEffect(() => {
+    getCompany().then(setCompanies);
+    getCanteenCalender(1).then(setCalendars);
+  }, []);
 
-  const getCalendars = async () => {
-    try {
-      const response = await getCanteenCalender(1);
-      setCalendars(response);
-    } catch (err) {
-      console.error(err);
-      toast.error('Error fetching calendar data');
+  useEffect(() => {
+    if (!selectedCompany) {
+      setPlants([]);
+      setSelectedPlant(null);
+      return;
     }
-  };
+    getPlant(selectedCompany).then(setPlants);
+  }, [selectedCompany]);
 
-  const getPlants = async (companyId) => {
-    try {
-      if (!companyId) {
-        setPlants([]);
-        setSelectedPlant(null);
-        return;
-      }
-      const res = await getPlant(companyId);
-      setPlants(res || []);
-    } catch (err) {
-      console.error(err);
-      toast.error('Error fetching plants');
-    }
-  };
-
-  // Fetch employees
   const getData = async () => {
     try {
       if (!selectedCalendar) {
         setData([]);
         return;
       }
-      console.log(selectedPlant)
-      let data = {
+
+      const payload = {
         canteenCalenderId: selectedCalendar,
         companyId: selectedCompany || null,
-        employeeType: selectedType, // may be null to indicate All,
+        employeeType: selectedType,
         plant_id: selectedPlant || null
       };
-      const res = await getCanteenReport(data);
+
+      const res = dateReport
+        ? await getCanteenReportDate(payload)
+        : await getCanteenReport(payload);
 
       setData(res);
     } catch (err) {
       console.error(err);
-      toast.error('Error fetching employees');
+      toast.error('Error fetching canteen report');
     }
   };
 
   useEffect(() => {
-    getCompanies();
-    getCalendars();
-  }, []);
-
-  useEffect(() => {
-    if (selectedCompany) getPlants(selectedCompany);
-    else setPlants([]);
-  }, [selectedCompany]);
-
-  // useEffect(() => {
-  //   getData();
-  // }, [selectedCompany, selectedType]);
+    if (selectedCalendar) getData();
+  }, [dateReport]);
 
   return (
-    <Stack direction={'column'} gap={2}>
+    <Stack gap={2}>
       <Tools />
 
-      <Box sx={{ mb: 2 }}>
+      <Box>
         <Stack direction={{ xs: 'column', md: 'row' }} spacing={2}>
           <FormControl fullWidth>
             <InputLabel>Select Calendar</InputLabel>
-            <Select value={selectedCalendar} label="Select Calendar" onChange={(e) => setSelectedCalendar(e.target.value)}>
+            <Select
+              value={selectedCalendar}
+              label="Select Calendar"
+              onChange={(e) => setSelectedCalendar(e.target.value)}
+            >
               <MenuItem value="">
-                <em>Select a calendar</em>
+                <em>Select Calendar</em>
               </MenuItem>
-              {calendars.map((calendar) => (
-                <MenuItem key={calendar.canteen_calendar_id} value={calendar.canteen_calendar_id}>
-                  {calendar.month_year}
+              {calendars.map((c) => (
+                <MenuItem
+                  key={c.canteen_calendar_id}
+                  value={c.canteen_calendar_id}
+                >
+                  {c.month_year}
                 </MenuItem>
               ))}
             </Select>
@@ -118,21 +110,31 @@ export default function Index() {
 
           <FormControl fullWidth>
             <InputLabel>Select Company</InputLabel>
-            <Select value={selectedCompany} label="Select Company" onChange={(e) => setSelectedCompany(e.target.value)}>
+            <Select
+              value={selectedCompany}
+              label="Select Company"
+              onChange={(e) => setSelectedCompany(e.target.value)}
+            >
               <MenuItem value="">
-                <em>Select a company</em>
+                <em>Select Company</em>
               </MenuItem>
-              {companies.map((company) => (
-                <MenuItem key={company.company_id} value={company.company_id}>
-                  {company.company_name}
+              {companies.map((c) => (
+                <MenuItem key={c.company_id} value={c.company_id}>
+                  {c.company_name}
                 </MenuItem>
               ))}
             </Select>
           </FormControl>
 
           <FormControl fullWidth>
-            <InputLabel>Select Plant </InputLabel>
-            <Select value={selectedPlant || ''} label="Select Plant (optional)" onChange={(e) => setSelectedPlant(e.target.value || null)}>
+            <InputLabel>Select Plant</InputLabel>
+            <Select
+              value={selectedPlant || ''}
+              label="Select Plant"
+              onChange={(e) =>
+                setSelectedPlant(e.target.value || null)
+              }
+            >
               <MenuItem value="">
                 <em>All Plants</em>
               </MenuItem>
@@ -149,7 +151,9 @@ export default function Index() {
             <Select
               value={selectedType}
               label="Employee Type"
-              onChange={(e) => setSelectedType(e.target.value === '' ? null : e.target.value)}
+              onChange={(e) =>
+                setSelectedType(e.target.value || null)
+              }
             >
               {employeeTypes.map((t) => (
                 <MenuItem key={String(t.value)} value={t.value}>
@@ -162,8 +166,7 @@ export default function Index() {
           <Button
             variant="contained"
             onClick={getData}
-            disabled={(selectedType !== 'fixed' && !selectedCompany) || !selectedCalendar}
-            color="primary"
+            disabled={!selectedCalendar}
           >
             Apply
           </Button>
@@ -171,15 +174,20 @@ export default function Index() {
       </Box>
 
       <Content
-        meta={{
-          month: calendars.find((c) => c.canteen_calendar_id === selectedCalendar)?.month_year || '',
-          company: companies.find((c) => c.company_id === selectedCompany)?.company_name || '',
-          type: selectedType ? (selectedType.charAt(0).toUpperCase() + selectedType.slice(1)) : 'All'
-        }}
-        selectedCompany={selectedCompany}
         data={data}
-        updateData={getData}
-        type={selectedType}
+        meta={{
+          month:
+            calendars.find(
+              (c) => c.canteen_calendar_id === selectedCalendar
+            )?.month_year || '',
+          company:
+            companies.find(
+              (c) => c.company_id === selectedCompany
+            )?.company_name || '',
+          type: selectedType || 'All'
+        }}
+        dateReport={dateReport}
+        onDateToggle={setDateReport}
       />
     </Stack>
   );
