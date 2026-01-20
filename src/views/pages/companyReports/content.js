@@ -9,7 +9,7 @@ import {
   Switch
 } from '@mui/material';
 import ExportButtons from '../shared/ExportButtons';
-
+import {  formatDateTime } from 'utils/formatDateTime';
 /* ================= HEADERS ================= */
 
 const tableHeader = [
@@ -47,7 +47,7 @@ const countOnlyKeys = [
 ];
 
 const dateReportHeader = [
-  'Employee Code', 'Employee Name', 'Employee Type', 'Plant code',
+  'Employee Code', 'Employee Name', 'Employee Type', 'Plant code',  'Date',
   'Breakfast Count', 'Breakfast Amount',
   'Lunch Count', 'Lunch Amount',
   'Dinner Count', 'Dinner Amount',
@@ -57,7 +57,7 @@ const dateReportHeader = [
 ];
 
 const dateReportKeys = [
-  'employee_code', 'employee_name', 'employee_type', 'plant_code',
+  'employee_code', 'employee_name', 'employee_type', 'plant_code',  'transaction_date',
   'Breakfast_Count', 'Breakfast_Amount',
   'Lunch_Count', 'Lunch_Amount',
   'Dinner_Count', 'Dinner_Amount',
@@ -101,11 +101,19 @@ export default function Content({
     currentKeys = dateReportKeys;
   }
 
+  const processedData = dateReport
+  ? filteredData.map(item => ({
+      ...item,
+      transaction_date: formatDateTime(item.transaction_date, 'DD-MM-YYYY'),
+    }))
+  : filteredData;
+
   const tableData = tableHeaderReplace(
-    filteredData,
-    currentKeys,
-    currentHeaders
-  );
+  processedData,
+  currentKeys,
+  currentHeaders
+);
+
 
   return (
     <>
