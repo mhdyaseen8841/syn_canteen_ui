@@ -1,15 +1,5 @@
 import React, { useState } from 'react';
-import {
-  Chip,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Pagination,
-  Stack
-} from '@mui/material';
+import { Chip, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Pagination, Stack } from '@mui/material';
 import MainCard from 'ui-component/cards/MainCard';
 import TableActionButton from 'ui-component/TableActionButton';
 
@@ -43,7 +33,9 @@ export default function StyledTable({
             <TableRow>
               {isShowSerialNo && <TableCell sx={{ color: 'primary.main' }}>SLNO</TableCell>}
               {header.map((head, i) => (
-                <TableCell key={i} sx={{ color: 'primary.main' }}>{head}</TableCell>
+                <TableCell key={i} sx={{ color: 'primary.main' }}>
+                  {head}
+                </TableCell>
               ))}
               {isShowAction && <TableCell sx={{ color: 'primary.main' }}>Action</TableCell>}
             </TableRow>
@@ -72,14 +64,18 @@ export default function StyledTable({
                           variant="filled"
                           sx={{
                             color: '#fff',
-                            backgroundColor: isPremium ? 'success.main' : '#424242',
+                            backgroundColor: isPremium ? 'success.main' : '#424242'
                           }}
                         />
                       </TableCell>
                     );
                   } else if (head.toUpperCase() === 'STATUS') {
+                    return <TableCell key={i}>{value ? 'Active' : 'Inactive'}</TableCell>;
+                  } else if (head === 'Date') {
                     return (
-                      <TableCell key={i}>{value ? 'Active' : 'Inactive'}</TableCell>
+                      <TableCell key={i} sx={{ whiteSpace: 'nowrap', minWidth: 110 }}>
+                        {value}
+                      </TableCell>
                     );
                   } else {
                     return <TableCell key={i}>{value}</TableCell>;
@@ -87,11 +83,7 @@ export default function StyledTable({
                 })}
                 {isShowAction && (
                   <TableCell>
-                    <TableActionButton
-                      data={dt}
-                      onActionChange={(e) => onActionChange(e)}
-                      actions={actions}
-                    />
+                    <TableActionButton data={dt} onActionChange={(e) => onActionChange(e)} actions={actions} />
                   </TableCell>
                 )}
               </TableRow>
@@ -102,13 +94,7 @@ export default function StyledTable({
 
       {totalPages > 1 && (
         <Stack direction="row" justifyContent="flex-end" sx={{ p: 2 }}>
-          <Pagination
-            count={totalPages}
-            page={page}
-            onChange={onPageChange}
-            color="primary"
-            shape="rounded"
-          />
+          <Pagination count={totalPages} page={page} onChange={onPageChange} color="primary" shape="rounded" />
         </Stack>
       )}
     </MainCard>
