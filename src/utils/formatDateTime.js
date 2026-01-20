@@ -38,3 +38,16 @@ export const deformatDate = (formattedDate) => {
   const isoString = `${year}-${month}-${day}T${hours}:${minutes}:${seconds || '00'}`;
   return isoString;
 };
+
+
+export const formatDate = (isoDateString) => {
+  if (!isoDateString) return '';
+
+  const date = new Date(isoDateString);
+
+  const day = date.getUTCDate().toString().padStart(2, '0');
+  const month = (date.getUTCMonth() + 1).toString().padStart(2, '0');
+  const year = date.getUTCFullYear();
+
+  return `${day}-${month}-${year}`;
+};

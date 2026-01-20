@@ -9,7 +9,7 @@ import {
   Switch
 } from '@mui/material';
 import ExportButtons from '../shared/ExportButtons';
-import {  formatDateTime } from 'utils/formatDateTime';
+import {  formatDate } from 'utils/formatDateTime';
 /* ================= HEADERS ================= */
 
 const tableHeader = [
@@ -104,7 +104,7 @@ export default function Content({
   const processedData = dateReport
   ? filteredData.map(item => ({
       ...item,
-      transaction_date: formatDateTime(item.transaction_date, 'DD-MM-YYYY'),
+      transaction_date: formatDate(item.transaction_date),
     }))
   : filteredData;
 
