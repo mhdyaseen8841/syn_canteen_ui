@@ -222,6 +222,12 @@ export async function getCanteenReport(data) {
   return response.data;
 }
 
+export async function getCanteenReportDate(data) {
+  const response = await apiInstance.post('get-canteen-report-date', data);
+  return response.data;
+}
+
+
 export async function addRating(data) {
   const response = await apiInstance.post('rating', data);
   return response.data;
