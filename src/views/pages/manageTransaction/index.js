@@ -42,6 +42,16 @@ export default function Index() {
     dateVal = selectedDate
   ) => {
     try {
+      let formattedDate = null;
+      if (dateVal) {
+        const parts = dateVal.split('-');
+        if (parts.length === 3 && parts[0].length === 4) {
+          formattedDate = `${parts[2]}-${parts[1]}-${parts[0]}`;
+        } else {
+          formattedDate = dateVal;
+        }
+      }
+
       let reqData = {
         canteen_calendar_id: calender,
         menu_id: menuId,
@@ -49,8 +59,8 @@ export default function Index() {
         page: pageNo,
         limit: pageLimit,
         employee_id : employeeId,
-        from_date: dateVal || null,
-        to_date: dateVal || null
+        from_date: formattedDate,
+        to_date: formattedDate
       };
       const res = await getCurrentTransaction(reqData);
       setData(res.data || res.recordset || []);
