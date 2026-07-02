@@ -18,7 +18,7 @@ import { toast } from 'react-toastify';
 import StyledDialog from 'ui-component/StyledDialog';
 import { addEmployeeTransaction, getCompany, getMenu, searchEmployee } from 'utils/Service';
 
-export default function AddForm({ getData, open, onClose, isEdit = false, data = {}, selectedCalender }) {
+export default function AddForm({ getData, open, onClose, isEdit = false, data = {}, selectedCalender, selectedDate, selectedMenu }) {
   const [companies, setCompanies] = React.useState([]);
   const [employees, setEmployees] = React.useState([]);
   const [loadingEmployees, setLoadingEmployees] = React.useState(false);
@@ -40,11 +40,11 @@ export default function AddForm({ getData, open, onClose, isEdit = false, data =
     defaultValues: isEdit
       ? data
       : {
-         date: selectedCalender?.from_date?.split('T')[0] || today,
+          date: selectedDate || selectedCalender?.from_date?.split('T')[0] || today,
           companyId: '',
           empId: '',
-          menu: '',
-          no_of_coupons: '',
+          menu: selectedMenu || '',
+          no_of_coupons: '1',
           remarks: ' '
         }
   });
@@ -52,17 +52,17 @@ export default function AddForm({ getData, open, onClose, isEdit = false, data =
   const watchedCompany = watch('companyId');
 
   React.useEffect(() => {
-  if (open && selectedCalender) {
-    reset({
-      date: selectedCalender.from_date?.split('T')[0] || today,
-      companyId: '',
-      empId: '',
-      menu: '',
-      no_of_coupons: '1',
-      remarks: ' '
-    });
-  }
-}, [selectedCalender, open, reset]);
+    if (open) {
+      reset({
+        date: selectedDate || selectedCalender?.from_date?.split('T')[0] || today,
+        companyId: '',
+        empId: '',
+        menu: selectedMenu || '',
+        no_of_coupons: '1',
+        remarks: ' '
+      });
+    }
+  }, [selectedCalender, selectedDate, selectedMenu, open, reset]);
 
 
   // Load companies on component mount
@@ -317,7 +317,7 @@ export default function AddForm({ getData, open, onClose, isEdit = false, data =
               render={({ field }) => (
                 <FormControl fullWidth error={Boolean(errors.menu)}>
                   <InputLabel>Menu Type</InputLabel>
-                  <Select {...field} label="Menu Type" error={Boolean(errors.menu)} onChange={(e) => field.onChange(e.target.value)}>
+                  <Select {...field} label="Menu Type" error={Boolean(errors.menu)} disabled={Boolean(selectedMenu)} onChange={(e) => field.onChange(e.target.value)}>
                     <MenuItem value="">
                       <em>Select Menu</em>
                     </MenuItem>

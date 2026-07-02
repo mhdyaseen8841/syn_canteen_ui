@@ -14,6 +14,7 @@ export default function Index() {
     const [canteenCalenderData, setCanteenCalenderData] = useState([]);
     const [selectedCalender, setSelectedCalender] = useState(null);
     const [selectedCalenderData, setSelectedCalenderData] = useState(null);
+    const [selectedDate, setSelectedDate] = useState('');
     const [menu, setMenu] = useState([]);
     const [selectedMenu, setSelectedMenu] = useState('');
      const [transactionType, setTransactionType] = useState('employee'); // <-- New state
@@ -37,7 +38,8 @@ export default function Index() {
     selectedType = transactionType,
     pageNo = page,
     pageLimit = limit,
-    employeeId = selectedEmployee
+    employeeId = selectedEmployee,
+    dateVal = selectedDate
   ) => {
     try {
       let reqData = {
@@ -46,7 +48,9 @@ export default function Index() {
         transaction_type: selectedType,
         page: pageNo,
         limit: pageLimit,
-        employee_id : employeeId
+        employee_id : employeeId,
+        from_date: dateVal || null,
+        to_date: dateVal || null
       };
       const res = await getCurrentTransaction(reqData);
       setData(res.data || res.recordset || []);
@@ -88,33 +92,52 @@ export default function Index() {
         const selected = canteenCalenderData.find(cal => cal.canteen_calendar_id === data);
       setSelectedCalender(data)
       setSelectedCalenderData(selected)
-      getData(data,selectedMenu);
+
+      const fromD = selected?.from_date?.split('T')[0];
+      const toD = selected?.to_date?.split('T')[0];
+      const today = new Date().toISOString().split('T')[0];
+      let defaultDate = '';
+      if (fromD && toD) {
+        if (today >= fromD && today <= toD) {
+          defaultDate = today;
+        } else {
+          defaultDate = fromD;
+        }
+      }
+      setSelectedDate(defaultDate);
+      getData(data, selectedMenu, transactionType, 1, limit, selectedEmployee, defaultDate);
     }
   
+    const handleDateChange = (dateVal) => {
+      setSelectedDate(dateVal);
+      setPage(1);
+      getData(selectedCalender, selectedMenu, transactionType, 1, limit, selectedEmployee, dateVal);
+    }
+
     const handleMenuChange = (data) => {
       setSelectedMenu(data)
       if(selectedCalender){
-        getData(selectedCalender,data);
+        getData(selectedCalender, data, transactionType, 1, limit, selectedEmployee, selectedDate);
       }
     }
 
-      const handleTransactionTypeChange = (data) => {
+       const handleTransactionTypeChange = (data) => {
       setTransactionType(data);
       if (selectedCalender) {
-        getData(selectedCalender, selectedMenu, data);
+        getData(selectedCalender, selectedMenu, data, 1, limit, selectedEmployee, selectedDate);
       }
     }
   
       const handlePageChange = (event, value) => {
     setPage(value);
-    getData(selectedCalender, selectedMenu, transactionType, value, limit);
+    getData(selectedCalender, selectedMenu, transactionType, value, limit, selectedEmployee, selectedDate);
   };
 
   const handleLimitChange = (event) => {
     const newLimit = parseInt(event.target.value, 10);
     setLimit(newLimit);
     setPage(1);
-    getData(selectedCalender, selectedMenu, transactionType, 1, newLimit);
+    getData(selectedCalender, selectedMenu, transactionType, 1, newLimit, selectedEmployee, selectedDate);
   };
 
 
@@ -122,7 +145,7 @@ export default function Index() {
 
   useEffect(() => {
     if (selectedCalender) {
-      getData(selectedCalender, selectedMenu, transactionType, page, limit);
+      getData(selectedCalender, selectedMenu, transactionType, page, limit, selectedEmployee, selectedDate);
     }
   }, [page, limit]);
 
@@ -169,10 +192,10 @@ export default function Index() {
       <Box sx={{ mb: 1 }}>
         <Stack direction={{ xs: 'column', md: 'row' }} spacing={2}>
           <FormControl fullWidth>
-            <InputLabel>Select Date</InputLabel>
-            <Select value={selectedCalender} label="Select Date" onChange={(e) => handleCalenderDate(e.target.value)}>
+            <InputLabel>Select Month/Year</InputLabel>
+            <Select value={selectedCalender} label="Select Month/Year" onChange={(e) => handleCalenderDate(e.target.value)}>
               <MenuItem value="">
-                <em>Select a Date</em>
+                <em>Select a Month/Year</em>
               </MenuItem>
               {canteenCalenderData.map((calender) => (
                 <MenuItem key={calender.canteen_calendar_id} value={calender.canteen_calendar_id}>
@@ -180,6 +203,21 @@ export default function Index() {
                 </MenuItem>
               ))}
             </Select>
+          </FormControl>
+
+          <FormControl fullWidth>
+            <TextField
+              type="date"
+              label="Select Date"
+              value={selectedDate || ''}
+              onChange={(e) => handleDateChange(e.target.value)}
+              disabled={!selectedCalender}
+              InputLabelProps={{ shrink: true }}
+              inputProps={{
+                min: selectedCalenderData?.from_date?.split('T')[0],
+                max: selectedCalenderData?.to_date?.split('T')[0]
+              }}
+            />
           </FormControl>
 
           <FormControl fullWidth>
@@ -243,7 +281,7 @@ export default function Index() {
     setEmployeeOptions([]);
     setSearchText('');
     setSelectedEmployee(null); // <-- clear selected employee first!
-    getData(selectedCalender, selectedMenu, transactionType, 1, limit, null); // pass null for employee
+    getData(selectedCalender, selectedMenu, transactionType, 1, limit, null, selectedDate); // pass null for employee
   }
 }}
           onChange={(_, newValue) => {
@@ -256,7 +294,8 @@ export default function Index() {
               transactionType,
               1,
               limit,
-              newValue ? newValue.employee_id : null
+              newValue ? newValue.employee_id : null,
+              selectedDate
             );
           }}
           renderInput={params => (
@@ -306,7 +345,14 @@ export default function Index() {
         />
       </Stack>
 
-      <AddForm open={formOpen}  getData={getData} onClose={() => setFormOpen(false)} selectedCalender={selectedCalenderData}/>
+      <AddForm 
+        open={formOpen}  
+        getData={getData} 
+        onClose={() => setFormOpen(false)} 
+        selectedCalender={selectedCalenderData}
+        selectedDate={selectedDate}
+        selectedMenu={selectedMenu}
+      />
       <Content data={data} updateData={getData} />
     </Stack>
   );
