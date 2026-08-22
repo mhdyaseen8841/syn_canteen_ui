@@ -87,7 +87,9 @@ const MainRoutes = {
     },
     {
       path: 'cancel-transaction',
-      element: <CancelCanteenCoupons />
+      element: localStorage.getItem('role') === 'admin'
+        ? <CancelCanteenCoupons />
+        : <Navigate to="/" replace />
     },
   //  {
   //   path: 'contractor',

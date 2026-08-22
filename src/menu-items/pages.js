@@ -80,7 +80,7 @@ export default function Pages() {
       type: 'item',
       url: '/cancel-transaction',
       icon: icons.IconBan,
-      visibleTo: [Roles.ADMIN, Roles.FRONTOFFICE]
+      visibleTo: [Roles.ADMIN]
     },
     {
       id: 'settlement',
